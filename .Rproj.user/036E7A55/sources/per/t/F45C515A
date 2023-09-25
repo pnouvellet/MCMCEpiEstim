@@ -1,0 +1,26 @@
+{
+    "id": "F45C515A",
+    "path": "D:/Work/github/MCMCEpiEstim/R/sim_Rt_sin.R",
+    "project_path": "R/sim_Rt_sin.R",
+    "type": "r_source",
+    "hash": "407217857",
+    "contents": "",
+    "dirty": false,
+    "created": 1695633841970.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "9,11",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1695636565,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1695636565110,
+    "read_only": false,
+    "read_only_alternatives": []
+}

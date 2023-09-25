@@ -1,0 +1,8 @@
+"0",""
+"0","I <- project_fct(I0 = I0, Rt = Rt, n_sim = n_sim,"
+"0","                 t_max = t_max, si = si, model = 'poisson' )"
+"0","# I <- project_fct(I0 = I0, Rt = Rt, n_sim = n_sim, "
+"0","#                  t_max = t_max, si = si, model = 'negbin',size = 0.5 )"
+"0",""
+"0",""
+"0","matplot((I[,-1]))"

@@ -1,0 +1,26 @@
+{
+    "id": "032C2DE1",
+    "path": "D:/Work/github/MCMCEpiEstim/R/fct_EpiEstim.R",
+    "project_path": "R/fct_EpiEstim.R",
+    "type": "r_source",
+    "hash": "810851886",
+    "contents": "",
+    "dirty": false,
+    "created": 1695635091744.0,
+    "source_on_save": false,
+    "relative_order": 6,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "18,47",
+        "scrollLine": "12"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1695638527,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1695638527881,
+    "read_only": false,
+    "read_only_alternatives": []
+}

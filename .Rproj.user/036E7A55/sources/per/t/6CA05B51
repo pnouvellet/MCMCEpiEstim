@@ -1,0 +1,26 @@
+{
+    "id": "6CA05B51",
+    "path": "D:/Work/github/MCMCEpiEstim/R/MCMC_full.R",
+    "project_path": "R/MCMC_full.R",
+    "type": "r_source",
+    "hash": "2779952100",
+    "contents": "",
+    "dirty": false,
+    "created": 1695635098848.0,
+    "source_on_save": false,
+    "relative_order": 9,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "29,3",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1684422753,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1684422753,
+    "read_only": false,
+    "read_only_alternatives": []
+}

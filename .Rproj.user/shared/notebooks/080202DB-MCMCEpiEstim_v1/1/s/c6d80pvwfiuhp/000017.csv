@@ -1,6 +1,0 @@
-"0",""
-"0","res_EpiEstim <- fct_EpiEstim(I0 = I0 , I = I , t_window = t_window, "
-"0","                             mean_prior = mean_prior, std_prior = std_prior,"
-"0","                             si = si, overlap = FALSE)"
-"0",""
-"0","plot(Rt$t,Rt$Rt,type = 'l', ylim = c(0,1.5))"

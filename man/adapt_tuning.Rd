@@ -2,7 +2,7 @@
 % Please edit documentation in R/adapt_tuning.R
 \name{adapt_tuning}
 \alias{adapt_tuning}
-\title{adaptative tuning}
+\title{adaptive tuning}
 \usage{
 adapt_tuning(
   repli,
@@ -10,7 +10,7 @@ adapt_tuning(
   theta0,
   sigma,
   data_long,
-  n_sim,
+  n_loc,
   n_tw,
   t_window,
   prior,
@@ -21,7 +21,7 @@ adapt_tuning(
 \arguments{
 \item{repli}{number of time the variance of the proposal is tuned (10 tends to be ok)}
 
-\item{within_iter}{iterations for evaluate the accpetance with new proposal variances}
+\item{within_iter}{iterations for evaluation of the acceptance with new proposal variances}
 
 \item{sigma}{original variance to start with}
 
@@ -32,6 +32,6 @@ tune proposal and give good initial values to start 'proper' MCMC
  try to tune variance toward 20% acceptance
 }
 \details{
-res list of 2 vectors: theta0: posterior samples at the last iterations
-                      sigma: new variance for the proposal distribution
+res list of 2 vectors: theta0: parameters value (posterior samples) at the last iterations
+                      sigma: new variances for the proposal distributions
 }

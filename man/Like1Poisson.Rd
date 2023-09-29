@@ -2,20 +2,25 @@
 % Please edit documentation in R/Like1.R
 \name{Like1Poisson}
 \alias{Like1Poisson}
-\title{get likelihood}
+\title{get likelihood  for Poisson or NB offspring distribution}
 \usage{
-Like1Poisson(theta, data_long, t_window, n_sim, n_tw, param_agg = FALSE)
+Like1Poisson(theta, data_long, t_window, n_loc, n_tw, param_agg = FALSE)
 }
 \arguments{
-\item{lambda:}{'force of infection' matrix (incidence weighted by serial interval),
-column number of days, row: number of locations}
+\item{data_long}{dataframe of incidence and overall infectivities}
 
-\item{I}{matrix of observed incidence, same dimension as lambda}
+\item{t_window}{time windows}
 
-\item{R0}{vector of reproduction numbers per locations}
+\item{n_loc}{number of locations}
+
+\item{n_tw}{number of time windows}
+
+\item{param_agg}{TRUE or FALSE if Rt/overdispersion estimate are aggregated by location}
+
+\item{theta:}{parameters values}
 }
 \description{
-get Poisson likelihood  
+get likelihood  
 internal to the MCMC
 }
 \details{

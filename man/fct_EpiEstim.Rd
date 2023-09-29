@@ -4,18 +4,28 @@
 \alias{fct_EpiEstim}
 \title{epiestim wrap}
 \usage{
-fct_EpiEstim(I0, I, t_window, mean_prior, std_prior, si)
+fct_EpiEstim(I0, I, t_window, mean_prior, std_prior, si, overlap)
 }
 \arguments{
-\item{theta}{matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples}
+\item{I0}{matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples}
 
-\item{s}{vector, proposal variances used to obtain posterior samples theta}
+\item{I}{matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples}
 
-\item{it}{integer, nro of theta}
+\item{t_window}{matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples}
+
+\item{mean_prior}{single real number, mean prior for Rts}
+
+\item{std_prior}{single real number, stad deviation for prior for Rts}
+
+\item{si}{serial distribution (as in EpiEstim include a 0 weighted SI on same day)}
+
+\item{overlap}{TRUE/FALSE, whether using overlapping time window or not}
 }
 \description{
-function to epiestim on the simulated data
+wrapper to call EpiEstim independently on multiple locations
 }
 \details{
-lambda incidence weighted by serial interval
+res, list of 1 dataframe per location summarising incidence, time, overall infectivity,
+             time window start and end date, estimated mean/std deviation/median and
+              95% CI lower and upper quantile for Rts
 }

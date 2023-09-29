@@ -2,7 +2,7 @@
 % Please edit documentation in R/MCMC_full.R
 \name{MCMC_full}
 \alias{MCMC_full}
-\title{MCMC iterate}
+\title{MCMC full}
 \usage{
 MCMC_full(
   iter,
@@ -11,7 +11,7 @@ MCMC_full(
   repli_adapt,
   within_iter,
   data_long,
-  n_sim,
+  n_loc,
   n_tw,
   t_window,
   prior,
@@ -27,26 +27,33 @@ MCMC_full(
 
 \item{s}{variance of proposal distributions (log-normal)}
 
-\item{within_iter}{iterations for evaluate the accpetance with new proposal variances}
+\item{repli_adapt}{number of time the variance of the proposal is tuned (10 tends to be ok)}
 
-\item{I}{the incidence for the time window during which we assume Rt to be constant.
-I is a dataframe, first column are dates then incidence for all locations
-nb of row is the size of time widows, dates must be sequential}
+\item{within_iter}{iterations for evaluation of the acceptance with new proposal variances, when tuning}
 
-\item{N_geo}{integer of  numbers of locations}
+\item{data_long}{dataframe of incidence and overall infectivities}
 
-\item{SI}{Serial interval distribution (see SI_gamma_dist_EpiEstim)}
+\item{n_loc}{number of locations}
 
-\item{mu0:}{initial conidtions to guaranty that if R=1, then we predict the number of cases in the future will stablise at the mean number of cases observed in the time window
-mu0 is also used as the mean of the (exponential) prior for intial conditions estimated}
+\item{n_tw}{number of time windows}
 
-\item{repli}{number of time the variance of the proposal is tuned (10 tends to be ok)}
+\item{t_window}{time windows}
+
+\item{prior}{prior for parameters}
+
+\item{overdispersion}{TRUE or FALSE if overdispersion is assumed (Poisson vs. NB)}
+
+\item{thin}{nb of iterations being disregarded}
+
+\item{param_agg}{TRUE or FALSE if Rt/overdispersion estimate are aggregated by location}
 }
 \description{
-run the MCMC to sample posterior of R and initial coniditions at each location 
-FYI: this is called internally by adapt_tuning
+run the MCMC to sample posterior of Rts (and overdispersion) at each location + 
+tuning of proposal variance + DIC of model
 }
 \details{
-res a list containing 2 matrices: theta: matrix of posterior samples
-                     and logL: matrix of associated log-likelihood
+res a list containing matrices of: Rts posterior samples (before/after thinning), 
+              overdispersions posterior samples (before/after thinning),
+              likelihoods (before/after thinning), 
+              DIC for the model.
 }

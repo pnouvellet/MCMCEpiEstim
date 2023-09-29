@@ -1,4 +1,0 @@
-"0",""
-"0","Rt <- sim_Rt_sin(a = a, period = period, m = c, t_max = t_max, t_start = I0$timespan+1)"
-"0","Rt$Rt <- rep(Rt$Rt[seq(1,t_max-2, by = 7)], each = 7)"
-"0","plot(Rt$t,Rt$Rt,type = 'l')"

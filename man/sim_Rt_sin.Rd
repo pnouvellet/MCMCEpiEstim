@@ -7,20 +7,19 @@
 sim_Rt_sin(a, period, m, t_max, t_start)
 }
 \arguments{
-\item{a}{matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples}
+\item{a}{amplitude of the wave}
 
-\item{period}{vector, proposal variances used to obtain posterior samples theta}
+\item{period}{period of Rts oscillations}
 
-\item{m}{integer, nro of theta}
+\item{m}{overall mean of Rt}
 
-\item{t_max}{vector, proposal variances used to obtain posterior samples theta}
+\item{t_max}{end time}
 
-\item{t_start}{integer, nro of theta}
+\item{t_start}{starting time for simulation of Rt}
 }
 \description{
 simulate sinusoidal Rt
- try to tune variance toward 20% acceptance
 }
 \details{
-lambda incidence weighted by serial interval
+return dataframe with Rt and time
 }

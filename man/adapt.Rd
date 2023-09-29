@@ -11,12 +11,12 @@ adapt(theta, s, it)
 
 \item{s}{vector, proposal variances used to obtain posterior samples theta}
 
-\item{it}{integer, nro of theta}
+\item{it}{integer, number of theta sample}
 }
 \description{
-tune variance proposal
+tune the variance proposal
  try to tune variance toward 20% acceptance
 }
 \details{
-lambda incidence weighted by serial interval
+return corrected variances to decrease/increase acceptance
 }

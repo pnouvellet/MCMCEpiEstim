@@ -4,18 +4,24 @@
 \alias{project_fct}
 \title{project}
 \usage{
-project_fct(I0, Rt, n_sim, t_max, si, model = "poisson", size = NULL)
+project_fct(I0, Rt, n_sim, t_max, si, model = "poisson", over = NULL)
 }
 \arguments{
-\item{theta}{matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples}
+\item{I0}{matrix of initial incidence per location (can be more than one day)}
 
-\item{s}{vector, proposal variances used to obtain posterior samples theta}
+\item{Rt}{dataframe with t (time) and associated Rts (instantaneous Rt)}
 
-\item{it}{integer, nro of theta}
+\item{t_max}{number of simulated time steps}
+
+\item{si}{serial distribution (as in EpiEstim include a 0 weighted SI on same day)}
+
+\item{model}{take 'poisson' or 'NB', i.e. offspring distribution assumed.}
+
+\item{over}{value of overdispersion in the offspring distribution (here no under-reporting)}
 }
 \description{
-wrapper for projection
+wrapper for projection with/without overdispersion
 }
 \details{
-lambda incidence weighted by serial interval
+I simulated incidence, inclusive of starting values
 }

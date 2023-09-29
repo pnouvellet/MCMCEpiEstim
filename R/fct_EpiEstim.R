@@ -1,15 +1,25 @@
 #' epiestim wrap
 #'
-#' function to epiestim on the simulated data 
+#' wrapper to call EpiEstim independently on multiple locations
 #' 
-#' @param theta matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples
+#' @param I0 matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples
 #' 
-#' @param s vector, proposal variances used to obtain posterior samples theta
+#' @param I matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples
+#' 
+#' @param t_window matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples
+#' 
+#' @param mean_prior single real number, mean prior for Rts
+#' 
+#' @param std_prior single real number, stad deviation for prior for Rts
+#' 
+#' @param si serial distribution (as in EpiEstim include a 0 weighted SI on same day)
 #'                   
-#' @param it integer, nro of theta
+#' @param overlap TRUE/FALSE, whether using overlapping time window or not
 #'
 #' 
-#' @details lambda incidence weighted by serial interval
+#' @details res, list of 1 dataframe per location summarising incidence, time, overall infectivity,
+#'              time window start and end date, estimated mean/std deviation/median and
+#'               95% CI lower and upper quantile for Rts
 #' @export
 #' 
 #' 

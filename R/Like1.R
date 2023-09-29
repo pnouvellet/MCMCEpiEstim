@@ -1,20 +1,25 @@
-#' get likelihood  
+#' get likelihood  for Poisson or NB offspring distribution
 #'
-#' get Poisson likelihood  
+#' get likelihood  
 #' internal to the MCMC
 #' 
-#' @param lambda: 'force of infection' matrix (incidence weighted by serial interval),
-#'                  column number of days, row: number of locations   
+#' @param theta: parameters values   
 #'                  
-#' @param I matrix of observed incidence, same dimension as lambda
+#' @param data_long dataframe of incidence and overall infectivities
 #' 
-#' @param R0 vector of reproduction numbers per locations
+#' @param t_window time windows
+#' 
+#' @param n_loc number of locations
+#' 
+#' @param n_tw number of time windows
+#' 
+#' @param param_agg TRUE or FALSE if Rt/overdispersion estimate are aggregated by location
 #'
 #' @details  L log likelihood
 #' @export
 #' 
 
-Like1Poisson <- function(theta, data_long, t_window, n_sim, n_tw, param_agg = FALSE  ){
+Like1Poisson <- function(theta, data_long, t_window, n_loc, n_tw, param_agg = FALSE  ){
   
   R <- theta$Rts
   # place new value in datalong to account for time window smoothing
@@ -26,9 +31,9 @@ Like1Poisson <- function(theta, data_long, t_window, n_sim, n_tw, param_agg = FA
   # logL_ind <- data_long$Inc_lk *log(lambda) - lambda 
   
   # aggregate within time windows equivalent but faster than: logL_s <- aggregate(logL_ind_s, by = list(data_long$Rt),sum)[,-1]
-  logL <- colSums(matrix(logL_ind, nrow = t_window, ncol = n_sim*n_tw, byrow = FALSE), na.rm = TRUE )
+  logL <- colSums(matrix(logL_ind, nrow = t_window, ncol = n_loc*n_tw, byrow = FALSE), na.rm = TRUE )
   if (param_agg){
-    logL <- colSums(matrix(logL, nrow = n_sim, ncol = n_tw, byrow = TRUE), na.rm = TRUE )
+    logL <- colSums(matrix(logL, nrow = n_loc, ncol = n_tw, byrow = TRUE), na.rm = TRUE )
   }
   
   return(logL)
@@ -41,10 +46,10 @@ Like1Poisson <- function(theta, data_long, t_window, n_sim, n_tw, param_agg = FA
 # logL <- dnbinom(x = data_long$Inc_lk, mu = Rts_lk_0*data_long$Oi_lk, 
 #                 size = data_long$Oi_lk * theta0_over , log = TRUE) 
 
-Like1NBsp <- function(theta, data_long, t_window, n_sim, n_tw, param_agg = FALSE  ){
+Like1NBsp <- function(theta, data_long, t_window, n_loc, n_tw, param_agg = FALSE  ){
   
   R <- theta$Rts
-  over <- theta$Over
+  over <- theta$Over # !!!!!!!need to be modified in light of new results!!!!
   # place new value in datalong to account for time window smoothing
   Rts_lk <- R[data_long$Rt]
   # get mean new number of cases
@@ -56,9 +61,9 @@ Like1NBsp <- function(theta, data_long, t_window, n_sim, n_tw, param_agg = FALSE
   
   
   # aggregate within time windows equivalent but faster than: logL_s <- aggregate(logL_ind_s, by = list(data_long$Rt),sum)[,-1]
-  logL <- colSums(matrix(logL_ind, nrow = t_window, ncol = n_sim*n_tw, byrow = FALSE), na.rm = TRUE )
+  logL <- colSums(matrix(logL_ind, nrow = t_window, ncol = n_loc*n_tw, byrow = FALSE), na.rm = TRUE )
   if (param_agg){
-    logL <- colSums(matrix(logL, nrow = n_sim, ncol = n_tw, byrow = TRUE), na.rm = TRUE )
+    logL <- colSums(matrix(logL, nrow = n_loc, ncol = n_tw, byrow = TRUE), na.rm = TRUE )
   }
   return(logL)
 }

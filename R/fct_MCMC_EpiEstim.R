@@ -1,7 +1,7 @@
 #' wrapper for MCMC EpiEstim
 #'
 #' run the MCMC to sample posterior of of Rts (and overdispersion) at each location, require
-#' running first the 'fct_EpiEstim' (need to clean up input here so no dupilcation)
+#' running first the 'fct_EpiEstim' (need to clean up input here so no duplications)
 #' 
 #' 
 #' 

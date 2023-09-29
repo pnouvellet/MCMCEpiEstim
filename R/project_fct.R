@@ -1,20 +1,27 @@
 #' project
 #'
-#' wrapper for projection
+#' wrapper for projection with/without overdispersion 
 #' 
-#' @param theta matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples
+#' @param I0 matrix of initial incidence per location (can be more than one day)
 #' 
-#' @param s vector, proposal variances used to obtain posterior samples theta
+#' @param Rt dataframe with t (time) and associated Rts (instantaneous Rt)
 #'                   
-#' @param it integer, nro of theta
+#' @param t_max number of simulated time steps
+#'
+#' @param si serial distribution (as in EpiEstim include a 0 weighted SI on same day)
+#'
+#' @param model take 'poisson' or 'NB', i.e. offspring distribution assumed.
+#'
+#' @param over value of overdispersion in the offspring distribution (here no under-reporting)
 #'
 #' 
-#' @details lambda incidence weighted by serial interval
+#' @details I simulated incidence, inclusive of starting values
+#' 
 #' @export
 #' 
 #' 
 
-project_fct <- function(I0, Rt, n_sim, t_max, si, model = 'poisson',size = NULL){
+project_fct <- function(I0, Rt, n_sim, t_max, si, model = 'poisson',over = NULL){
   
   I <- as.data.frame(matrix(NA,ncol = n_sim+1, nrow = t_max))
   names(I) <- c('t',paste0('sim',1:n_sim))
@@ -34,7 +41,7 @@ project_fct <- function(I0, Rt, n_sim, t_max, si, model = 'poisson',size = NULL)
                                   si = si[-1], n_sim = n_sim, time_change = 2:(t_max-0-I0$timespan),
                                   n_days = t_max-I0$timespan, 
                                   R_fix_within = TRUE, 
-                                  model = 'negbin',instantaneous_R = TRUE, size = size))
+                                  model = 'negbin',instantaneous_R = TRUE, size = over))
   }
   
   

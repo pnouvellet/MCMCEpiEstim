@@ -1,19 +1,19 @@
-#' adaptative tuning
+#' adaptive tuning
 #'
 #' tune proposal and give good initial values to start 'proper' MCMC
 #'  try to tune variance toward 20% acceptance
 #' 
 #' @param repli number of time the variance of the proposal is tuned (10 tends to be ok)
 #' 
-#' @param within_iter iterations for evaluate the accpetance with new proposal variances
+#' @param within_iter iterations for evaluation of the acceptance with new proposal variances
 #'                   
 #' @param sigma original variance to start with
 #'
 #' @param others same as in MCMC_iter function
 #'
 #' 
-#' @details res list of 2 vectors: theta0: posterior samples at the last iterations
-#'                       sigma: new variance for the proposal distribution
+#' @details res list of 2 vectors: theta0: parameters value (posterior samples) at the last iterations
+#'                       sigma: new variances for the proposal distributions
 #' @export
 #' 
 

@@ -1,20 +1,19 @@
 #' simulate
 #'
 #' simulate sinusoidal Rt
-#'  try to tune variance toward 20% acceptance
 #' 
-#' @param a matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples
+#' @param a amplitude of the wave
 #' 
-#' @param period vector, proposal variances used to obtain posterior samples theta
+#' @param period period of Rts oscillations
 #'                   
-#' @param m integer, nro of theta
+#' @param m overall mean of Rt
 #'
-#' @param t_max vector, proposal variances used to obtain posterior samples theta
+#' @param t_start starting time for simulation of Rt
+#'
+#' @param t_max end time
 #'                   
-#' @param t_start integer, nro of theta
-#'
 #' 
-#' @details lambda incidence weighted by serial interval
+#' @details return dataframe with Rt and time
 #' 
 #' @export
 #' 

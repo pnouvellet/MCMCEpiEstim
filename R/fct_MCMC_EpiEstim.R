@@ -42,7 +42,7 @@ fct_MCMC_EpiEstim <- function(I0, I, t_window,
   
   prior <- epitrix::gamma_mucv2shapescale(mu = mean_prior, cv = std_prior/mean_prior)
   t_max <- nrow(I)
-  n_sim <- ncol(I)-1
+  n_loc <- ncol(I)-1
   
   # time windows
   t_start <- seq(I0$timespan+1, t_max-t_window+1,by = 1)        
@@ -52,7 +52,7 @@ fct_MCMC_EpiEstim <- function(I0, I, t_window,
   # parameters & proposal log_normal standard deviation
   if (param_agg){
     if(Rt0_epiEstim){
-      temp <- apply(matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), nrow = t_max, ncol = n_sim, byrow = FALSE),
+      temp <- apply(matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), nrow = t_max, ncol = n_loc, byrow = FALSE),
                     1,mean,na.rm=TRUE)
       Rts_0 <- temp[(t_window+I0$timespan):length(temp)]
     }else{
@@ -61,12 +61,12 @@ fct_MCMC_EpiEstim <- function(I0, I, t_window,
     s_Rt <- rep(0.1, n_tw)
   }else{
     if(Rt0_epiEstim){
-      temp <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), nrow = t_max, ncol = n_sim, byrow = FALSE)
+      temp <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), nrow = t_max, ncol = n_loc, byrow = FALSE)
       Rts_0 <- c(temp[(t_window+I0$timespan):nrow(temp),])
     }else{
-      Rts_0 <- rep(1, n_sim*n_tw)
+      Rts_0 <- rep(1, n_loc*n_tw)
     }
-    s_Rt <- rep(0.1, n_sim*n_tw)
+    s_Rt <- rep(0.1, n_loc*n_tw)
   }
   if(overdispersion == TRUE){
     Over_0 <- 100
@@ -80,28 +80,28 @@ fct_MCMC_EpiEstim <- function(I0, I, t_window,
   
   # precompute I and infectivity matrices
   Inc <- as.matrix(I[,-1])
-  Oi <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Oi')), nrow = t_max, ncol = n_sim, byrow = FALSE)
+  Oi <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Oi')), nrow = t_max, ncol = n_loc, byrow = FALSE)
   Oi[Oi==0] <- NA
   idx_inc <- c(apply(cbind(t_start,t_end), 1,f1_idx_inc))
   
   if(param_agg){
     data_long <- data.frame(Inc_lk = c(Inc[idx_inc,]),
                             Oi_lk = c(Oi[idx_inc,]),
-                            sim = c(matrix(1:n_sim, nrow = n_tw*t_window, ncol = n_sim, byrow = TRUE)),
+                            sim = c(matrix(1:n_loc, nrow = n_tw*t_window, ncol = n_loc, byrow = TRUE)),
                             Rt = rep(seq(1,n_tw), each = t_window ) )
   }else{
     data_long <- data.frame(Inc_lk = c(Inc[idx_inc,]),
                             Oi_lk = c(Oi[idx_inc,]),
-                            sim = c(matrix(1:n_sim, nrow = n_tw*t_window, ncol = n_sim, byrow = TRUE)),
-                            Rt = rep(seq(1,n_tw*n_sim), each = t_window ) )
+                            sim = c(matrix(1:n_loc, nrow = n_tw*t_window, ncol = n_loc, byrow = TRUE)),
+                            Rt = rep(seq(1,n_tw*n_loc), each = t_window ) )
   }
   # res <- MCMC_iter(iter = rep, theta0 = Theta_0, s = s_0, data_long = data_long,
-  #                  n_sim = n_sim, n_tw = n_tw, t_window = t_window,
+  #                  n_loc = n_loc, n_tw = n_tw, t_window = t_window,
   #                  prior = prior,overdispersion = overdispersion, param_agg )
 
   res <- MCMC_full(iter = rep, theta0 = Theta_0, s = s_0,
                    repli_adapt = 10, within_iter = rep/10,
-                   data_long = data_long, n_sim = n_sim, n_tw = n_tw, 
+                   data_long = data_long, n_loc = n_loc, n_tw = n_tw, 
                    t_window = t_window, prior = prior, 
                    overdispersion = overdispersion, thin = thin, param_agg )
   

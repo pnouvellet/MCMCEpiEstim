@@ -25,7 +25,7 @@
 # sigma: original variance to start with
 # others: as in MCMC_iter
 adapt_tuning <- function(repli, within_iter, theta0, sigma, 
-                         data_long, n_sim, n_tw, t_window, prior, overdispersion, param_agg = FALSE ){
+                         data_long, n_loc, n_tw, t_window, prior, overdispersion, param_agg = FALSE ){
   
   new_sigma <- sigma
   for (i in 1:repli){
@@ -34,7 +34,7 @@ adapt_tuning <- function(repli, within_iter, theta0, sigma,
     #                  theta0 = theta0,
     #                  s = new_sigma)
     res <- MCMC_iter(iter = within_iter, theta0 = theta0, s = new_sigma, 
-                     data_long = data_long, n_sim = n_sim, n_tw = n_tw,
+                     data_long = data_long, n_loc = n_loc, n_tw = n_tw,
                      t_window = t_window, prior = prior, overdispersion = overdispersion, param_agg)
     
     # colSums(diff(res$theta)!=0)/(within_iter-1) 

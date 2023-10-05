@@ -60,7 +60,8 @@ MCMC_iter <- function(iter,theta0,s, data_long, n_loc, n_tw, t_window, prior, ov
     theta_s$Rts <- theta_s$Rts*exp(s$Rts*rnorm(n = n_param[[1]], mean = 0, sd = 1) )
     
     # get the log-likelihood (minus constant bits)
-    logL_s <- Like1(theta = theta_s, data_long = data_long, t_window = t_window, n_loc = n_loc, n_tw = n_tw, param_agg )
+    logL_s <- Like1(theta = theta_s, data_long = data_long, t_window = t_window,
+                    n_loc = n_loc, n_tw = n_tw, param_agg, overdispersion = overdispersion  )
     
     # correct log-likelihood for gamma prior Rt
     corr_prior <- ( (prior$shape-1)*(log(theta_s$Rts) - log(theta0$Rts)) + (theta0$Rts - theta_s$Rts)/prior$scale )

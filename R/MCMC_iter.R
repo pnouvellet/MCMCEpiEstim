@@ -33,17 +33,18 @@ MCMC_iter <- function(iter,theta0,s, data_long, n_loc, n_tw, t_window, prior, ov
   # parameters
   n_param <- data.frame(Rt = length(theta0$Rts),
                         Over = length(theta0$Over))
-  if(overdispersion){
-    Like1 <- Like1NBsp 
-  }else{
-    Like1 <- Like1Poisson
-  }
+  # if(overdispersion){
+  #   Like1 <- Like1NBsp 
+  # }else{
+  #   Like1 <- Like1Poisson
+  # }
   #storage matrices
   L <- matrix(NA, nrow = iter, ncol = sum(n_param))
   Rs <- matrix(NA, nrow = iter, ncol = n_param$Rt)
   Overs <- matrix(NA, nrow = iter, ncol = n_param$Over)
   
-  logL_0 <- Like1(theta = theta0, data_long = data_long, t_window = t_window, n_loc = n_loc, n_tw = n_tw, param_agg )
+  logL_0 <- Like1(theta = theta0, data_long = data_long, t_window = t_window,
+                  n_loc = n_loc, n_tw = n_tw, param_agg, overdispersion = overdispersion )
   
   # fill first raw of storage
   Rs[1,] <- theta0$Rts
@@ -83,7 +84,8 @@ MCMC_iter <- function(iter,theta0,s, data_long, n_loc, n_tw, t_window, prior, ov
       if(theta_s$Over>1e3) theta_s$Over <- theta0$Over 
       
       # get the log-likelihood (minus constant bits)
-      logL_s <- Like1(theta = theta_s, data_long = data_long, t_window = t_window, n_loc = n_loc, n_tw = n_tw, param_agg )
+      logL_s <- Like1(theta = theta_s, data_long = data_long, 
+                      t_window = t_window, n_loc = n_loc, n_tw = n_tw, param_agg, overdispersion = overdispersion )
       
       # get ratio of likelihood corrected for priors and proposal
       r <- exp(sum(logL_s)-sum(logL_0))*theta_s$Over/theta0$Over  

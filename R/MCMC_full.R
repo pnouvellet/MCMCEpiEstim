@@ -106,7 +106,8 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
   if (overdispersion){
     theta_hat$Over <- median(res$theta_over)
   }
-  L <- sum(Like1(theta = theta_hat, data_long = data_long, t_window = t_window, n_loc = n_loc, n_tw = n_tw, param_agg ))
+  L <- sum(Like1(theta = theta_hat, data_long = data_long, t_window = t_window, 
+                 n_loc = n_loc, n_tw = n_tw, param_agg, overdispersion = overdispersion ))
   
   ll_med = median(rowSums(res$logL[,1:(n_param[[1]])]))
   P = 2 * (L - ll_med)

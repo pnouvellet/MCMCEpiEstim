@@ -13,18 +13,17 @@
 #'                   
 #' @param t_window integer, the number of iteration for the MCMC
 #'
-#' @param mean_prior vector of inital parameters
+#' @param mean_prior mean prior for Rt
 #'
-#' @param std_prior variance of proposal distributions (log-normal) 
+#' @param std_prior std deviation prior for Rt
 #' 
-#' @param res_EpiEstim Serial interval distribution (see SI_gamma_dist_EpiEstim)
+#' @param res_EpiEstim starting at Rts at estimate from epiestim
 #' 
-#' @param overdispersion: initial conidtions to guaranty that if R=1, then we predict the number of cases in the future will stablise at the mean number of cases observed in the time window
-#'              mu0 is also used as the mean of the (exponential) prior for intial conditions estimated
+#' @param overdispersion: FALSE/TRUE, TRUE: single overdispersion across locations
 #'              
-#' @param rep number of time the variance of the proposal is tuned (10 tends to be ok)
+#' @param rep iterations for MCMC, rep for the final sampling, rep/10 10 times for optimisation of proposal
 #' 
-#' @param thin iterations for evaluate the accpetance with new proposal variances
+#' @param thin thinning of posterior sample
 #' 
 #' @param param_agg iterations for evaluate the accpetance with new proposal variances
 #' 

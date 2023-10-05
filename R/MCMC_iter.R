@@ -20,7 +20,7 @@
 #' 
 #' @param overdispersion TRUE or FALSE if overdispersion is assumed (Poisson vs. NB)
 #'              
-#' @param param_agg TRUE or FALSE if Rt/overdispersion estimate are aggregated by location
+#' @param param_agg TRUE or FALSE if Rts estimates are aggregated by location
 #' 
 #' 
 #' @details  res a list containing matrices of: Rts posterior samples (before/after thinning), 

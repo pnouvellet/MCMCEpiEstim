@@ -27,22 +27,21 @@ nb of row is the size of time widows, dates must be sequential}
 
 \item{t_window}{integer, the number of iteration for the MCMC}
 
-\item{mean_prior}{vector of inital parameters}
+\item{mean_prior}{mean prior for Rt}
 
-\item{std_prior}{variance of proposal distributions (log-normal)}
+\item{std_prior}{std deviation prior for Rt}
 
-\item{res_EpiEstim}{Serial interval distribution (see SI_gamma_dist_EpiEstim)}
+\item{res_EpiEstim}{starting at Rts at estimate from epiestim}
 
-\item{rep}{number of time the variance of the proposal is tuned (10 tends to be ok)}
+\item{rep}{iterations for MCMC, rep for the final sampling, rep/10 10 times for optimisation of proposal}
 
-\item{thin}{iterations for evaluate the accpetance with new proposal variances}
+\item{thin}{thinning of posterior sample}
 
 \item{param_agg}{iterations for evaluate the accpetance with new proposal variances}
 
 \item{Rt0_epiEstim}{iterations for evaluate the accpetance with new proposal variances}
 
-\item{overdispersion:}{initial conidtions to guaranty that if R=1, then we predict the number of cases in the future will stablise at the mean number of cases observed in the time window
-mu0 is also used as the mean of the (exponential) prior for intial conditions estimated}
+\item{overdispersion:}{FALSE/TRUE, TRUE: single overdispersion across locations}
 }
 \description{
 run the MCMC to sample posterior of of Rts (and overdispersion) at each location, require

@@ -43,9 +43,9 @@ MCMC_full(
 
 \item{overdispersion}{TRUE or FALSE if overdispersion is assumed (Poisson vs. NB)}
 
-\item{thin}{nb of iterations being disregarded}
+\item{thin}{thinning of posterior sample}
 
-\item{param_agg}{TRUE or FALSE if Rt/overdispersion estimate are aggregated by location}
+\item{param_agg}{TRUE or FALSE if Rts estimates are aggregated by location}
 }
 \description{
 run the MCMC to sample posterior of Rts (and overdispersion) at each location + 

@@ -6,6 +6,8 @@
 #' 
 #' @param Rt dataframe with t (time) and associated Rts (instantaneous Rt)
 #'                   
+#' @param n_loc number of locations
+#' 
 #' @param t_max number of simulated time steps
 #'
 #' @param si serial distribution (as in EpiEstim include a 0 weighted SI on same day)

@@ -66,7 +66,7 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
   # res <- MCMC_iter(iter = iter,
   #                  theta0 = res0$theta0,
   #                  s = res0$sigma)
-  browser()
+  
   res <- MCMC_iter(iter = rep, 
                    theta0 = res0$theta0, 
                    s = res0$sigma, 

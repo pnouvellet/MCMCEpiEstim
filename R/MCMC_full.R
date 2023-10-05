@@ -40,13 +40,13 @@
 MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
                       n_loc, n_tw, t_window, prior, overdispersion, thin, param_agg = FALSE ){
  
-  # initialise likelihood
-  if(overdispersion){
-    Like1 <- Like1NBsp 
-  }else{
-    Like1 <- Like1Poisson
-  }
-  
+  # # initialise likelihood
+  # if(overdispersion){
+  #   Like1 <- Like1NBsp 
+  # }else{
+  #   Like1 <- Like1Poisson
+  # }
+  # 
   res0 <- adapt_tuning(repli = repli_adapt,
                        within_iter = within_iter,
                        theta0 = theta0,

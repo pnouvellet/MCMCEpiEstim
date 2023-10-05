@@ -40,6 +40,7 @@
 MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
                       n_loc, n_tw, t_window, prior, overdispersion, thin, param_agg = FALSE ){
  
+  rep <- repli_adapt*within_iter
   # # initialise likelihood
   # if(overdispersion){
   #   Like1 <- Like1NBsp 
@@ -66,7 +67,7 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
   # res <- MCMC_iter(iter = iter,
   #                  theta0 = res0$theta0,
   #                  s = res0$sigma)
-  browser()
+  # browser()
   res <- MCMC_iter(iter = rep, 
                    theta0 = res0$theta0, 
                    s = res0$sigma, 

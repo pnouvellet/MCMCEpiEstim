@@ -54,11 +54,11 @@ I0 <- incidence::as.incidence(x = 10, dates = 1, interval = 1)
 
 ```{r}
 Rt <- MCMCEpiEstim:::Rt_linear(inp = input)
-I_NB <- MCMCEpiEstim::project_fct(I0 = I0, Rt = Rt, 
-                                  n_loc = 1e1,#input$n_locations,
-                                  t_max = nrow(Rt), si = si,
+res <- MCMCEpiEstim::project_fct(I0 = I0, Rt = Rt, 
+                                  n_loc = 1e2,#input$n_locations,
+                                  t_max = nrow(Rt), si = si,p = 1,
                                   model = 'poisson')#,over = input$k)
-
+I_NB <- res$I_true
 ```
 
 check means
@@ -121,11 +121,11 @@ lines(log10(x),y2-x,col = 'red',lty = 2)
 
 ```{r}
 
-I_NB <- project_fct(I0 = I0, Rt = Rt, 
-                                  n_loc = 1e1,#input$n_locations,
-                                  t_max = nrow(Rt), si = si,
+res <- project_fct(I0 = I0, Rt = Rt, 
+                                  n_loc = 1e2,#input$n_locations,
+                                  t_max = nrow(Rt), si = si,p = 1,
                                   model = 'negbin',over = 1)
-
+I_NB <- res$I_true
 ```
 
 check means
@@ -181,8 +181,8 @@ E_NB_Corr <- E_NB[-1,]*(1 + matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byr
 plot(log10(c(E_NB[-1,])),c(resid))
 abline(h = 0,col = 'red',lty = 2)
 
-lines(log10(x),y1-x,col = 'red',lty = 2)   
-lines(log10(x),y2-x,col = 'red',lty = 2)   
+lines(log10(x),(y1-x),col = 'red',lty = 2)   
+lines(log10(x),(y2-x),col = 'red',lty = 2)   
 
 # correction
 plot(log10(c(E_NB_Corr)),c(resid))

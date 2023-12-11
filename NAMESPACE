@@ -3,6 +3,7 @@
 export(Like1)
 export(MCMC_full)
 export(MCMC_iter)
+export(Rt_linear)
 export(adapt)
 export(adapt_tuning)
 export(f1_idx_inc)

@@ -25,23 +25,23 @@
 
 project_fct <- function(I0, Rt, n_loc, t_max, si, model = 'poisson',over = NULL){
   
-  I <- as.data.frame(matrix(NA,ncol = n_loc+1, nrow = t_max))
+  I <- as.data.frame(matrix(NA,ncol = n_loc+1, nrow = t_max+1))
   names(I) <- c('t',paste0('sim',1:n_loc))
-  I$t <- 1:t_max
+  I$t <- 1:(t_max+1)
   
   # project
   if (model == 'poisson'){
     temp <- as.data.frame(project(x = I0,
                                   R = Rt$Rt, 
-                                  si = si[-1], n_sim = n_loc, time_change = 1:(t_max-1-I0$timespan),
-                                  n_days = t_max-I0$timespan, 
+                                  si = si[-1], n_sim = n_loc, time_change = 1:(t_max-1-I0$timespan+1),
+                                  n_days = t_max-I0$timespan+1, 
                                   R_fix_within = TRUE, 
                                   model = 'poisson',instantaneous_R = TRUE))
   }else if (model == 'negbin'){
     temp <- as.data.frame(project(x = I0,
                                   R = Rt$Rt, 
-                                  si = si[-1], n_sim = n_loc, time_change = 1:(t_max-1-I0$timespan),
-                                  n_days = t_max-I0$timespan, 
+                                  si = si[-1], n_sim = n_loc, time_change = 1:(t_max-1-I0$timespan+1),
+                                  n_days = t_max-I0$timespan+1, 
                                   R_fix_within = TRUE, 
                                   model = 'negbin',instantaneous_R = TRUE, size = over))
   }

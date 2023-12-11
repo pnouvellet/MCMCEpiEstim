@@ -1,0 +1,209 @@
+---
+title: "simulate incidence - check"
+author: "Pierre Nouvellet"
+date: "2023-09"
+output:
+  html_document:
+    self_contained: no
+---
+
+```{r , include = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+rm(list=ls())
+
+
+library(Hmisc)
+library(EpiEstim)
+library(incidence)
+library(projections)
+library(readxl)
+
+remove.packages('MCMCEpiEstim')
+devtools::install_github("pnouvellet/MCMCEpiEstim",build = TRUE)
+library(MCMCEpiEstim)
+
+```
+
+
+# Simulated input data
+
+## config for simulation
+
+```{r}
+
+# Scenarios <- as.data.frame(readxl::read_xlsx('../overdispersion_scenarios.xlsx',
+#                                sheet = 1, range = 'A1:I60'))
+Scenarios <- as.data.frame(readxl::read_xlsx('../overdispersion-epidemic-data/overdispersion_scenarios.xlsx',
+                               sheet = 1, range = 'A1:I60'))
+
+input <- Scenarios[1,]
+
+si <- c(0,1)
+
+```
+
+## simulate Rt and I
+
+```{r}
+
+ratio <- input$period/input$step
+
+if((ratio %% 1)!=0) { stop("ratio of period by step should be integer")}
+if(ratio %% 2) { stop("ratio of period by step should be even")}
+
+temp <- seq(input$R_max, input$R_min,length.out = ratio/2+1)
+temp <- c(temp,rev(temp[-1])[-1])
+
+n_week <- 24  # simulate for 24 weeks
+n_rep_cycle <- n_week/(input$period/7)
+if((n_rep_cycle %% 1)!=0) { stop("nb cycle repetitions should be integer (with 24 weeks simulation")}
+
+
+Rt <- data.frame(t = 1:(n_week*7), 
+                 Rt = rep(rep(temp, each = input$step), n_rep_cycle))
+                 
+# I0 <- incidence::as.incidence(x = input$I0, dates = 1, interval = 1)
+I0 <- incidence::as.incidence(x = 10, dates = 1, interval = 1)
+
+```
+
+
+# Poisson simulation
+
+```{r}
+
+I_NB <- project_fct(I0 = I0, Rt = Rt, 
+                                  n_loc = 1e3,#input$n_locations,
+                                  t_max = nrow(Rt), si = si,
+                                  model = 'poisson')#,over = input$k)
+
+```
+
+check means
+
+```{r}
+
+plot(1:(nrow(I)-1),apply(I_NB[2:(nrow(I_NB)),-1]/I_NB[1:(nrow(I_NB)-1),-1],1,mean,na.rm=TRUE))
+lines(Rt$t,Rt$Rt)
+
+
+```
+
+check variances
+
+```{r}
+
+c(Rt$Rt[1]*I0$counts,sd(I_NB[2,-1])^2)
+E_NB <- I_NB[1:(nrow(I)-1),-1] * matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)
+E_NB <- as.matrix(rbind(NA,E_NB))
+
+Var_I <- data.frame(I = 1:50, Var = NA, n = NA)
+temp <- as.matrix(I_NB)
+temp[,1]<-NA
+for(i in 1:nrow(Var_I)){
+  f <- which(E_NB == Var_I$I[i])
+  Var_I$Var[i] <- sd(temp[f])
+  Var_I$n[i] <- length(f)
+}
+
+plot(Var_I$I,Var_I$Var, xlim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )),ylim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )) )
+abline(a = 0, b = 1,col = 'red')
+
+plot(Var_I$I,Var_I$n)
+
+
+```
+
+check residuals vs. Poisson
+
+```{r}
+
+resid <- (E_NB[-1,]-as.matrix(I_NB[-1,-1])) #/  E_NB[-1,]
+
+x <- seq(1,max(c(E_NB),na.rm = TRUE))
+y1 <- qpois(p = 0.975,lambda = x,lower.tail = TRUE)
+y2 <- qpois(p = 0.025,lambda = x,lower.tail = TRUE)
+
+plot(log10(c(E_NB[-1,])),c(resid))
+abline(h = 0,col = 'red',lty = 2)
+
+lines(log10(x),y1-x,col = 'red',lty = 2)   
+lines(log10(x),y2-x,col = 'red',lty = 2)   
+         
+```
+
+
+
+
+# NB simulation
+
+```{r}
+
+I_NB <- project_fct(I0 = I0, Rt = Rt, 
+                                  n_loc = 1e3,#input$n_locations,
+                                  t_max = nrow(Rt), si = si,
+                                  model = 'nrgbin',over = 0.1)
+
+```
+
+check means
+
+```{r}
+
+plot(1:(nrow(I)-1),apply(I_NB[2:(nrow(I_NB)),-1]/I_NB[1:(nrow(I_NB)-1),-1],1,mean,na.rm=TRUE))
+lines(Rt$t,Rt$Rt)
+
+
+```
+
+check variances
+
+```{r}
+
+c(Rt$Rt[1]*I0$counts,sd(I_NB[2,-1])^2)
+E_NB <- I_NB[1:(nrow(I)-1),-1] * matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)
+E_NB <- as.matrix(rbind(NA,E_NB))
+
+Var_I <- data.frame(I = 1:50, Var = NA, n = NA)
+temp <- as.matrix(I_NB)
+temp[,1]<-NA
+for(i in 1:nrow(Var_I)){
+  f <- which(E_NB == Var_I$I[i])
+  Var_I$Var[i] <- sd(temp[f])
+  Var_I$n[i] <- length(f)
+}
+
+plot(Var_I$I,Var_I$Var, xlim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )),ylim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )) )
+abline(a = 0, b = 1,col = 'red')
+
+plot(Var_I$I,Var_I$n)
+
+
+```
+
+check residuals vs. Poisson
+
+```{r}
+
+resid <- (E_NB[-1,]-as.matrix(I_NB[-1,-1])) #/  E_NB[-1,]
+
+x <- seq(1,max(c(E_NB),na.rm = TRUE))
+y1 <- qpois(p = 0.975,lambda = x,lower.tail = TRUE)
+y2 <- qpois(p = 0.025,lambda = x,lower.tail = TRUE)
+
+plot(log10(c(E_NB[-1,])),c(resid))
+abline(h = 0,col = 'red',lty = 2)
+
+lines(log10(x),y1-x,col = 'red',lty = 2)   
+lines(log10(x),y2-x,col = 'red',lty = 2)   
+         
+```
+
+
+
+```{r}
+# I_NB <- MCMCEpiEstim::project_fct(I0 = I0, Rt = Rt[1,],#Rt, 
+#                                   n_loc = input$n_locations,
+#                                   t_max = nrow(Rt), si = si,
+#                                   model = 'negbin',over = input$k)
+
+```

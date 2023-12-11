@@ -23,7 +23,8 @@
 #' 
 #' 
 
-project_fct <- function(I0, Rt, n_loc, t_max, si, model = 'poisson',over = NULL){
+project_fct <- function(I0, Rt, n_loc, t_max, si, p,
+                        model = 'poisson',over = NULL){
   
   I <- as.data.frame(matrix(NA,ncol = n_loc+1, nrow = t_max+1))
   names(I) <- c('t',paste0('sim',1:n_loc))
@@ -53,6 +54,11 @@ project_fct <- function(I0, Rt, n_loc, t_max, si, model = 'poisson',over = NULL)
   
   I[(I0$timespan+1):(nrow(I)),] <- temp
   
-  return(I)
+  I_obs <- I
+  I_obs[,-1] <- matrix(rbinom(n = nrow(I)*(ncol(I)-1),
+                              size = as.matrix(I[,-1]),prob = p),
+                       nrow = nrow(I),ncol = (ncol(I)-1),byrow = FALSE)
+  
+  return(list(I_true = I, I_obs = I_obs))
   
 }

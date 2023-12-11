@@ -45,23 +45,6 @@ si <- c(0,1)
 
 ```{r}
 
-ratio <- input$period/input$step
-
-if((ratio %% 1)!=0) { stop("ratio of period by step should be integer")}
-if(ratio %% 2) { stop("ratio of period by step should be even")}
-
-temp <- seq(input$R_max, input$R_min,length.out = ratio/2+1)
-temp <- c(temp,rev(temp[-1])[-1])
-
-n_week <- 24  # simulate for 24 weeks
-n_rep_cycle <- n_week/(input$period/7)
-if((n_rep_cycle %% 1)!=0) { stop("nb cycle repetitions should be integer (with 24 weeks simulation")}
-
-
-Rt <- data.frame(t = 1:(n_week*7), 
-                 Rt = rep(rep(temp, each = input$step), n_rep_cycle))
-                 
-# I0 <- incidence::as.incidence(x = input$I0, dates = 1, interval = 1)
 I0 <- incidence::as.incidence(x = 10, dates = 1, interval = 1)
 
 ```
@@ -70,7 +53,7 @@ I0 <- incidence::as.incidence(x = 10, dates = 1, interval = 1)
 # Poisson simulation
 
 ```{r}
-
+Rt <- MCMCEpiEstim:::Rt_linear(inp = input)
 I_NB <- MCMCEpiEstim::project_fct(I0 = I0, Rt = Rt, 
                                   n_loc = 1e1,#input$n_locations,
                                   t_max = nrow(Rt), si = si,

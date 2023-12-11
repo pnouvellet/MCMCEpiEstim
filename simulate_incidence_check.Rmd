@@ -106,11 +106,17 @@ x <- seq(1,max(c(E_NB),na.rm = TRUE))
 y1 <- qpois(p = 0.975,lambda = x,lower.tail = TRUE)
 y2 <- qpois(p = 0.025,lambda = x,lower.tail = TRUE)
 
+layout(matrix(1:2, nrow = 1))
 plot(log10(c(E_NB[-1,])),c(resid))
 abline(h = 0,col = 'red',lty = 2)
-
 lines(log10(x),y1-x,col = 'red',lty = 2)   
 lines(log10(x),y2-x,col = 'red',lty = 2)   
+
+#
+plot((c(E_NB[-1,])),c(resid), xlim = c(0,max(c(E_NB[-1,]),na.rm = TRUE))*.1 )
+abline(h = 0,col = 'red',lty = 2)
+lines((x),(y1-x),col = 'red',lty = 2)   
+lines((x),(y2-x),col = 'red',lty = 2)   
          
 ```
 
@@ -178,19 +184,400 @@ y2 <- qpois(p = 0.025,lambda = x,lower.tail = TRUE)
 
 E_NB_Corr <- E_NB[-1,]*(1 + matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)/1)
 
+layout(matrix(1:2, nrow = 1))
 plot(log10(c(E_NB[-1,])),c(resid))
+abline(h = 0,col = 'red',lty = 2)
+lines(log10(x),(y1-x),col = 'red',lty = 2)   
+lines(log10(x),(y2-x),col = 'red',lty = 2)   
+#
+plot((c(E_NB[-1,])),c(resid), xlim = c(0,max(c(E_NB[-1,]),na.rm = TRUE))*.1 )
+abline(h = 0,col = 'red',lty = 2)
+lines((x),(y1-x),col = 'red',lty = 2)   
+lines((x),(y2-x),col = 'red',lty = 2)   
+
+# correction
+layout(matrix(1:2, nrow = 1))
+plot(log10(c(E_NB_Corr)),c(resid))
+abline(h = 0,col = 'red',lty = 2)
+lines(log10(x),y1-x,col = 'red',lty = 2)   
+lines(log10(x),y2-x,col = 'red',lty = 2)   
+#
+plot((c(E_NB_Corr)),c(resid), xlim = c(0,max(c(E_NB_Corr),na.rm = TRUE))*.1 )
+abline(h = 0,col = 'red',lty = 2)
+lines((x),(y1-x),col = 'red',lty = 2)   
+lines((x),(y2-x),col = 'red',lty = 2)   
+
+# check %
+check <- data.frame(Obs = c(as.matrix(I_NB[-1,-1])),Exp = c(E_NB[-1,]),
+                    residual = c(resid), lim_up = NA,lim_down = NA)
+check$lim_up <- qpois(p = 0.975,lambda = check$Exp,lower.tail = TRUE) - check$Exp
+check$lim_down <- qpois(p = 0.025,lambda = check$Exp,lower.tail = TRUE) - check$Exp
+check[which(check$Exp==0),] <- NA
+check$out <- ((check$residual<=check$lim_up )+ (check$residual >=check$lim_down))==2
+check <- check[order(check$Exp),]
+
+sum(check$out,na.rm = TRUE)/sum(!is.na(check$out))
+
+check$log10Exp <- log10(check$Exp)
+check$int <- cut(check$log10Exp,breaks = 4)
+tt <- table(check$int,check$out)
+tt
+tt[,2]/rowSums(tt)
+
+
+# check %
+check2 <- data.frame(Obs = c(as.matrix(I_NB[-1,-1])),Exp = c(E_NB[-1,]),
+                     Exp_corr = c(E_NB_Corr),
+                    residual = c(resid), lim_up = NA,lim_down = NA)
+check2$lim_up <- qpois(p = 0.975,lambda = check2$Exp_corr,lower.tail = TRUE) - check2$Exp_corr
+check2$lim_down <- qpois(p = 0.025,lambda = check2$Exp_corr,lower.tail = TRUE) - check2$Exp_corr
+check2[which(check2$Exp==0),] <- NA
+check2$out <- ((check2$residual<=check2$lim_up )+ (check2$residual >=check2$lim_down))==2
+check2 <- check2[order(check2$Exp_corr),]
+
+sum(check2$out,na.rm = TRUE)/sum(!is.na(check2$out))
+
+check2$log10Exp_corr <- log10(check2$Exp_corr)
+check2$int <- cut(check2$log10Exp_corr,breaks = 4)
+tt <- table(check2$int,check2$out)
+tt
+tt[,2]/rowSums(tt)
+
+```
+
+# simulate
+
+```{r}
+
+Scenarios <- as.data.frame(readxl::read_xlsx('../overdispersion-epidemic-data/overdispersion_scenarios.xlsx',
+                               sheet = 1, range = 'A1:I60'))
+si <- c(0,1)
+
+i=57
+
+  # print(i)
+  input <- Scenarios[i,]
+  
+  input$R_min <- 0.65
+  input$k <- .1
+  
+  I0 <- incidence::as.incidence(x = input$I0, dates = 1, interval = 1)
+  
+  Rt <- MCMCEpiEstim::Rt_linear(inp = input)
+  
+  res <- MCMCEpiEstim::project_fct(I0 = I0, Rt = Rt, 
+                                    n_loc = input$n_locations,
+                                    t_max = nrow(Rt), si = si,p = input$pi,
+                                    model = 'negbin',over = input$k)
+  sim <- list(input = input, I0 = I0, Rt = Rt, res = res)
+
+  
+matplot((sim$res$I_true[,-1]))
+matplot((sim$res$I_obs[,-1]))
+  
+```
+
+
+# check MCMC
+
+```{r}
+
+
+# parameters
+# for EpiEstim
+t_window <- 7
+mean_prior <- 5
+std_prior <- 5
+
+res_EpiEstim <- fct_EpiEstim(I0 = sim$I0 , I = sim$res$I_true , t_window = t_window, 
+                             mean_prior = mean_prior, std_prior = std_prior,
+                             si = si, overlap = FALSE)
+aa <- sim$res$I_true
+ab <- res_EpiEstim[[1]]
+
+plot(Rt$t,Rt$Rt,type = 'l', ylim = c(0,2.5))
+
+for(i in 1:sim$input$n_locations){
+  
+  Hmisc::errbar(x = res_EpiEstim[[i]]$t_start, 
+                y = res_EpiEstim[[i]]$`Median(R)`,
+                yplus = res_EpiEstim[[i]]$`Quantile.0.975(R)`,
+                yminus = res_EpiEstim[[i]]$`Quantile.0.025(R)`,
+                col = i, errbar.col = i, 
+                add=TRUE)
+}
+
+
+
+```
+
+
+## Run MCMCEpiEstim 
+
+```{r}
+
+rep <- 1e3
+
+res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_true , t_window = t_window,
+                                             mean_prior = mean_prior, std_prior = std_prior,
+                                             res_EpiEstim = res_EpiEstim, overdispersion = FALSE, 
+                                             rep = rep, thin = 10, param_agg = FALSE)
+
+res_MCMC_EpiEstim_Poiss2 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_true , t_window = t_window,
+                                             mean_prior = mean_prior, std_prior = std_prior,
+                                             res_EpiEstim = res_EpiEstim, overdispersion = FALSE, 
+                                             rep = rep, thin = 10, param_agg = TRUE)
+
+```
+
+
+```{r}
+
+res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_true  , t_window = t_window,
+                                          mean_prior = mean_prior, std_prior = std_prior,
+                                          res_EpiEstim = res_EpiEstim, overdispersion = TRUE,
+                                          rep = rep, thin = 10, param_agg = FALSE)
+
+
+res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_true  , t_window = t_window,
+                                          mean_prior = mean_prior, std_prior = std_prior,
+                                          res_EpiEstim = res_EpiEstim, overdispersion = TRUE,
+                                          rep = rep, thin = 10, param_agg = TRUE)
+
+
+```
+
+
+```{r}
+
+dics <- data.frame(model = c('Pois1','Pois2','NB1','NB2'),
+                   DIC = c(res_MCMC_EpiEstim_Poiss1$DIC[1],
+                           res_MCMC_EpiEstim_Poiss2$DIC[1],
+                           res_MCMC_EpiEstim_NB1$DIC[1],
+                           res_MCMC_EpiEstim_NB2$DIC[1]))
+
+```
+
+
+## check
+
+```{r}
+LogL <- cbind(rowSums(res_MCMC_EpiEstim_Poiss1$logL),
+              rowSums(res_MCMC_EpiEstim_Poiss2$logL),
+              rowSums(res_MCMC_EpiEstim_NB1$logL),
+              rowSums(res_MCMC_EpiEstim_NB2$logL))
+R1 <- cbind(res_MCMC_EpiEstim_Poiss1$theta_R[,1],
+            res_MCMC_EpiEstim_Poiss2$theta_R[,1],
+            res_MCMC_EpiEstim_NB1$theta_R[,1],
+            res_MCMC_EpiEstim_NB2$theta_R[,1])
+
+layout(matrix(1:4,2,2))
+plot(LogL[,1],ylim = range(c(LogL)))
+lines(LogL[,2],col = 'red3',type = 'p',pch = 12)
+lines(LogL[,3],col = 'blue3',type = 'p',pch = 12)
+lines(LogL[,4],col = 'green3',type = 'p',pch = 12)
+
+plot(R1[,1],ylim = range(c(R1)))
+lines(R1[,2],col = 'red3',type = 'p',pch = 12)
+lines(R1[,3],col = 'blue3',type = 'p',pch = 12)
+lines(R1[,4],col = 'green3',type = 'p',pch = 12)
+
+
+# others
+acf(res_MCMC_EpiEstim_Poiss1$theta_R[,1])
+acf(res_MCMC_EpiEstim_NB1$theta_R[,1])
+
+plot(res_MCMC_EpiEstim_NB1$theta_over , 
+     ylim = range(c(res_MCMC_EpiEstim_NB1$theta_over,
+                    res_MCMC_EpiEstim_NB2$theta_over)))
+
+lines(res_MCMC_EpiEstim_NB2$theta_over,col = 'red3',type = 'p',pch = 12)
+
+quantile(res_MCMC_EpiEstim_NB1$theta_over, c(.5,.025,.975))
+quantile(res_MCMC_EpiEstim_NB2$theta_over, c(.5,.025,.975))
+```
+
+```{r}
+# function for plots compare results
+t_max <- length(res_EpiEstim[[1]]$t)
+n_location <- sim$input$n_locations
+  
+comp_plot <- function(f1,f2){
+  
+  if(f2 %in% c("Quantile.0.025(R)","Quantile.0.975(R)")){
+    if(f2 %in%"Quantile.0.025(R)"){
+      Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,quantile,0.025,na.rm = TRUE)
+      Rts_mcmc_NB <- apply(res_MCMC_EpiEstim_NB1$theta_R,2,quantile,0.025,na.rm = TRUE)
+    }else{
+      Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,quantile,0.975,na.rm = TRUE)
+      Rts_mcmc_NB <- apply(res_MCMC_EpiEstim_NB1$theta_R,2,quantile,0.975,na.rm = TRUE)
+    }
+  }else{
+    Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,f1)
+    Rts_mcmc_NB <- apply(res_MCMC_EpiEstim_NB1$theta_R,2,f1)
+  }
+  Rts_epiestim <- matrix(unlist(lapply(res_EpiEstim, "[", ,f2)), nrow = t_max, ncol = n_location, byrow = FALSE)
+  Rts_epiestim <- c(Rts_epiestim[(t_window+I0$timespan):nrow(Rts_epiestim),])
+  
+  if(length(Rts_epiestim) == n_location*length(Rts_mcmc_NB)){
+    Rts_mcmc_pois <- rep(Rts_mcmc_pois,n_location)
+    Rts_mcmc_NB <- rep(Rts_mcmc_NB,n_location)
+  }
+  
+  plot(log10(Rts_epiestim), log10(Rts_mcmc_pois), bty = 'n', main = f2, col = 'blue3',pch=3)
+  lines(log10(Rts_epiestim), log10(Rts_mcmc_NB), type = 'p', col = 'red3',pch=4)
+  abline(a = c(0,1), col = 'grey50')
+  # range((Rts_epiestim-Rts_mcmc), na.rm = TRUE)
+  
+}
+
+
+layout(matrix(1:9,3,3, byrow = TRUE))
+comp_plot(f1 = mean,f2 = 'Mean(R)')
+comp_plot(f1 = median,f2 = "Median(R)")
+comp_plot(f1 = sd,f2 = "Std(R)")
+comp_plot(f1 = mean,f2 = "Quantile.0.025(R)")
+comp_plot(f1 = mean,f2 = "Quantile.0.975(R)")
+
+legend('topleft',c('Poiss','NB'),pch = c(3,4), col = c('blue3','red3'),bty = 'n')
+
+```
+
+
+
+```{r}
+layout(matrix(1:4,2,2))
+# time windows
+  t_start <- seq(sim$I0$timespan+1, t_max-t_window+1,by = 1)        
+  t_end <- t_start + t_window - 1     
+  n_tw <- length(t_start)
+
+# sim vs  epiestim
+Rts_epiestim_med <- matrix(unlist(lapply(res_EpiEstim, "[", ,"Median(R)")), 
+                           nrow = t_max, ncol = n_location, byrow = FALSE)
+Rts_epiestim_mean <- matrix(unlist(lapply(res_EpiEstim, "[", ,"Mean(R)")), 
+                            nrow = t_max, ncol = n_location, byrow = FALSE)
+
+plot(rep(seq(1,t_max),n_location),c(Rts_epiestim_med), 
+     main = 'median/mean EpiEstim vs sim',bty = 'n',pch=3,col = 'blue3')
+lines(rep(seq(1,t_max),n_location),c(Rts_epiestim_mean),type = 'p',pch=4, col = 'red3')
+lines(Rt$t, Rt$Rt, col = 'grey50')
+
+# sim vs MCMC Poiss
+Rts_mcmc_poiss_med <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,median), 
+                             nrow =  n_tw, ncol = n_location, byrow = FALSE)
+Rts_mcmc_poiss_mean <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,mean), 
+                              nrow =  n_tw, ncol = n_location, byrow = FALSE)
+
+plot(rep(t_end,n_location),c(Rts_mcmc_poiss_med), 
+     main = 'median/mean MCMC Pois vs sim',bty = 'n',pch=3,col = 'blue3')
+lines(rep(t_end,n_location),c(Rts_mcmc_poiss_mean),type = 'p',pch=4, col = 'red3')
+lines(Rt$t, Rt$Rt, col = 'grey50')
+
+# sim vs MCMC NB
+Rts_mcmc_NB_med <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R,2,median), 
+                             nrow =  n_tw, ncol = n_location, byrow = FALSE)
+Rts_mcmc_NB_mean <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R,2,mean), 
+                              nrow =  n_tw, ncol = n_location, byrow = FALSE)
+
+plot(rep(t_end,n_location),c(Rts_mcmc_NB_med), 
+     main = 'median/mean MCMC NB vs sim',bty = 'n',,pch=3,col = 'blue3')
+lines(rep(t_end,n_location),c(Rts_mcmc_NB_mean),type = 'p',pch=4, col = 'red3')
+lines(Rt$t, Rt$Rt, col = 'grey50')
+
+legend('topleft',c('median','mean'),pch = c(3,4), col = c('blue3','red3'),bty = 'n')
+
+```
+
+
+```{r}
+E_x <- matrix(unlist(lapply(res_EpiEstim, "[", ,"Oi")), 
+                            nrow = t_max, ncol = n_location, byrow = FALSE)
+
+Rts_mcmc_poiss_med <- rbind(matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,median),
+                             nrow =  n_tw, ncol = n_location, byrow = FALSE),
+                            matrix(NA,nrow = 6,ncol = ncol(E_x)))
+Rts_mcmc_poiss_med <- Rts_mcmc_poiss_med[seq(1,nrow(Rts_mcmc_poiss_med),by = 7),]
+Rts_mcmc_poiss_med <- Rts_mcmc_poiss_med[rep(seq(1:nrow(Rts_mcmc_poiss_med)),each = 7),]
+
+E_x <- E_x[-1,]* Rts_mcmc_poiss_med
+E_x <- as.matrix(rbind(NA,E_x))
+
+
+resid <- (E_x[-1,]-as.matrix(sim$res$I_true[-1,-1])) #/  E_NB[-1,]
+
+x <- seq(1,max(c(E_x),na.rm = TRUE))
+y1 <- qpois(p = 0.975,lambda = x,lower.tail = TRUE)
+y2 <- qpois(p = 0.025,lambda = x,lower.tail = TRUE)
+
+
+layout(matrix(1:2,nrow = 1))
+plot(log10(c(E_x[-1,])),(c(resid)))
 abline(h = 0,col = 'red',lty = 2)
 
 lines(log10(x),(y1-x),col = 'red',lty = 2)   
 lines(log10(x),(y2-x),col = 'red',lty = 2)   
-
-# correction
-plot(log10(c(E_NB_Corr)),c(resid))
+#
+plot((c(E_x[-1,])),c(resid))
 abline(h = 0,col = 'red',lty = 2)
 
-lines(log10(x),y1-x,col = 'red',lty = 2)   
-lines(log10(x),y2-x,col = 'red',lty = 2)   
+lines((x),(y1-x),col = 'red',lty = 2)   
+lines((x),(y2-x),col = 'red',lty = 2)   
 
+```
+
+
+```{r}
+E_x <- matrix(unlist(lapply(res_EpiEstim, "[", ,"Oi")), 
+                            nrow = t_max, ncol = n_location, byrow = FALSE)
+
+# E_x_Corr <- E_x[-1,]*(1 + matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_x)-1,byrow = FALSE)/1)
+Rts_mcmc_NB_med <- rbind(matrix(apply(res_MCMC_EpiEstim_NB1$theta_R,2,median),
+                             nrow =  n_tw, ncol = n_location, byrow = FALSE),
+                            matrix(NA,nrow = 6,ncol = ncol(E_x)))
+Rts_mcmc_NB_med <- Rts_mcmc_NB_med[seq(1,nrow(Rts_mcmc_NB_med),by = 7),]
+Rts_mcmc_NB_med <- Rts_mcmc_NB_med[rep(seq(1:nrow(Rts_mcmc_NB_med)),each = 7),]
+
+E_x2 <- E_x[-1,]* Rts_mcmc_NB_med
+E_x2 <- as.matrix(rbind(NA,E_x2))
+
+
+resid2 <- (E_x2[-1,]-as.matrix(sim$res$I_true[-1,-1])) #/  E_NB[-1,]
+
+x <- seq(1,max(c(E_x2),na.rm = TRUE))
+y1 <- qpois(p = 0.975,lambda = x,lower.tail = TRUE)
+y2 <- qpois(p = 0.025,lambda = x,lower.tail = TRUE)
+
+layout(matrix(1:2,nrow = 1))
+plot(log10(c(E_x[-1,])),(c(resid)))
+abline(h = 0,col = 'red',lty = 2)
+
+lines(log10(x),(y1-x),col = 'red',lty = 2)   
+lines(log10(x),(y2-x),col = 'red',lty = 2)   
+#
+plot((c(E_x[-1,])),c(resid), xlim = c(0,max(c(E_x),na.rm = TRUE))*.1 )
+abline(h = 0,col = 'red',lty = 2)
+
+lines((x),(y1-x),col = 'red',lty = 2)   
+lines((x),(y2-x),col = 'red',lty = 2)   
+
+
+#correction
+E_x_Corr <- E_x2[-1,]*(1 + Rts_mcmc_NB_med/median(res_MCMC_EpiEstim_NB1$theta_over0))
+
+
+layout(matrix(1:2,nrow = 1))
+plot(log10(c(E_x_Corr)),(c(resid)))
+abline(h = 0,col = 'red',lty = 2)
+
+lines(log10(x),(y1-x),col = 'red',lty = 2)   
+lines(log10(x),(y2-x),col = 'red',lty = 2)   
+#
+plot((c(E_x_Corr)),c(resid), xlim = c(0,max(c(E_x_Corr),na.rm = TRUE))*.1 )
+abline(h = 0,col = 'red',lty = 2)
+
+lines((x),(y1-x),col = 'red',lty = 2)   
+lines((x),(y2-x),col = 'red',lty = 2)   
 
 ```
 

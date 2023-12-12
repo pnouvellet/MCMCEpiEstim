@@ -53,7 +53,7 @@ I0 <- incidence::as.incidence(x = 10, dates = 1, interval = 1)
 # Poisson simulation
 
 ```{r}
-Rt <- MCMCEpiEstim:::Rt_linear(inp = input)
+Rt <- MCMCEpiEstim::Rt_linear(inp = input)
 res <- MCMCEpiEstim::project_fct(I0 = I0, Rt = Rt, 
                                   n_loc = 1e2,#input$n_locations,
                                   t_max = nrow(Rt), si = si,p = 1,
@@ -184,6 +184,11 @@ y2 <- qpois(p = 0.025,lambda = x,lower.tail = TRUE)
 
 E_NB_Corr <- E_NB[-1,]*(1 + matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)/1)
 
+# # with nb
+# ynb1 <- qnbinom(p = 0.975,mu = x, size = x^2/(E_NB_Corr-x),lower.tail = TRUE)
+# ynb2 <- qnbinom(p = 0.025,mu = x, size = x^2/(E_NB_Corr-x),lower.tail = TRUE)
+
+
 layout(matrix(1:2, nrow = 1))
 plot(log10(c(E_NB[-1,])),c(resid))
 abline(h = 0,col = 'red',lty = 2)
@@ -206,6 +211,15 @@ plot((c(E_NB_Corr)),c(resid), xlim = c(0,max(c(E_NB_Corr),na.rm = TRUE))*.1 )
 abline(h = 0,col = 'red',lty = 2)
 lines((x),(y1-x),col = 'red',lty = 2)   
 lines((x),(y2-x),col = 'red',lty = 2)   
+
+
+# #
+# plot((c(E_NB_Corr)),c(resid), xlim = c(0,max(c(E_NB_Corr),na.rm = TRUE))*.1 )
+# abline(h = 0,col = 'red',lty = 2)
+# lines((x),(ynb1-x),col = 'red',lty = 2)   
+# lines((x),(ynb2-x),col = 'red',lty = 2)   
+
+
 
 # check %
 check <- data.frame(Obs = c(as.matrix(I_NB[-1,-1])),Exp = c(E_NB[-1,]),

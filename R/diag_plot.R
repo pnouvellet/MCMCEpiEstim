@@ -107,7 +107,7 @@ diag_plot <- function(I_NB, E_NB, logged, max_x=1, dist, Rt, k){
   # I
   tt <- table(check$int_I,check$out)
   temp <- tt[,2]/rowSums(tt)
-  res_table$I <- data.frame( interval = c('all',names(temp)),
+  res_table$I <- data.frame( interval_I = c('all',names(temp)),
                     n = c(sum(rowSums(tt)),rowSums(tt)),
                     out = c(sum(tt[,1]),tt[,1]),
                     incl_p = c(sum(check$out,na.rm = TRUE)/sum(!is.na(check$out)),
@@ -116,7 +116,7 @@ diag_plot <- function(I_NB, E_NB, logged, max_x=1, dist, Rt, k){
   # Rt
   tt <- table(check$int_R,check$out)
   temp <- tt[,2]/rowSums(tt)
-  res_table$R <- data.frame( interval = c('all',names(temp)),
+  res_table$R <- data.frame( interval_R = c('all',names(temp)),
                              n = c(sum(rowSums(tt)),rowSums(tt)),
                              out = c(sum(tt[,1]),tt[,1]),
                              incl_p = c(sum(check$out,na.rm = TRUE)/sum(!is.na(check$out)),
@@ -125,7 +125,7 @@ diag_plot <- function(I_NB, E_NB, logged, max_x=1, dist, Rt, k){
   # t
   tt <- table(check$int_t,check$out)
   temp <- tt[,2]/rowSums(tt)
-  res_table$t <- data.frame( interval = c('all',names(temp)),
+  res_table$t <- data.frame( interval_t = c('all',names(temp)),
                              n = c(sum(rowSums(tt)),rowSums(tt)),
                              out = c(sum(tt[,1]),tt[,1]),
                              incl_p = c(sum(check$out,na.rm = TRUE)/sum(!is.na(check$out)),
@@ -134,7 +134,7 @@ diag_plot <- function(I_NB, E_NB, logged, max_x=1, dist, Rt, k){
   # location
   tt <- table(check$location,check$out)
   temp <- tt[,2]/rowSums(tt)
-  res_table$loc <- data.frame( interval = c('all',names(temp)),
+  res_table$loc <- data.frame( interval_loc = c('all',names(temp)),
                              n = c(sum(rowSums(tt)),rowSums(tt)),
                              out = c(sum(tt[,1]),tt[,1]),
                              incl_p = c(sum(check$out,na.rm = TRUE)/sum(!is.na(check$out)),

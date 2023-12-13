@@ -4,7 +4,7 @@
 \alias{project_fct}
 \title{project}
 \usage{
-project_fct(I0, Rt, n_loc, t_max, si, model = "poisson", over = NULL)
+project_fct(I0, Rt, n_loc, t_max, si, p, model = "poisson", over = NULL)
 }
 \arguments{
 \item{I0}{matrix of initial incidence per location (can be more than one day)}

@@ -39,7 +39,9 @@ diag_plot <- function(I_NB, E_NB, logged, max_x=1, dist, Rt, k){
     check$lim_up <- qpois(p = 0.975,lambda = check$Exp,lower.tail = TRUE) - check$Exp
     check$lim_down <- qpois(p = 0.025,lambda = check$Exp,lower.tail = TRUE) - check$Exp
   }else if(dist == 'nb'){
-    
+    check$var <- check$Exp * (1 + check$Rt/k)
+    check$lim_up <- qnbinom(p = 0.975,mu = check$Exp, size = check$Exp^2 / (check$var - check$Exp), lower.tail = TRUE) - check$Exp
+    check$lim_down <- qnbinom(p = 0.025,mu = check$Exp, size = check$Exp^2 / (check$var - check$Exp),lower.tail = TRUE) - check$Exp
   }
   
   #remove all entries where expected case number == 0

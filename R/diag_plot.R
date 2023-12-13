@@ -81,7 +81,7 @@ diag_plot <- function(I_NB, E_NB, logged, max_x=1, dist, Rt, k){
     xlim <- c(0,max_x) 
   }
   
-  plot(Xobs,c(check$resid), xlim = )
+  plot(Xobs,c(check$resid), xlim = xlim)
   abline(h = 0,col = 'red',lty = 2)
   
   if(dist=='poisson'){

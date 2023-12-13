@@ -8,7 +8,7 @@
 #'                   
 #' @param dist assumed offspring distribution: 'poisson' or 'nb'
 #' 
-#' @param Rt relevant only when dist = 'nb', vector of Rt's assumed or estimated
+#' @param Rt data.frame with t = time and vector of Rt's assumed or estimated
 #'
 #' @param k relevant only when dist = 'nb', assumed or estimated overdispersion (single estimate)
 #'
@@ -25,7 +25,7 @@ diag_plot <- function(I_NB, E_NB, logged, max_x=1, dist, Rt, k){
   
   check <- data.frame(time = rep(as.matrix(I_NB[-1,1]),ncol(I_NB)-1),
                       location = rep(paste('loc_',1:(ncol(I_NB)-1)), each = nrow(I_NB)-1),
-                      Rt = rep(Rt,ncol(I_NB)-1),
+                      Rt = rep(Rt$Rt,ncol(I_NB)-1),
                       Obs = c(as.matrix(I_NB[-1,-1])),
                       Exp = c(E_NB[-1,]),
                       residual = NA, 
@@ -58,8 +58,8 @@ diag_plot <- function(I_NB, E_NB, logged, max_x=1, dist, Rt, k){
     y2 <- qpois(p = 0.025,lambda = x,lower.tail = TRUE)
   }else if(dist == 'nb'){
     # # with nb
-    var_max <- x*(1+max(Rt)/k)
-    var_min <- x*(1+min(Rt)/k)
+    var_max <- x*(1+max(Rt$Rt)/k)
+    var_min <- x*(1+min(Rt$Rt)/k)
     ynb1_max <- qnbinom(p = 0.975,mu = x, size = x^2/(var_max-x),lower.tail = TRUE)
     ynb2_max <- qnbinom(p = 0.025,mu = x, size = x^2/(var_max-x),lower.tail = TRUE)
     ynb1_min <- qnbinom(p = 0.975,mu = x, size = x^2/(var_min-x),lower.tail = TRUE)

@@ -74,24 +74,24 @@ lines(Rt$t,Rt$Rt)
 check variances
 
 ```{r}
-
-c(Rt$Rt[1]*I0$counts,sd(I_NB[2,-1])^2)
-E_NB <- I_NB[1:(nrow(I_NB)-1),-1] * matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)
-E_NB <- as.matrix(rbind(NA,E_NB))
-
-Var_I <- data.frame(I = 1:50, Var = NA, n = NA)
-temp <- as.matrix(I_NB)
-temp[,1]<-NA
-for(i in 1:nrow(Var_I)){
-  f <- which(E_NB == Var_I$I[i])
-  Var_I$Var[i] <- sd(temp[f])
-  Var_I$n[i] <- length(f)
-}
-
-plot(Var_I$I,Var_I$Var, xlim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )),ylim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )) )
-abline(a = 0, b = 1,col = 'red')
-
-plot(Var_I$I,Var_I$n)
+# 
+# c(Rt$Rt[1]*I0$counts,sd(I_NB[2,-1])^2)
+# E_NB <- I_NB[1:(nrow(I_NB)-1),-1] * matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)
+# E_NB <- as.matrix(rbind(NA,E_NB))
+# 
+# Var_I <- data.frame(I = 1:50, Var = NA, n = NA)
+# temp <- as.matrix(I_NB)
+# temp[,1]<-NA
+# for(i in 1:nrow(Var_I)){
+#   f <- which(E_NB == Var_I$I[i])
+#   Var_I$Var[i] <- sd(temp[f])
+#   Var_I$n[i] <- length(f)
+# }
+# 
+# plot(Var_I$I,Var_I$Var, xlim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )),ylim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )) )
+# abline(a = 0, b = 1,col = 'red')
+# 
+# plot(Var_I$I,Var_I$n)
 
 
 ```
@@ -100,23 +100,9 @@ check residuals vs. Poisson
 
 ```{r}
 
-resid <- (as.matrix(I_NB[-1,-1])-E_NB[-1,]) /  E_NB[-1,]
-
-x <- seq(1,max(c(E_NB),na.rm = TRUE))
-y1 <- qpois(p = 0.975,lambda = x,lower.tail = TRUE)
-y2 <- qpois(p = 0.025,lambda = x,lower.tail = TRUE)
-
 layout(matrix(1:2, nrow = 1))
-plot(log10(c(E_NB[-1,])),c(resid))
-abline(h = 0,col = 'red',lty = 2)
-lines(log10(x),y1-x,col = 'red',lty = 2)   
-lines(log10(x),y2-x,col = 'red',lty = 2)   
-
-#
-plot((c(E_NB[-1,])),c(resid), xlim = c(0,max(c(E_NB[-1,]),na.rm = TRUE))*.1 )
-abline(h = 0,col = 'red',lty = 2)
-lines((x),(y1-x),col = 'red',lty = 2)   
-lines((x),(y2-x),col = 'red',lty = 2)   
+diag_plot(I_NB, E_NB, logged = TRUE, max_x=1, dist = 'poisson', Rt = Rt)
+diag_plot(I_NB, E_NB, logged = FALSE, max_x=.1, dist = 'poisson', Rt = Rt)
          
 ```
 
@@ -147,171 +133,49 @@ lines(Rt$t,Rt$Rt)
 check variances
 
 ```{r}
-
-c(Rt$Rt[1]*I0$counts,sd(I_NB[2,-1])^2)
-E_NB <- I_NB[1:(nrow(I_NB)-1),-1] * matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)
-E_NB <- as.matrix(rbind(NA,E_NB))
-
-Var_I <- data.frame(I = 1:50, Var = NA, n = NA)
-temp <- as.matrix(I_NB)
-temp[,1]<-NA
-for(i in 1:nrow(Var_I)){
-  f <- which(E_NB == Var_I$I[i])
-  Var_I$Var[i] <- sd(temp[f])
-  Var_I$n[i] <- length(f)
-}
-
-plot(Var_I$I,Var_I$Var, xlim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )),ylim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )) )
-x <- seq(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE ))
-y <- 1*x*(1+1/k) # assume R of 1
-abline(a = 0, b = 1,col = 'red')
-lines(x,y,col = 'blue')
-
-plot(Var_I$I,Var_I$n)
+# 
+# c(Rt$Rt[1]*I0$counts,sd(I_NB[2,-1])^2)
+# E_NB <- I_NB[1:(nrow(I_NB)-1),-1] * matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)
+# E_NB <- as.matrix(rbind(NA,E_NB))
+# 
+# Var_I <- data.frame(I = 1:50, Var = NA, n = NA)
+# temp <- as.matrix(I_NB)
+# temp[,1]<-NA
+# for(i in 1:nrow(Var_I)){
+#   f <- which(E_NB == Var_I$I[i])
+#   Var_I$Var[i] <- sd(temp[f])
+#   Var_I$n[i] <- length(f)
+# }
+# 
+# plot(Var_I$I,Var_I$Var, xlim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )),ylim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )) )
+# x <- seq(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE ))
+# y <- 1*x*(1+1/k) # assume R of 1
+# abline(a = 0, b = 1,col = 'red')
+# lines(x,y,col = 'blue')
+# 
+# plot(Var_I$I,Var_I$n)
 
 
 ```
 
 check residuals vs. Poisson
 
-```{r}
-
-resid <- (as.matrix(I_NB[-1,-1])-E_NB[-1,]) #/  E_NB[-1,]
-
-x <- seq(1,max(c(E_NB),na.rm = TRUE))
-y1 <- qpois(p = 0.975,lambda = x,lower.tail = TRUE)
-y2 <- qpois(p = 0.025,lambda = x,lower.tail = TRUE)
-
-E_NB_Corr <- E_NB[-1,]*(1 + matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)/k)
-
-# # with nb
-var_max <- x*(1+max(Rt$Rt)/k)
-var_min <- x*(1+min(Rt$Rt)/k)
-ynb1_max <- qnbinom(p = 0.975,mu = x, size = x^2/(var_max-x),lower.tail = TRUE)
-ynb2_max <- qnbinom(p = 0.025,mu = x, size = x^2/(var_max-x),lower.tail = TRUE)
-ynb1_min <- qnbinom(p = 0.975,mu = x, size = x^2/(var_min-x),lower.tail = TRUE)
-ynb2_min <- qnbinom(p = 0.025,mu = x, size = x^2/(var_min-x),lower.tail = TRUE)
-
-```
 
 ```{r}
-#poisson
 
 layout(matrix(1:2, nrow = 1))
-plot(log10(c(E_NB[-1,])),c(resid))
-abline(h = 0,col = 'red',lty = 2)
-lines(log10(x),(y1-x),col = 'red',lty = 2)   
-lines(log10(x),(y2-x),col = 'red',lty = 2)   
-#
-plot((c(E_NB[-1,])),c(resid), xlim = c(0,max(c(E_NB[-1,]),na.rm = TRUE))*.1 )
-abline(h = 0,col = 'red',lty = 2)
-lines((x),(y1-x),col = 'red',lty = 2)   
-lines((x),(y2-x),col = 'red',lty = 2)   
+diag_plot(I_NB, E_NB, logged = TRUE, max_x=1, dist = 'poisson', Rt = Rt)
+diag_plot(I_NB, E_NB, logged = FALSE, max_x=.1, dist = 'poisson', Rt = Rt)
 
-```
-
-```{r}
-# correction 
 layout(matrix(1:2, nrow = 1))
-plot(log10(c(E_NB_Corr)),c(resid))
-abline(h = 0,col = 'red',lty = 2)
-lines(log10(x),y1-x,col = 'red',lty = 2)   
-lines(log10(x),y2-x,col = 'red',lty = 2)   
-#
-plot((c(E_NB_Corr)),c(resid), xlim = c(0,max(c(E_NB_Corr),na.rm = TRUE))*.1 )
-abline(h = 0,col = 'red',lty = 2)
-lines((x),(y1-x),col = 'red',lty = 2)   
-lines((x),(y2-x),col = 'red',lty = 2)   
+diag_plot(I_NB, E_NB, logged = TRUE, max_x=1, dist = 'nb', Rt = Rt,k = k)
+diag_plot(I_NB, E_NB, logged = FALSE, max_x=.1, dist = 'nb', Rt = Rt, k = k)
 
-
-#
-plot(log10(c(E_NB[-1,])),c(resid) )
-abline(h = 0,col = 'red',lty = 2)
-lines(log10(x),y1-x,col = 'red',lty = 1)   
-lines(log10(x),y2-x,col = 'red',lty = 1)   
-# nbmax
-lines(log10(x),(ynb1_max-x),col = 'blue3',lty = 1)
-lines(log10(x),(ynb2_max-x),col = 'blue3',lty = 1)
-# nbmin
-lines(log10(x),(ynb1_max-x),col = 'green4',lty = 1)
-lines(log10(x),(ynb2_max-x),col = 'green4',lty = 1)
-
-#
-plot((c(E_NB[-1,])),c(resid) , xlim = c(0,max(c(E_NB[-1,]),na.rm = TRUE))*.1  )
-abline(h = 0,col = 'red',lty = 2)
-lines((x),y1-x,col = 'red',lty = 1)   
-lines((x),y2-x,col = 'red',lty = 1)   
-# nbmax
-lines((x),(ynb1_max-x),col = 'blue3',lty = 1)
-lines((x),(ynb2_max-x),col = 'blue3',lty = 1)
-# nbmin
-lines((x),(ynb1_max-x),col = 'green4',lty = 1)
-lines((x),(ynb2_max-x),col = 'green4',lty = 1)
-
-```
-```{r}
-
-x_corr1 <- (1+max(Rt$Rt)/k)
-x_corr2 <- (1+min(Rt$Rt)/k)
-
-plot(log10(x/x_corr1),y1-x,col = 'red',type = 'l', ylim = c(-1,1)*300)
-lines(log10(x/x_corr1),y2-x,col = 'red',type = 'l')
-
-lines(log10(x/x_corr2),y2-x,col = 'orange3',type = 'l')
-lines(log10(x/x_corr2),y2-x,col = 'orange3',type = 'l')
-
-
-# nbmax
-lines(log10(x),(ynb1_max-x),col = 'blue3',lty = 1)
-lines(log10(x),(ynb2_max-x),col = 'blue3',lty = 1)
-# nbmin
-lines(log10(x),(ynb1_max-x),col = 'green4',lty = 1)
-lines(log10(x),(ynb2_max-x),col = 'green4',lty = 1)
 
 ```
 
 
-```{r}
 
-# 95%CI
-
-# check %
-check <- data.frame(Obs = c(as.matrix(I_NB[-1,-1])),Exp = c(E_NB[-1,]),
-                    residual = c(resid), lim_up = NA,lim_down = NA)
-check$lim_up <- qpois(p = 0.975,lambda = check$Exp,lower.tail = TRUE) - check$Exp
-check$lim_down <- qpois(p = 0.025,lambda = check$Exp,lower.tail = TRUE) - check$Exp
-check[which(check$Exp==0),] <- NA
-check$out <- ((check$residual<=check$lim_up )+ (check$residual >=check$lim_down))==2
-check <- check[order(check$Exp),]
-
-sum(check$out,na.rm = TRUE)/sum(!is.na(check$out))
-
-check$log10Exp <- log10(check$Exp)
-check$int <- cut(check$log10Exp,breaks = 4)
-tt <- table(check$int,check$out)
-tt
-tt[,2]/rowSums(tt)
-
-
-# check %
-check2 <- data.frame(Obs = c(as.matrix(I_NB[-1,-1])),Exp = c(E_NB[-1,]),
-                     Exp_corr = c(E_NB_Corr),
-                    residual = c(resid), lim_up = NA,lim_down = NA)
-check2$lim_up <- qpois(p = 0.975,lambda = check2$Exp_corr,lower.tail = TRUE) - check2$Exp_corr
-check2$lim_down <- qpois(p = 0.025,lambda = check2$Exp_corr,lower.tail = TRUE) - check2$Exp_corr
-check2[which(check2$Exp==0),] <- NA
-check2$out <- ((check2$residual<=check2$lim_up )+ (check2$residual >=check2$lim_down))==2
-check2 <- check2[order(check2$Exp_corr),]
-
-sum(check2$out,na.rm = TRUE)/sum(!is.na(check2$out))
-
-check2$log10Exp_corr <- log10(check2$Exp_corr)
-check2$int <- cut(check2$log10Exp_corr,breaks = 4)
-tt <- table(check2$int,check2$out)
-tt
-tt[,2]/rowSums(tt)
-
-```
 
 # simulate
 

@@ -32,7 +32,7 @@ diag_plot <- function(I_NB, E_NB, logged, max_x=1, dist, Rt, k){
                       lim_up = NA,
                       lim_down = NA)
   
-  check$residual <- check$Obs- check$Exp
+  check$residual <- check$Obs - check$Exp
     
   # 95%CI associated with particular observation
   if (dist == 'poisson'){

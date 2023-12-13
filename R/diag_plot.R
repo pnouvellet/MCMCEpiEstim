@@ -90,8 +90,8 @@ diag_plot <- function(I_NB, E_NB, logged, max_x=1, dist, Rt, k){
   }else if(dist == 'nb'){
     lines(Xci,ynb1_max-x,col = 'red',lty = 2)   
     lines(Xci,ynb2_max-x,col = 'red',lty = 2)   
-    lines(Xci,ynb1_min-x,col = 'red',lty = 2)   
-    lines(Xci,ynb2_min-x,col = 'red',lty = 2)   
+    lines(Xci,ynb1_min-x,col = 'blue3',lty = 2)   
+    lines(Xci,ynb2_min-x,col = 'blue3',lty = 2)   
   }
   
   # confidence interval inclusion

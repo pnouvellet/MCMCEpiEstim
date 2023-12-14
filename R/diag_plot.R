@@ -95,7 +95,7 @@ diag_plot <- function(I_NB, logged, max_x=1, dist, Rt, k){
   
   if(dist=='poisson'){
     lines(Xci,y1-x,col = 'red',lty = 1)   
-    lines(Xci,y2-x,col = 'red',lty = 2)   
+    lines(Xci,y2-x,col = 'red',lty = 1)   
   }else if(dist == 'nb'){
     lines(Xci,ynb1_max-x,col = 'red',lty = 1)   
     lines(Xci,ynb2_max-x,col = 'red',lty = 1)   

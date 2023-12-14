@@ -96,7 +96,7 @@ diag_plot <- function(I_NB, E_NB, logged, max_x=1, dist, Rt, k){
   
   # confidence interval inclusion
   if (logged){
-    check$int_I <- cut(check$log10Exp,breaks = seq(log10(min_x)*.9,log10(max_x),length.out=5))
+    check$int_I <- cut(check$log10Exp,breaks = seq(log10(min_x)*1.1,log10(max_x),length.out=5))
   }else{
     check$int_I <- cut(check$Exp,breaks = seq(0,max(check$Exp,na.rm = TRUE),length.out=5))
   }

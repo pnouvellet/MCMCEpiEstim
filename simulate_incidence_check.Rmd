@@ -74,24 +74,24 @@ lines(Rt$t,Rt$Rt)
 check variances
 
 ```{r}
-# 
-# c(Rt$Rt[1]*I0$counts,sd(I_NB[2,-1])^2)
-# E_NB <- I_NB[1:(nrow(I_NB)-1),-1] * matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)
-# E_NB <- as.matrix(rbind(NA,E_NB))
-# 
-# Var_I <- data.frame(I = 1:50, Var = NA, n = NA)
-# temp <- as.matrix(I_NB)
-# temp[,1]<-NA
-# for(i in 1:nrow(Var_I)){
-#   f <- which(E_NB == Var_I$I[i])
-#   Var_I$Var[i] <- sd(temp[f])
-#   Var_I$n[i] <- length(f)
-# }
-# 
-# plot(Var_I$I,Var_I$Var, xlim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )),ylim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )) )
-# abline(a = 0, b = 1,col = 'red')
-# 
-# plot(Var_I$I,Var_I$n)
+
+c(Rt$Rt[1]*I0$counts,sd(I_NB[2,-1])^2)
+E_NB <- I_NB[1:(nrow(I_NB)-1),-1] * matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)
+E_NB <- as.matrix(rbind(NA,E_NB))
+
+Var_I <- data.frame(I = 1:50, Var = NA, n = NA)
+temp <- as.matrix(I_NB)
+temp[,1]<-NA
+for(i in 1:nrow(Var_I)){
+  f <- which(E_NB == Var_I$I[i])
+  Var_I$Var[i] <- sd(temp[f])
+  Var_I$n[i] <- length(f)
+}
+
+plot(Var_I$I,Var_I$Var, xlim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )),ylim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )) )
+abline(a = 0, b = 1,col = 'red')
+
+plot(Var_I$I,Var_I$n)
 
 
 ```
@@ -133,27 +133,27 @@ lines(Rt$t,Rt$Rt)
 check variances
 
 ```{r}
-# 
-# c(Rt$Rt[1]*I0$counts,sd(I_NB[2,-1])^2)
-# E_NB <- I_NB[1:(nrow(I_NB)-1),-1] * matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)
-# E_NB <- as.matrix(rbind(NA,E_NB))
-# 
-# Var_I <- data.frame(I = 1:50, Var = NA, n = NA)
-# temp <- as.matrix(I_NB)
-# temp[,1]<-NA
-# for(i in 1:nrow(Var_I)){
-#   f <- which(E_NB == Var_I$I[i])
-#   Var_I$Var[i] <- sd(temp[f])
-#   Var_I$n[i] <- length(f)
-# }
-# 
-# plot(Var_I$I,Var_I$Var, xlim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )),ylim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )) )
-# x <- seq(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE ))
-# y <- 1*x*(1+1/k) # assume R of 1
-# abline(a = 0, b = 1,col = 'red')
-# lines(x,y,col = 'blue')
-# 
-# plot(Var_I$I,Var_I$n)
+
+c(Rt$Rt[1]*I0$counts,sd(I_NB[2,-1])^2)
+E_NB <- I_NB[1:(nrow(I_NB)-1),-1] * matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)
+E_NB <- as.matrix(rbind(NA,E_NB))
+
+Var_I <- data.frame(I = 1:50, Var = NA, n = NA)
+temp <- as.matrix(I_NB)
+temp[,1]<-NA
+for(i in 1:nrow(Var_I)){
+  f <- which(E_NB == Var_I$I[i])
+  Var_I$Var[i] <- sd(temp[f])
+  Var_I$n[i] <- length(f)
+}
+
+plot(Var_I$I,Var_I$Var, xlim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )),ylim = c(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE )) )
+x <- seq(0,max(c(Var_I$I,Var_I$Var), na.rm=TRUE ))
+y <- 1*x*(1+1/k) # assume R of 1
+abline(a = 0, b = 1,col = 'red')
+lines(x,y,col = 'blue')
+
+plot(Var_I$I,Var_I$n)
 
 
 ```

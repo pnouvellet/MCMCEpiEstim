@@ -18,14 +18,23 @@
 #' @export
 #' 
 
-diag_plot <- function(I_NB, E_NB, logged, max_x=1, dist, Rt, k){
+diag_plot <- function(I_NB, logged, max_x=1, dist, Rt, k){
   
-  E_NB <- I_NB[1:(nrow(I_NB)-1),-1] * matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)
+  # get overall infertivity from EpiEstim
+  # E_NB <- matrix(unlist(lapply(res_EpiEstim, "[", ,"Oi")), 
+  #                nrow = t_max, ncol = n_location, byrow = FALSE)
+  if(ncol(Rt) == 2){
+    Rts <- matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)
+  }else{
+    Rts <- as.matrix(Rt[,-1])
+  }
+  
+  E_NB <- I_NB[1:(nrow(I_NB)-1),-1] * Rts
   E_NB <- as.matrix(rbind(NA,E_NB))
   
   check <- data.frame(time = rep(as.matrix(I_NB[-1,1]),ncol(I_NB)-1),
                       location = rep(paste('loc_',1:(ncol(I_NB)-1)), each = nrow(I_NB)-1),
-                      Rt = rep(Rt$Rt,ncol(I_NB)-1),
+                      Rt = c(Rts),
                       Obs = c(as.matrix(I_NB[-1,-1])),
                       Exp = c(E_NB[-1,]),
                       residual = NA, 

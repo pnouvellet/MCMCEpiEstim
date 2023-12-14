@@ -39,10 +39,11 @@ Like1 <- function(theta, data_long, t_window, n_loc, n_tw, param_agg = FALSE, ov
   lambda <- Rts_lk*data_long$Oi_lk
   
   if(overdispersion){
-      over <- theta$Over # !!!!!!!need to be modified in light of new results!!!!
+      over <- theta$Over # !!!!!!!need to be modified in light of new results, incl. reporting throughout!!!!
+      varnb <- lambda*(1+Rts_lk/theta$Over)
     # get the log-likelihood (minus constant bits)
     logL_ind <- dnbinom(x = data_long$Inc_lk, mu = lambda, 
-                        size = data_long$Oi_lk * over , log = TRUE)
+                        size = lambda^2/(varnb-lambda) , log = TRUE)
   }else{
     logL_ind <- dpois(x = data_long$Inc_lk, lambda = lambda, log = TRUE)
   }

@@ -69,8 +69,8 @@ diag_plot <- function(I_NB, logged, max_x=1, dist, Rt, k){
     y2 <- qpois(p = 0.025,lambda = x,lower.tail = TRUE)
   }else if(dist == 'nb'){
     # # with nb
-    var_max <- x*(1+max(check$Rt)/k)
-    var_min <- x*(1+min(check$Rt)/k)
+    var_max <- x*(1+max(check$Rt,na.rm = TRUE)/k)
+    var_min <- x*(1+min(check$Rt,na.rm = TRUE)/k)
     ynb1_max <- qnbinom(p = 0.975,mu = x, size = x^2/(var_max-x),lower.tail = TRUE)
     ynb2_max <- qnbinom(p = 0.025,mu = x, size = x^2/(var_max-x),lower.tail = TRUE)
     ynb1_min <- qnbinom(p = 0.975,mu = x, size = x^2/(var_min-x),lower.tail = TRUE)

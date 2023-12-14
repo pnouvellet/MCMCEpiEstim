@@ -63,7 +63,7 @@ diag_plot <- function(I_NB, logged, max_x=1, dist, Rt, k){
 
   
   # expected mean - 95%CI
-  x <- seq(1,max(check$Exp,na.rm = TRUE)) # range of expected incidence
+  x <- seq(1,max(check$Exp,na.rm = TRUE), length.out = 1e3) # range of expected incidence
   if(dist == 'poisson'){
     y1 <- qpois(p = 0.975,lambda = x,lower.tail = TRUE)
     y2 <- qpois(p = 0.025,lambda = x,lower.tail = TRUE)
@@ -91,16 +91,16 @@ diag_plot <- function(I_NB, logged, max_x=1, dist, Rt, k){
   }
   
   plot(Xobs,c(check$resid), xlim = xlim)
-  abline(h = 0,col = 'red',lty = 2)
+  abline(h = 0,col = 'red',lty = 1)
   
   if(dist=='poisson'){
-    lines(Xci,y1-x,col = 'red',lty = 2)   
+    lines(Xci,y1-x,col = 'red',lty = 1)   
     lines(Xci,y2-x,col = 'red',lty = 2)   
   }else if(dist == 'nb'){
-    lines(Xci,ynb1_max-x,col = 'red',lty = 2)   
-    lines(Xci,ynb2_max-x,col = 'red',lty = 2)   
-    lines(Xci,ynb1_min-x,col = 'blue3',lty = 2)   
-    lines(Xci,ynb2_min-x,col = 'blue3',lty = 2)   
+    lines(Xci,ynb1_max-x,col = 'red',lty = 1)   
+    lines(Xci,ynb2_max-x,col = 'red',lty = 1)   
+    lines(Xci,ynb1_min-x,col = 'blue3',lty = 1)   
+    lines(Xci,ynb2_min-x,col = 'blue3',lty = 1)   
   }
   
   # confidence interval inclusion

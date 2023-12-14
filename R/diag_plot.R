@@ -151,6 +151,6 @@ diag_plot <- function(I_NB, logged, max_x=1, dist, Rt, k){
                              incl_p = c(sum(check$out,na.rm = TRUE)/sum(!is.na(check$out)),
                                         temp))
   
-  return(res_table)
+  return(list(res_table = res_table, check = check))
 }
 

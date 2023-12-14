@@ -451,11 +451,17 @@ diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'poisson', Rt = Rts_P1)
 
 ```{r}
 
+Rts_nb1 <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R,2,median),
+                                   nrow =  n_tw, ncol = n_location, byrow = FALSE)
+
+Rts_nb1 <- Rts_nb1[seq(1,nrow(Rts_nb1),by = 7),]
+Rts_nb1 <- Rts_nb1[rep(seq(1:nrow(Rts_nb1)),each = 7),]
+Rts_nb1 <- data.frame(t = 1:nrow(Rts_nb1),
+                     Rts_nb1)
 
 layout(matrix(1:2, nrow = 1))
-diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'nb', Rt = Rts_P1,k = median(res_MCMC_EpiEstim_NB1$theta_over0))
-diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'nb', Rt = Rts_P1, k = median(res_MCMC_EpiEstim_NB1$theta_over0))
-
+diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'nb', Rt = Rts_nb1,k = median(res_MCMC_EpiEstim_NB1$theta_over0))
+diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'nb', Rt = Rts_nb1, k = median(res_MCMC_EpiEstim_NB1$theta_over0))
 
 ```
 

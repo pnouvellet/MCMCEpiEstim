@@ -101,9 +101,16 @@ check residuals vs. Poisson
 ```{r}
 
 layout(matrix(1:2, nrow = 1))
-diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'poisson', Rt = Rt)
-diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'poisson', Rt = Rt)
-         
+P1 <- diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'poisson', Rt = Rt)
+P2 <- diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'poisson', Rt = Rt)
+
+P1$res_table  
+P2$res_table  
+
+P1$check$v1 <- P1$check$residual^2/P1$check$Exp
+boxplot(P1$check$v1~P1$check$Rt)
+m1<-lm(P1$check$v1~P1$check$Rt)
+summary(m1)
 ```
 
 
@@ -164,13 +171,30 @@ check residuals vs. Poisson
 ```{r}
 
 layout(matrix(1:2, nrow = 1))
-diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'poisson', Rt = Rt)
-diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'poisson', Rt = Rt)
+P1 <- diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'poisson', Rt = Rt)
+P2 <- diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'poisson', Rt = Rt)
 
 layout(matrix(1:2, nrow = 1))
-diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'nb', Rt = Rt,k = k)
-diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'nb', Rt = Rt, k = k)
+NB1 <- diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'nb', Rt = Rt,k = k)
+NB2 <- diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'nb', Rt = Rt, k = k)
 
+P1
+P2
+NB1
+NB2
+
+
+NB1$check$v1 <- NB1$check$residual^2/NB1$check$Exp
+
+boxplot(NB1$check$v1~NB1$check$Rt)
+m1<-lm(NB1$check$v1~NB1$check$Rt)
+summary(m1)
+
+P1$check$v1 <- P1$check$residual^2/P1$check$Exp
+
+boxplot(P1$check$v1~P1$check$Rt)
+m1<-lm(P1$check$v1~P1$check$Rt)
+summary(m1)
 
 ```
 
@@ -227,11 +251,11 @@ t_window <- 7
 mean_prior <- 5
 std_prior <- 5
 
-res_EpiEstim <- fct_EpiEstim(I0 = sim$I0 , I = sim$res$I_true , t_window = t_window, 
+res_EpiEstim <- fct_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs, #I_true ,
+                             t_window = t_window, 
                              mean_prior = mean_prior, std_prior = std_prior,
                              si = si, overlap = FALSE)
-aa <- sim$res$I_true
-ab <- res_EpiEstim[[1]]
+
 
 plot(Rt$t,Rt$Rt,type = 'l', ylim = c(0,2.5))
 
@@ -248,6 +272,49 @@ for(i in 1:sim$input$n_locations){
 
 
 ```
+diagnoistics for epiEstim
+
+```{r}
+
+I_NB <- as.matrix(sim$res$I_obs) #I_true)
+
+Rts_epiestim <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), 
+                       nrow = t_max, ncol = n_location, byrow = FALSE)
+
+Rts_epiestim <- Rts_epiestim[seq(1,nrow(Rts_epiestim),by = 7),]
+Rts_epiestim <- Rts_epiestim[rep(seq(2,nrow(Rts_epiestim)),each = 7),]
+
+Rts_epiestim <- data.frame(t = 1:nrow(Rts_epiestim),
+                           Rts_epiestim)
+
+
+layout(matrix(1:2, nrow = 1))
+P1 <- diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'poisson', Rt = Rts_epiestim)
+P2 <- diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'poisson', Rt = Rts_epiestim)
+
+P1
+P2
+
+
+P1$check$v1 <- P1$check$residual^2/P1$check$Exp
+
+plot((P1$check$Rt),(P1$check$v1))
+
+m1<-lm(P1$check$v1~1+P1$check$Rt )
+summary(m1)
+m0<-lm(P1$check$v1~1  )
+summary(m0)
+
+a1 <- anova(m0,m1, test = 'Chisq')
+a1
+if(a1$`Pr(>Chi)`[2]<0.05){
+  print(paste0('likely overdispersion, guestimate of dipersion parameter: ',round(1/m1$coefficients[2],digits = 2)) )
+}else{
+  print('unlikely overdispersion')
+}
+
+
+```
 
 
 ## Run MCMCEpiEstim 
@@ -256,12 +323,14 @@ for(i in 1:sim$input$n_locations){
 
 rep <- 1e3
 
-res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_true , t_window = t_window,
+res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs, #I_true ,
+                                              t_window = t_window,
                                              mean_prior = mean_prior, std_prior = std_prior,
                                              res_EpiEstim = res_EpiEstim, overdispersion = FALSE, 
                                              rep = rep, thin = 10, param_agg = FALSE)
 
-res_MCMC_EpiEstim_Poiss2 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_true , t_window = t_window,
+res_MCMC_EpiEstim_Poiss2 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs, #I_true , 
+                                              t_window = t_window,
                                              mean_prior = mean_prior, std_prior = std_prior,
                                              res_EpiEstim = res_EpiEstim, overdispersion = FALSE, 
                                              rep = rep, thin = 10, param_agg = TRUE)
@@ -271,13 +340,15 @@ res_MCMC_EpiEstim_Poiss2 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_true ,
 
 ```{r}
 
-res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_true  , t_window = t_window,
+res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs,#I_true  ,
+                                           t_window = t_window,
                                           mean_prior = mean_prior, std_prior = std_prior,
                                           res_EpiEstim = res_EpiEstim, overdispersion = TRUE,
                                           rep = rep, thin = 10, param_agg = FALSE)
 
 
-res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_true  , t_window = t_window,
+res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs, #I_true  ,
+                                           t_window = t_window,
                                           mean_prior = mean_prior, std_prior = std_prior,
                                           res_EpiEstim = res_EpiEstim, overdispersion = TRUE,
                                           rep = rep, thin = 10, param_agg = TRUE)
@@ -441,10 +512,11 @@ Rts_P1 <- data.frame(t = 1:nrow(Rts_P1),
 
 
 layout(matrix(1:2, nrow = 1))
-diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'poisson', Rt = Rts_P1)
-diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'poisson', Rt = Rts_P1)
+P1 <- diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'poisson', Rt = Rts_P1)
+P2 <- diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'poisson', Rt = Rts_P1)
 
-
+P1
+P2
 
 ```
 
@@ -460,8 +532,11 @@ Rts_nb1 <- data.frame(t = 1:nrow(Rts_nb1),
                      Rts_nb1)
 
 layout(matrix(1:2, nrow = 1))
-diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'nb', Rt = Rts_nb1,k = median(res_MCMC_EpiEstim_NB1$theta_over0))
-diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'nb', Rt = Rts_nb1, k = median(res_MCMC_EpiEstim_NB1$theta_over0))
+NB1 <- diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'nb', Rt = Rts_nb1,k = median(res_MCMC_EpiEstim_NB1$theta_over0))
+NB2 <- diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'nb', Rt = Rts_nb1, k = median(res_MCMC_EpiEstim_NB1$theta_over0))
+
+NB1
+NB2
 
 ```
 
@@ -536,6 +611,49 @@ for(i in 1:sim$input$n_locations){
 
 ```
 
+diagnoistics for epiEstim
+
+```{r}
+
+I_NB <- as.matrix(sim$res$I_true)
+
+Rts_epiestim <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), 
+                       nrow = t_max, ncol = n_location, byrow = FALSE)
+
+Rts_epiestim <- Rts_epiestim[seq(1,nrow(Rts_epiestim),by = 7),]
+Rts_epiestim <- Rts_epiestim[rep(seq(2,nrow(Rts_epiestim)),each = 7),]
+
+Rts_epiestim <- data.frame(t = 1:nrow(Rts_epiestim),
+                           Rts_epiestim)
+
+
+layout(matrix(1:2, nrow = 1))
+P1 <- diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'poisson', Rt = Rts_epiestim)
+P2 <- diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'poisson', Rt = Rts_epiestim)
+
+P1$res_table
+P2$res_table
+
+
+P1$check$v1 <- P1$check$residual^2/P1$check$Exp
+
+plot(P1$check$Rt,P1$check$v1)
+
+m1<-lm(P1$check$v1~1+P1$check$Rt )
+summary(m1)
+m0<-lm(P1$check$v1~1  )
+summary(m0)
+
+a1 <- anova(m0,m1, test = 'Chisq')
+a1
+if(a1$`Pr(>Chi)`[2]<0.05){
+  print(paste0('likely overdispersion, guestimate of dipersion parameter: ',round(1/m1$coefficients[2],digits = 2)) )
+}else{
+  print('unlikely overdispersion')
+}
+
+```
+
 
 ## Run MCMCEpiEstim 
 
@@ -728,9 +846,11 @@ Rts_P1 <- data.frame(t = 1:nrow(Rts_P1),
 
 
 layout(matrix(1:2, nrow = 1))
-diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'poisson', Rt = Rts_P1)
-diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'poisson', Rt = Rts_P1)
+P1 <- diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'poisson', Rt = Rts_P1)
+P2 <- diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'poisson', Rt = Rts_P1)
 
+P1$res_table
+P2$res_table
 
 
 ```
@@ -747,8 +867,10 @@ Rts_nb1 <- data.frame(t = 1:nrow(Rts_nb1),
                      Rts_nb1)
 
 layout(matrix(1:2, nrow = 1))
-diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'nb', Rt = Rts_nb1,k = median(res_MCMC_EpiEstim_NB1$theta_over0))
-diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'nb', Rt = Rts_nb1, k = median(res_MCMC_EpiEstim_NB1$theta_over0))
+NB1 <- diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'nb', Rt = Rts_nb1,k = median(res_MCMC_EpiEstim_NB1$theta_over0))
+NB2 <- diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'nb', Rt = Rts_nb1, k = median(res_MCMC_EpiEstim_NB1$theta_over0))
 
+NB1$res_table
+NB2$res_table
 
 ```

@@ -23,6 +23,8 @@ library(MCMCEpiEstim)
 
 ```
 
+here check package work with perfect reporting!
+
 
 # Simulated input data
 
@@ -37,6 +39,9 @@ Scenarios <- as.data.frame(readxl::read_xlsx('../overdispersion-epidemic-data/ov
 
 input <- Scenarios[1,]
 
+input$I0 <-10
+input$n_locations <- 1e2
+input$k <- 1e4
 si <- c(0,1)
 
 ```
@@ -45,7 +50,7 @@ si <- c(0,1)
 
 ```{r}
 
-I0 <- incidence::as.incidence(x = 10, dates = 1, interval = 1)
+I0 <- incidence::as.incidence(x = input$I0, dates = 1, interval = 1)
 
 ```
 
@@ -57,7 +62,7 @@ Rt <- MCMCEpiEstim::Rt_linear(inp = input)
 
 res <- MCMCEpiEstim::project_fct(I0 = I0, 
                                  Rt = Rt, 
-                                 n_loc = 1e2,#input$n_locations,
+                                 n_loc = input$n_locations,
                                  t_max = nrow(Rt), 
                                  si = si,
                                  p = 1,
@@ -126,7 +131,7 @@ summary(m1)
 ```{r}
 k=.1
 res <- project_fct(I0 = I0, Rt = Rt, 
-                                  n_loc = 1e3,#input$n_locations,
+                                  n_loc = input$n_locations,
                                   t_max = nrow(Rt), si = si,p = 1,
                                   model = 'negbin',over = k)
 I_NB <- res$I_true
@@ -281,10 +286,11 @@ diagnoistics for epiEstim
 
 ```{r}
 
-I_NB <- as.matrix(sim$res$I_obs) #I_true)
+# I_NB <- as.matrix(sim$res$I_obs) #I_true)
+I_NB <- as.matrix(sim$res$I_true)
 
 Rts_epiestim <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), 
-                       nrow = t_max, ncol = n_location, byrow = FALSE)
+                       nrow = nrow(Rt), ncol = input$n_locations, byrow = FALSE)
 
 Rts_epiestim <- Rts_epiestim[seq(1,nrow(Rts_epiestim),by = 7),]
 Rts_epiestim <- Rts_epiestim[rep(seq(2,nrow(Rts_epiestim)),each = 7),]

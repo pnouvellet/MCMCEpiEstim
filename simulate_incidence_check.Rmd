@@ -54,10 +54,15 @@ I0 <- incidence::as.incidence(x = 10, dates = 1, interval = 1)
 
 ```{r}
 Rt <- MCMCEpiEstim::Rt_linear(inp = input)
-res <- MCMCEpiEstim::project_fct(I0 = I0, Rt = Rt, 
-                                  n_loc = 1e2,#input$n_locations,
-                                  t_max = nrow(Rt), si = si,p = 1,
-                                  model = 'poisson')#,over = input$k)
+
+res <- MCMCEpiEstim::project_fct(I0 = I0, 
+                                 Rt = Rt, 
+                                 n_loc = 1e2,#input$n_locations,
+                                 t_max = nrow(Rt), 
+                                 si = si,
+                                 p = 1,
+                                 model = 'poisson')#,over = input$k)
+
 I_NB <- res$I_true
 ```
 

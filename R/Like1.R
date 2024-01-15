@@ -29,7 +29,7 @@
 # logL <- dnbinom(x = data_long$Inc_lk, mu = Rts_lk_0*data_long$Oi_lk, 
 #                 size = data_long$Oi_lk * theta0_over , log = TRUE) 
 
-Like1 <- function(theta, data_long, t_window, n_loc, n_tw, param_agg = FALSE, overdispersion  ){
+Like1 <- function(theta, data_long, t_window, n_loc, n_tw, param_agg = FALSE, overdispersion, p_reps  ){
   
   R <- theta$Rts
  
@@ -40,7 +40,9 @@ Like1 <- function(theta, data_long, t_window, n_loc, n_tw, param_agg = FALSE, ov
   
   if(overdispersion){
       over <- theta$Over # !!!!!!!need to be modified in light of new results, incl. reporting throughout!!!!
-      varnb <- lambda*(1+Rts_lk/theta$Over)
+      # varnb <- lambda*(1+Rts_lk/theta$Over).  # no under-reporting
+      varnb <- lambda*(1+(1-p_reps)* Rts_lk +p_reps*Rts_lk/theta$Over) + 
+        (1-p_reps)* Rts_lk*(1+ Rts_lk +p_reps*Rts_lk/theta$Over)
     # get the log-likelihood (minus constant bits)
     logL_ind <- dnbinom(x = data_long$Inc_lk, mu = lambda, 
                         size = lambda^2/(varnb-lambda) , log = TRUE)

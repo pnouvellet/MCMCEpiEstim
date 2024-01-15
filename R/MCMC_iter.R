@@ -28,7 +28,7 @@
 #' @export
 #' 
 
-MCMC_iter <- function(iter,theta0,s, data_long, n_loc, n_tw, t_window, prior, overdispersion, param_agg = FALSE ){
+MCMC_iter <- function(iter,theta0,s, data_long, n_loc, n_tw, t_window, prior, overdispersion, param_agg = FALSE, p_reps ){
   
   # parameters
   n_param <- data.frame(Rt = length(theta0$Rts),
@@ -44,7 +44,7 @@ MCMC_iter <- function(iter,theta0,s, data_long, n_loc, n_tw, t_window, prior, ov
   Overs <- matrix(NA, nrow = iter, ncol = n_param$Over)
   
   logL_0 <- Like1(theta = theta0, data_long = data_long, t_window = t_window,
-                  n_loc = n_loc, n_tw = n_tw, param_agg, overdispersion = overdispersion )
+                  n_loc = n_loc, n_tw = n_tw, param_agg, overdispersion = overdispersion, p_reps )
   
   # fill first raw of storage
   Rs[1,] <- theta0$Rts
@@ -61,7 +61,7 @@ MCMC_iter <- function(iter,theta0,s, data_long, n_loc, n_tw, t_window, prior, ov
     
     # get the log-likelihood (minus constant bits)
     logL_s <- Like1(theta = theta_s, data_long = data_long, t_window = t_window,
-                    n_loc = n_loc, n_tw = n_tw, param_agg, overdispersion = overdispersion  )
+                    n_loc = n_loc, n_tw = n_tw, param_agg, overdispersion = overdispersion, p_reps  )
     
     # correct log-likelihood for gamma prior Rt
     corr_prior <- ( (prior$shape-1)*(log(theta_s$Rts) - log(theta0$Rts)) + (theta0$Rts - theta_s$Rts)/prior$scale )
@@ -86,7 +86,7 @@ MCMC_iter <- function(iter,theta0,s, data_long, n_loc, n_tw, t_window, prior, ov
       
       # get the log-likelihood (minus constant bits)
       logL_s <- Like1(theta = theta_s, data_long = data_long, 
-                      t_window = t_window, n_loc = n_loc, n_tw = n_tw, param_agg, overdispersion = overdispersion )
+                      t_window = t_window, n_loc = n_loc, n_tw = n_tw, param_agg, overdispersion = overdispersion, p_reps )
       
       # get ratio of likelihood corrected for priors and proposal
       r <- exp(sum(logL_s)-sum(logL_0))*theta_s$Over/theta0$Over  

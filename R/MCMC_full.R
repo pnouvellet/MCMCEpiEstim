@@ -38,7 +38,7 @@
 #' 
 
 MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
-                      n_loc, n_tw, t_window, prior, overdispersion, thin, param_agg = FALSE ){
+                      n_loc, n_tw, t_window, prior, overdispersion, thin, param_agg = FALSE, p_reps ){
  
   rep <- repli_adapt*within_iter
   # # initialise likelihood
@@ -53,7 +53,7 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
                        theta0 = theta0,
                        sigma = s,
                        data_long = data_long, n_loc = n_loc, n_tw = n_tw, 
-                       t_window = t_window, prior = prior, overdispersion = overdispersion, param_agg)
+                       t_window = t_window, prior = prior, overdispersion = overdispersion, param_agg, p_reps)
   # adaptive tuning bit: we run an MCMC with rep/10 iterations, then
   # adjust the proposal variance to reach 0.2
   # do again using parameter value from the last iteration of the previous MCMC
@@ -72,7 +72,7 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
                    theta0 = res0$theta0, 
                    s = res0$sigma, 
                    data_long = data_long, n_loc = n_loc, n_tw = n_tw, 
-                   t_window = t_window, prior = prior, overdispersion = overdispersion, param_agg)
+                   t_window = t_window, prior = prior, overdispersion = overdispersion, param_agg, p_reps)
   
   # thin
   res$theta0_R <- res$theta_R
@@ -108,7 +108,7 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
     theta_hat$Over <- median(res$theta_over)
   }
   L <- sum(Like1(theta = theta_hat, data_long = data_long, t_window = t_window, 
-                 n_loc = n_loc, n_tw = n_tw, param_agg, overdispersion = overdispersion ))
+                 n_loc = n_loc, n_tw = n_tw, param_agg, overdispersion = overdispersion, p_reps ))
   
   ll_med = median(rowSums(res$logL[,1:(n_param[[1]])]))
   P = 2 * (L - ll_med)

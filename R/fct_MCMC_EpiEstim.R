@@ -37,7 +37,7 @@
 fct_MCMC_EpiEstim <- function(I0, I, t_window,
                               mean_prior, std_prior,
                               res_EpiEstim, overdispersion = FALSE, 
-                              rep, thin = 10, param_agg = FALSE, Rt0_epiEstim = TRUE ){
+                              rep, thin = 10, param_agg = FALSE, Rt0_epiEstim = TRUE, p_reps = 1 ){
   
   prior <- epitrix::gamma_mucv2shapescale(mu = mean_prior, cv = std_prior/mean_prior)
   t_max <- nrow(I)
@@ -102,7 +102,7 @@ fct_MCMC_EpiEstim <- function(I0, I, t_window,
                    repli_adapt = 10, within_iter = rep/10,
                    data_long = data_long, n_loc = n_loc, n_tw = n_tw, 
                    t_window = t_window, prior = prior, 
-                   overdispersion = overdispersion, thin = thin, param_agg )
+                   overdispersion = overdispersion, thin = thin, param_agg, p_reps )
   
   
   return(res)

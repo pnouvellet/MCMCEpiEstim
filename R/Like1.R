@@ -47,7 +47,15 @@ Like1 <- function(theta, data_long, t_window, n_loc, n_tw, param_agg = FALSE, ov
     logL_ind <- dnbinom(x = data_long$Inc_lk, mu = lambda, 
                         size = lambda^2/(varnb-lambda) , log = TRUE)
   }else{
-    logL_ind <- dpois(x = data_long$Inc_lk, lambda = lambda, log = TRUE)
+    if(p_reps==1){
+      logL_ind <- dpois(x = data_long$Inc_lk, lambda = lambda, log = TRUE)
+    }else{
+      varnb <- lambda*(1+(1-p_reps)* Rts_lk ) + 
+        (1-p_reps)* Rts_lk*(1+ Rts_lk )
+      # get the log-likelihood (minus constant bits)
+      logL_ind <- dnbinom(x = data_long$Inc_lk, mu = lambda, 
+                          size = lambda^2/(varnb-lambda) , log = TRUE)
+    }
   }
   
   

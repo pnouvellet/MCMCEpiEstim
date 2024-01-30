@@ -261,7 +261,7 @@ t_window <- 7
 mean_prior <- 5
 std_prior <- 5
 
-res_EpiEstim <- fct_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs, #I_true ,
+res_EpiEstim <- fct_EpiEstim(I0 = sim$I0 , I = sim$res$I_true , #I_obs, #I_true ,
                              t_window = t_window, 
                              mean_prior = mean_prior, std_prior = std_prior,
                              si = si, overlap = FALSE)
@@ -286,11 +286,11 @@ diagnoistics for epiEstim
 
 ```{r}
 
-# I_NB <- as.matrix(sim$res$I_obs) #I_true)
-I_NB <- as.matrix(sim$res$I_true)
+I_NB <- as.matrix(sim$res$I_obs) #I_true)
+# I_NB <- as.matrix(sim$res$I_true)
 
 Rts_epiestim <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), 
-                       nrow = nrow(Rt), ncol = input$n_locations, byrow = FALSE)
+                       nrow = nrow(Rt)+1, ncol = input$n_locations, byrow = FALSE)
 
 Rts_epiestim <- Rts_epiestim[seq(1,nrow(Rts_epiestim),by = 7),]
 Rts_epiestim <- Rts_epiestim[rep(seq(2,nrow(Rts_epiestim)),each = 7),]
@@ -334,13 +334,13 @@ if(a1$`Pr(>Chi)`[2]<0.05){
 
 rep <- 1e3
 
-res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs, #I_true ,
+res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_true , #I_obs, #I_true , #
                                               t_window = t_window,
                                              mean_prior = mean_prior, std_prior = std_prior,
                                              res_EpiEstim = res_EpiEstim, overdispersion = FALSE, 
                                              rep = rep, thin = 10, param_agg = FALSE)
 
-res_MCMC_EpiEstim_Poiss2 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs, #I_true , 
+res_MCMC_EpiEstim_Poiss2 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_true , #I_obs, #I_true , 
                                               t_window = t_window,
                                              mean_prior = mean_prior, std_prior = std_prior,
                                              res_EpiEstim = res_EpiEstim, overdispersion = FALSE, 
@@ -351,14 +351,14 @@ res_MCMC_EpiEstim_Poiss2 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs, #
 
 ```{r}
 
-res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs,#I_true  ,
+res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_true , #I_obs,#I_true  ,
                                            t_window = t_window,
                                           mean_prior = mean_prior, std_prior = std_prior,
                                           res_EpiEstim = res_EpiEstim, overdispersion = TRUE,
                                           rep = rep, thin = 10, param_agg = FALSE)
 
 
-res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs, #I_true  ,
+res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_true , #I_obs, #I_true  ,
                                            t_window = t_window,
                                           mean_prior = mean_prior, std_prior = std_prior,
                                           res_EpiEstim = res_EpiEstim, overdispersion = TRUE,
@@ -625,8 +625,11 @@ for(i in 1:sim$input$n_locations){
 diagnoistics for epiEstim
 
 ```{r}
+# function for plots compare results
+t_max <- length(res_EpiEstim[[1]]$t)
+n_location <- sim$input$n_locations
 
-I_NB <- as.matrix(sim$res$I_true)
+I_NB <- as.matrix(sim$res$I_obs)  #I_true)
 
 Rts_epiestim <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), 
                        nrow = t_max, ncol = n_location, byrow = FALSE)

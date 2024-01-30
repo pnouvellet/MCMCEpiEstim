@@ -116,7 +116,7 @@ for(i in 1:sim$input$n_locations){
 
 ```{r}
 
-rep <- 1e3
+rep <- 2*1e3
 
 res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs, #I_true ,
                                               t_window = t_window,
@@ -135,6 +135,8 @@ res_MCMC_EpiEstim_Poiss2 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs, #
 
 ```{r}
 
+rep <- 3*1e3
+
 res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs, #I_true  ,
                                            t_window = t_window,
                                           mean_prior = mean_prior, std_prior = std_prior,
@@ -146,8 +148,6 @@ res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs, #I_t
                                           mean_prior = mean_prior, std_prior = std_prior,
                                           res_EpiEstim = res_EpiEstim, overdispersion = TRUE,
                                           rep = rep, thin = 10, param_agg = TRUE, p_reps = input$pi)
-
-
 
 ```
 

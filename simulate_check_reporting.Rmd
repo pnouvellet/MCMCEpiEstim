@@ -45,12 +45,21 @@ i=57
 input <- Scenarios[i,]
 
 input$R_min <- 0.65
-# input$k <- .1
-input$k <- 1e4
+input$k <- .1
+# input$k <- 1e4
 
 I0 <- incidence::as.incidence(x = input$I0, dates = 1, interval = 1)
 
 Rt <- MCMCEpiEstim::Rt_linear(inp = input)
+
+res <- MCMCEpiEstim::project_fct(I0 = I0,
+                                 Rt = Rt,
+                                 n_loc = input$n_locations,
+                                 t_max = nrow(Rt),
+                                 si = si,
+                                 p = input$pi,
+                                 model = 'negbin',
+                                 over = input$k)
 
 # res <- MCMCEpiEstim::project_fct(I0 = I0, 
 #                                  Rt = Rt, 
@@ -58,16 +67,7 @@ Rt <- MCMCEpiEstim::Rt_linear(inp = input)
 #                                  t_max = nrow(Rt), 
 #                                  si = si,
 #                                  p = input$pi,
-#                                  model = 'negbin',
-#                                  over = input$k)
-
-res <- MCMCEpiEstim::project_fct(I0 = I0, 
-                                 Rt = Rt, 
-                                 n_loc = input$n_locations,
-                                 t_max = nrow(Rt), 
-                                 si = si,
-                                 p = input$pi,
-                                 model = 'poisson')
+#                                  model = 'poisson')
 
 sim <- list(input = input, I0 = I0, Rt = Rt, res = res)
 

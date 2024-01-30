@@ -39,7 +39,7 @@ Like1 <- function(theta, data_long, t_window, n_loc, n_tw, param_agg = FALSE, ov
   lambda <- Rts_lk*data_long$Oi_lk
   
   if(overdispersion){
-      over <- theta$Over # !!!!!!!need to be modified in light of new results, incl. reporting throughout!!!!
+      # over <- theta$Over # 
       # varnb <- lambda*(1+Rts_lk/theta$Over).  # no under-reporting
       varnb <- lambda*(1+(1-p_reps)* Rts_lk +p_reps*Rts_lk/theta$Over) + 
         (1-p_reps)* Rts_lk*(1+ Rts_lk +p_reps*Rts_lk/theta$Over)

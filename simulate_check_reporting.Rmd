@@ -52,22 +52,22 @@ I0 <- incidence::as.incidence(x = input$I0, dates = 1, interval = 1)
 
 Rt <- MCMCEpiEstim::Rt_linear(inp = input)
 
+# res <- MCMCEpiEstim::project_fct(I0 = I0,
+#                                  Rt = Rt,
+#                                  n_loc = input$n_locations,
+#                                  t_max = nrow(Rt),
+#                                  si = si,
+#                                  p = input$pi,
+#                                  model = 'negbin',
+#                                  over = input$k)
+
 res <- MCMCEpiEstim::project_fct(I0 = I0,
                                  Rt = Rt,
                                  n_loc = input$n_locations,
                                  t_max = nrow(Rt),
                                  si = si,
                                  p = input$pi,
-                                 model = 'negbin',
-                                 over = input$k)
-
-# res <- MCMCEpiEstim::project_fct(I0 = I0, 
-#                                  Rt = Rt, 
-#                                  n_loc = input$n_locations,
-#                                  t_max = nrow(Rt), 
-#                                  si = si,
-#                                  p = input$pi,
-#                                  model = 'poisson')
+                                 model = 'poisson')
 
 sim <- list(input = input, I0 = I0, Rt = Rt, res = res)
 

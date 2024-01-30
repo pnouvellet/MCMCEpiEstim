@@ -130,6 +130,13 @@ res_MCMC_EpiEstim_Poiss2 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs, #
                                              res_EpiEstim = res_EpiEstim, overdispersion = FALSE, 
                                              rep = rep, thin = 10, param_agg = TRUE, p_reps = input$pi)
 
+res_MCMC_EpiEstim_Poiss3 <- fct_MCMC_EpiEstim(I0 = sim$I0 , I = sim$res$I_obs, #I_true , 
+                                              t_window = t_window,
+                                             mean_prior = mean_prior, std_prior = std_prior,
+                                             res_EpiEstim = res_EpiEstim, overdispersion = FALSE, 
+                                             rep = rep, thin = 10, param_agg = FALSE, p_reps = input$pi)
+
+res_MCMC_EpiEstim_Poiss3$DIC[1]
 ```
 
 
@@ -195,6 +202,32 @@ lines(res_MCMC_EpiEstim_NB2$theta_over,col = 'red3',type = 'p',pch = 12)
 
 quantile(res_MCMC_EpiEstim_NB1$theta_over, c(.5,.025,.975))
 quantile(res_MCMC_EpiEstim_NB2$theta_over, c(.5,.025,.975))
+
+```
+
+
+```{r}
+k=1
+n_location <- sim$input$n_locations
+layout(matrix(1:4,2,2))
+for(i in 1:n_location){
+  plot(res_MCMC_EpiEstim_Poiss1$theta_R[,1])
+}
+
+layout(matrix(1:4,2,2))
+for(i in 1:n_location){
+  plot(res_MCMC_EpiEstim_Poiss2$theta_R[,1])
+}
+
+layout(matrix(1:4,2,2))
+for(i in 1:n_location){
+  plot(res_MCMC_EpiEstim_NB1$theta_R[,1])
+}
+
+layout(matrix(1:4,2,2))
+for(i in 1:n_location){
+  plot(res_MCMC_EpiEstim_NB2$theta_R[,1])
+}
 ```
 
 ```{r}

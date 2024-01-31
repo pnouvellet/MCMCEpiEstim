@@ -5,11 +5,10 @@
 #' 
 #' 
 #' 
-#' @param I0 the incidence for the time window during which we assume Rt to be constant.  
-#'           I is a dataframe, first column are dates then incidence for all locations
-#'           nb of row is the size of time widows, dates must be sequential
+#' @param I0_t_import which of the initial incidence is imported
 #' 
-#' @param I integer of  numbers of locations
+#' @param I I is a dataframe, first column are dates then incidence for all locations
+#'           nb of row is the size of time widows, dates must be sequential
 #'                   
 #' @param t_window integer, the number of iteration for the MCMC
 #'
@@ -34,7 +33,7 @@
 #' @export
 #' 
 
-fct_MCMC_EpiEstim <- function(I0, I, t_window,
+fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                               mean_prior, std_prior,
                               res_EpiEstim, overdispersion = FALSE, 
                               rep, thin = 10, param_agg = FALSE, Rt0_epiEstim = TRUE, p_reps = 1 ){
@@ -44,7 +43,7 @@ fct_MCMC_EpiEstim <- function(I0, I, t_window,
   n_loc <- ncol(I)-1
   
   # time windows
-  t_start <- seq(I0$timespan+1, t_max-t_window+1,by = 1)        
+  t_start <- seq(I0_t_import+1, t_max-t_window+1,by = 1)        
   t_end <- t_start + t_window - 1     
   n_tw <- length(t_start)
   
@@ -53,7 +52,7 @@ fct_MCMC_EpiEstim <- function(I0, I, t_window,
     if(Rt0_epiEstim){
       temp <- apply(matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), nrow = t_max, ncol = n_loc, byrow = FALSE),
                     1,mean,na.rm=TRUE)
-      Rts_0 <- temp[(t_window+I0$timespan):length(temp)]
+      Rts_0 <- temp[(t_window+I0_t_import):length(temp)]
     }else{
       Rts_0 <- rep(1, n_tw)
     }
@@ -61,7 +60,7 @@ fct_MCMC_EpiEstim <- function(I0, I, t_window,
   }else{
     if(Rt0_epiEstim){
       temp <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), nrow = t_max, ncol = n_loc, byrow = FALSE)
-      Rts_0 <- c(temp[(t_window+I0$timespan):nrow(temp),])
+      Rts_0 <- c(temp[(t_window+I0_t_import):nrow(temp),])
     }else{
       Rts_0 <- rep(1, n_loc*n_tw)
     }

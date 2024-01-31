@@ -2,7 +2,7 @@
 #'
 #' wrapper to call EpiEstim independently on multiple locations
 #' 
-#' @param I0 matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples
+#' @param I0_t_import which of the initial incidence is imported
 #' 
 #' @param I matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples
 #' 
@@ -25,14 +25,14 @@
 #' 
 # 
 
-fct_EpiEstim <- function(I0 , I , t_window, 
+fct_EpiEstim <- function(I0_t_import , I , t_window, 
                          mean_prior, std_prior,
                          si, overlap){
   
   t_max <- nrow(I)
   n_sim <- ncol(I)-1
   # time windows
-  t_start <- seq(I0$timespan+1, t_max-t_window+1,by = 1)
+  t_start <- seq(I0_t_import+1, t_max-t_window+1,by = 1)
   if (overlap == FALSE) {
     t_start <- t_start[seq(1,length(t_start),by = t_window)]
   }else{
@@ -56,14 +56,14 @@ fct_EpiEstim <- function(I0 , I , t_window,
     # overall Infectivity
     d_incidence$Oi = overall_infectivity(incid = d_incidence$incidence,
                                          si_distr = si)
-    d_incidence$Oi[1:I0$timespan] <- NA
+    d_incidence$Oi[1:I0_t_import] <- NA
     f_0 <- which(d_incidence$Oi == 0)
     
     I_corr <- data.frame(local = d_incidence$incidence,
                     imported = 0)
     # correct initial case as imported
-    I_corr$imported[1:I0$timespan] <- d_incidence$incidence[1:I0$timespan]
-    I_corr$local[1:I0$timespan] <- 0
+    I_corr$imported[1:I0_t_import] <- d_incidence$incidence[1:I0_t_import]
+    I_corr$local[1:I0_t_import] <- 0
     # correction for days with 0 overall infectivity
     I_corr$imported[f_0] <- d_incidence$incidence[f_0]
     I_corr$local[f_0] <- 0

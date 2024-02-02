@@ -109,7 +109,7 @@ for(i in 1:sim$input$n_locations){
 ```{r}
 
 rep <- 1e3
-
+devtools::load_all(".")
 res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_obs, #I_true ,
                                               t_window = t_window,
                                              mean_prior = mean_prior, std_prior = std_prior,

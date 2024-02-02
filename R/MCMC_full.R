@@ -80,7 +80,7 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
   if(overdispersion){
     res$theta_over_thinned <- res$theta_over[seq(1, rep, by = thin),]
   }
-  break()
+
   # run the MCMC to sample posterior of R and initial coniditions at each location
   # FYI: this is called internally by adapt_tuning
   # see Rscript/MCMC_Rt_2018.R for full function

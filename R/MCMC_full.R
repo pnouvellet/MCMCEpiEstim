@@ -100,14 +100,14 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
   n_param <- data.frame(Rt = length(theta0$Rts),
                         Over = length(theta0$Over))
   
-  theta_hat <- list(Rts = apply(res$theta_R,2,median), Over = NULL)
+  theta_hat <- list(Rts = apply(res$theta_R_thinned,2,median), Over = NULL)
   if (overdispersion){
-    theta_hat$Over <- median(res$theta_over)
+    theta_hat$Over <- median(res$theta_over_thinned)
   }
   L <- sum(Like1(theta = theta_hat, data_long = data_long, t_window = t_window, 
                  n_loc = n_loc, n_tw = n_tw, param_agg, overdispersion = overdispersion, p_reps ))
   
-  ll_med = median(rowSums(res$logL[,1:(n_param[[1]])]))
+  ll_med = median(rowSums(res$logL_thinned[,1:(n_param[[1]])]))
   P = 2 * (L - ll_med)
 
   #Calculate DIC

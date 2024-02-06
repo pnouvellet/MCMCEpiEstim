@@ -36,15 +36,21 @@
 fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                               mean_prior, std_prior,
                               res_EpiEstim, overdispersion = FALSE, 
-                              rep, thin = 10, param_agg = FALSE, Rt0_epiEstim = TRUE, p_reps = 1 ){
+                              rep, thin = 10, param_agg = FALSE, Rt0_epiEstim = TRUE, p_reps = 1, overlap = FALSE){
   
   prior <- epitrix::gamma_mucv2shapescale(mu = mean_prior, cv = std_prior/mean_prior)
   t_max <- nrow(I)
   n_loc <- ncol(I)-1
   
   # time windows
-  t_start <- seq(I0_t_import+1, t_max-t_window+1,by = 1)        
-  t_end <- t_start + t_window - 1     
+  t_start <- seq(I0_t_import+1, t_max-t_window+1,by = 1)
+  if (overlap == FALSE) {
+    t_start <- t_start[seq(1,length(t_start),by = t_window)]
+  }else{
+    
+  }
+  t_end <- t_start + t_window - 1      
+    
   n_tw <- length(t_start)
   
   # parameters & proposal log_normal standard deviation
@@ -52,7 +58,7 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
     if(Rt0_epiEstim){
       temp <- apply(matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), nrow = t_max, ncol = n_loc, byrow = FALSE),
                     1,mean,na.rm=TRUE)
-      Rts_0 <- temp[(t_window+I0_t_import):length(temp)]
+      Rts_0 <- temp[t_end]
     }else{
       Rts_0 <- rep(1, n_tw)
     }
@@ -60,7 +66,7 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
   }else{
     if(Rt0_epiEstim){
       temp <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), nrow = t_max, ncol = n_loc, byrow = FALSE)
-      Rts_0 <- c(temp[(t_window+I0_t_import):nrow(temp),])
+      Rts_0 <- c(temp[t_end,])
     }else{
       Rts_0 <- rep(1, n_loc*n_tw)
     }
@@ -95,7 +101,7 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
   }
   # res <- MCMC_iter(iter = rep, theta0 = Theta_0, s = s_0, data_long = data_long,
   #                  n_loc = n_loc, n_tw = n_tw, t_window = t_window,
-  #                  prior = prior,overdispersion = overdispersion, param_agg )
+  #                  prior = prior,overdispersion = overdispersion, param_agg, p_reps )
 
   res <- MCMC_full(iter = rep, theta0 = Theta_0, s = s_0,
                    repli_adapt = 10, within_iter = rep/10,

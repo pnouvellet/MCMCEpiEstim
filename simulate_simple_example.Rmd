@@ -81,10 +81,13 @@ t_window <- 7
 mean_prior <- 5
 std_prior <- 5
 
-res_EpiEstim <- fct_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_obs, #I_true ,
+res_EpiEstim <- fct_EpiEstim(I0_t_import = sim$I0$timespan , 
+                             I = sim$res$I_obs, #I_true ,
                              t_window = t_window, 
-                             mean_prior = mean_prior, std_prior = std_prior,
-                             si = si, overlap = FALSE)
+                             mean_prior = mean_prior, 
+                             std_prior = std_prior,
+                             si = si, 
+                             overlap = FALSE)
 
 
 plot(Rt$t,Rt$Rt,type = 'l', ylim = c(0,2.5))

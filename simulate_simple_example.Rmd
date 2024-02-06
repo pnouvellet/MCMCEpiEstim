@@ -113,30 +113,40 @@ for(i in 1:sim$input$n_locations){
 
 rep <- 1e3
 devtools::load_all(".")
-res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_obs, #I_true ,
+res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , 
+                                              I = sim$res$I_obs, #I_true ,
                                               t_window = t_window,
-                                             mean_prior = mean_prior, std_prior = std_prior,
-                                             res_EpiEstim = res_EpiEstim, overdispersion = FALSE, 
-                                             rep = rep, thin = 10, param_agg = FALSE, p_reps = 1)
+                                              mean_prior = mean_prior, 
+                                              std_prior = std_prior,
+                                              res_EpiEstim = res_EpiEstim, 
+                                              overdispersion = FALSE, 
+                                              rep = rep, 
+                                              thin = 10, 
+                                              param_agg = TRUE, 
+                                              p_reps = 1,
+                                              overlap = FALSE)
 
 res_MCMC_EpiEstim_Poiss2 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_obs, #I_true , 
                                               t_window = t_window,
                                              mean_prior = mean_prior, std_prior = std_prior,
                                              res_EpiEstim = res_EpiEstim, overdispersion = FALSE, 
-                                             rep = rep, thin = 10, param_agg = TRUE, p_reps = input$pi)
+                                             rep = rep, thin = 10, param_agg = TRUE, p_reps = input$pi,
+                                              overlap = FALSE)
 
 
 res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_obs, #I_true  ,
                                            t_window = t_window,
                                           mean_prior = mean_prior, std_prior = std_prior,
                                           res_EpiEstim = res_EpiEstim, overdispersion = TRUE,
-                                          rep = rep, thin = 10, param_agg = FALSE, p_reps = 1)
+                                          rep = rep, thin = 10, param_agg = TRUE, p_reps = 1,
+                                              overlap = FALSE)
 
 res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_obs, #I_true  ,
                                            t_window = t_window,
                                           mean_prior = mean_prior, std_prior = std_prior,
                                           res_EpiEstim = res_EpiEstim, overdispersion = TRUE,
-                                          rep = rep, thin = 10, param_agg = TRUE, p_reps = input$pi)
+                                          rep = rep, thin = 10, param_agg = TRUE, p_reps = input$pi,
+                                              overlap = FALSE)
 
 
 
@@ -218,34 +228,44 @@ for(i in 1:n_location){
 # function for plots compare results
 t_max <- length(res_EpiEstim[[1]]$t)
 n_location <- sim$input$n_locations
+overlap <- FALSE
+#time windows
+t_start <- seq(sim$I0$timespan+1, t_max-t_window+1,by = 1)
+if (overlap == FALSE) {
+  t_start <- t_start[seq(1,length(t_start),by = t_window)]
+}else{
   
+}
+t_end <- t_start + t_window - 1   
+n_tw <- length(t_start)
+ 
 comp_plot <- function(f1,f2){
   
   if(f2 %in% c("Quantile.0.025(R)","Quantile.0.975(R)")){
     if(f2 %in%"Quantile.0.025(R)"){
       # Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,quantile,0.025,na.rm = TRUE)
-      Rts_mcmc_NB1 <- apply(res_MCMC_EpiEstim_NB1$theta_R,2,quantile,0.025,na.rm = TRUE)
-      Rts_mcmc_NB2 <- apply(res_MCMC_EpiEstim_NB2$theta_R,2,quantile,0.025,na.rm = TRUE)
+      Rts_mcmc_NB1 <- apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,quantile,0.025,na.rm = TRUE)
+      Rts_mcmc_NB2 <- apply(res_MCMC_EpiEstim_NB2$theta_R_thinned,2,quantile,0.025,na.rm = TRUE)
     }else{
       # Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,quantile,0.975,na.rm = TRUE)
-      Rts_mcmc_NB1 <- apply(res_MCMC_EpiEstim_NB1$theta_R,2,quantile,0.975,na.rm = TRUE)
-      Rts_mcmc_NB2 <- apply(res_MCMC_EpiEstim_NB2$theta_R,2,quantile,0.975,na.rm = TRUE)
+      Rts_mcmc_NB1 <- apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,quantile,0.975,na.rm = TRUE)
+      Rts_mcmc_NB2 <- apply(res_MCMC_EpiEstim_NB2$theta_R_thinned,2,quantile,0.975,na.rm = TRUE)
     }
   }else{
     # Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,f1)
-    Rts_mcmc_NB1 <- apply(res_MCMC_EpiEstim_NB1$theta_R,2,f1)
-    Rts_mcmc_NB2 <- apply(res_MCMC_EpiEstim_NB2$theta_R,2,f1)
+    Rts_mcmc_NB1 <- apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,f1)
+    Rts_mcmc_NB2 <- apply(res_MCMC_EpiEstim_NB2$theta_R_thinned,2,f1)
   }
   Rts_epiestim <- matrix(unlist(lapply(res_EpiEstim, "[", ,f2)), nrow = t_max, ncol = n_location, byrow = FALSE)
-  Rts_epiestim <- c(Rts_epiestim[(t_window+I0$timespan):nrow(Rts_epiestim),])
+  Rts_epiestim <- c(Rts_epiestim[t_end,])
   
   if(length(Rts_epiestim) == n_location*length(Rts_mcmc_NB1)){
     # Rts_mcmc_pois <- rep(Rts_mcmc_pois,n_location)
     Rts_mcmc_NB1 <- rep(Rts_mcmc_NB1,n_location)
     Rts_mcmc_NB2 <- rep(Rts_mcmc_NB2,n_location)
   }
-  
-  plot(log10(Rts_epiestim), log10(Rts_mcmc_NB1), bty = 'n', main = f2, col = 'blue3',pch=3)
+  .limits <- range(log10(Rts_epiestim), log10(Rts_mcmc_NB1))
+  plot(log10(Rts_epiestim), log10(Rts_mcmc_NB1), bty = 'n', main = f2, col = 'blue3',pch=3, xlim = .limits, ylim = .limits)
   lines(log10(Rts_epiestim), log10(Rts_mcmc_NB2), type = 'p', col = 'red3',pch=4)
   abline(a = c(0,1), col = 'grey50')
   # range((Rts_epiestim-Rts_mcmc), na.rm = TRUE)
@@ -269,10 +289,6 @@ legend('topleft',c('NB1','NB2'),pch = c(3,4), col = c('blue3', 'red3'),bty = 'n'
 
 ```{r}
 layout(matrix(1:4,2,2))
-# time windows
-  t_start <- seq(sim$I0$timespan+1, t_max-t_window+1,by = 1)        
-  t_end <- t_start + t_window - 1     
-  n_tw <- length(t_start)
 
 # sim vs  epiestim
 Rts_epiestim_med <- matrix(unlist(lapply(res_EpiEstim, "[", ,"Median(R)")), 
@@ -286,9 +302,9 @@ lines(rep(seq(1,t_max),n_location),c(Rts_epiestim_mean),type = 'p',pch=4, col = 
 lines(Rt$t, Rt$Rt, col = 'grey50')
 
 # sim vs MCMC Poiss
-Rts_mcmc_poiss_med <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,median), 
+Rts_mcmc_poiss_med <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R_thinned,2,median), 
                              nrow =  n_tw, ncol = n_location, byrow = FALSE)
-Rts_mcmc_poiss_mean <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,mean), 
+Rts_mcmc_poiss_mean <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R_thinned,2,mean), 
                               nrow =  n_tw, ncol = n_location, byrow = FALSE)
 
 plot(rep(t_end,n_location),c(Rts_mcmc_poiss_med), 

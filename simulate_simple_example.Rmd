@@ -12,6 +12,8 @@ rm(list=ls())
 
 
 library(Hmisc)
+remove.packages('EpiEstim')
+devtools::install_github("mrc-ide/EpiEstim",build = TRUE,ref = 'na_bug' )
 library(EpiEstim)
 library(incidence)
 library(projections)

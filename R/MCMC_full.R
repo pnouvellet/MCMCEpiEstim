@@ -156,14 +156,6 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
     res$GRD_converged <- TRUE
   }
   
-  # TODO: 
-  # which of the two above do we want? 
-  # if we want to do the parameter by parameter we need to use the non thinned version
-  # add some tests ? 
-  # documentation? 
-  # + new dependency to coda. 
-  # Pierre to rename theta0_R to theta_R0 or theta_over0 to theta0_over
-  
   return(res)
 }
 

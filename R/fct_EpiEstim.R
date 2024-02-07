@@ -4,9 +4,9 @@
 #' 
 #' @param I0_t_import which of the initial incidence is imported
 #' 
-#' @param I matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples
+#' @param I dataframe of incidence. ncol: nb of location +1 (time), nrow: time
 #' 
-#' @param t_window matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples
+#' @param t_window integer, time window
 #' 
 #' @param mean_prior single real number, mean prior for Rts
 #' 
@@ -15,6 +15,11 @@
 #' @param si serial distribution (as in EpiEstim include a 0 weighted SI on same day)
 #'                   
 #' @param overlap TRUE/FALSE, whether using overlapping time window or not
+#'
+#' @param t_truncate integer, truncate incidence after t_truncate* t_window days 
+#'
+#' @param incidence_truncate integer, set incidence at NA for all time windows after which
+#' 'incidence_truncate' daily cases are reached
 #'
 #' 
 #' @details res, list of 1 dataframe per location summarising incidence, time, overall infectivity,
@@ -27,8 +32,24 @@
 
 fct_EpiEstim <- function(I0_t_import , I , t_window, 
                          mean_prior, std_prior,
-                         si, overlap){
+                         si, overlap, 
+                         t_truncate = NULL, incidence_truncate = NULL){
   
+  # check incidence/time to truncate
+  if (!is.null(t_truncate)){
+    I <- I[1:(t_truncate*t_window+I0_t_import),]
+  }
+  if (!is.null(incidence_truncate)){
+    f <- apply(I[,-1],2,function(x) which(x>incidence_truncate)[1])
+    f <- (floor((f-I0_t_import)/7)+1 )*7 + I0_t_import
+    for(i in 2:nrow(I)){
+      if(!is.na(f[i-1])){
+        I[f[i-1]:nrow(I),i] <- NA
+      }
+    }
+  }
+  
+  #
   t_max <- nrow(I)
   n_sim <- ncol(I)-1
   # time windows
@@ -52,9 +73,9 @@ fct_EpiEstim <- function(I0_t_import , I , t_window,
     
     d_incidence <- data.frame(t = I[,1],
                               incidence = I[,i+1])
-    
+    incid[which(is.na(incid))] <- 0
     # overall Infectivity
-    d_incidence$Oi = overall_infectivity(incid = d_incidence$incidence,
+    d_incidence$Oi <- EpiEstim::overall_infectivity(incid = d_incidence$incidence, ## issue here when NAs present
                                          si_distr = si)
     d_incidence$Oi[1:I0_t_import] <- NA
     f_0 <- which(d_incidence$Oi == 0)

@@ -10,7 +10,7 @@
 #' @param I I is a dataframe, first column are dates then incidence for all locations
 #'           nb of row is the size of time widows, dates must be sequential
 #'                   
-#' @param t_window integer, the number of iteration for the MCMC
+#' @param t_window integer, time window
 #'
 #' @param mean_prior mean prior for Rt
 #'
@@ -28,6 +28,12 @@
 #' 
 #' @param Rt0_epiEstim iterations for evaluate the accpetance with new proposal variances
 #' 
+#' @param Rt0_epiEstim iterations for evaluate the accpetance with new proposal variances
+#' 
+#' @param Rt0_epiEstim iterations for evaluate the accpetance with new proposal variances
+#' 
+#' @param Rt0_epiEstim iterations for evaluate the accpetance with new proposal variances
+#' 
 #' @details  res a list containing 2 matrices: theta: matrix of posterior samples
 #'                      and logL: matrix of associated log-likelihood
 #' @export
@@ -36,8 +42,19 @@
 fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                               mean_prior, std_prior,
                               res_EpiEstim, overdispersion = FALSE, 
-                              rep, thin = 10, param_agg = FALSE, Rt0_epiEstim = TRUE, p_reps = 1, overlap = FALSE){
+                              rep, thin = 10, param_agg = FALSE, Rt0_epiEstim = TRUE, 
+                              p_reps = 1, overlap = FALSE, 
+                              t_truncate = NULL, incidence_truncate = NULL){
   
+  # check incidence/time to truncate
+  if (!is.null(t_truncate)){
+    I <- I[1:(t_truncate*t_window),]
+  }
+  if (!is.null(incidence_truncate)){
+    I <- I[1:t_truncate,]
+  }
+  
+  #
   prior <- epitrix::gamma_mucv2shapescale(mu = mean_prior, cv = std_prior/mean_prior)
   t_max <- nrow(I)
   n_loc <- ncol(I)-1

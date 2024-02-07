@@ -17,10 +17,10 @@ library(incidence)
 library(projections)
 library(readxl)
 
-remove.packages('MCMCEpiEstim')
-devtools::install_github("pnouvellet/MCMCEpiEstim",build = TRUE)
-library(MCMCEpiEstim)
-
+# remove.packages('MCMCEpiEstim')
+# devtools::install_github("pnouvellet/MCMCEpiEstim",build = TRUE)
+# library(MCMCEpiEstim)
+devtools::load_all('.')
 ```
 
 here check package work with perfect reporting!

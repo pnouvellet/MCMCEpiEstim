@@ -437,15 +437,15 @@ comp_plot <- function(f1,f2){
   
   if(f2 %in% c("Quantile.0.025(R)","Quantile.0.975(R)")){
     if(f2 %in%"Quantile.0.025(R)"){
-      Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,quantile,0.025,na.rm = TRUE)
-      Rts_mcmc_NB <- apply(res_MCMC_EpiEstim_NB1$theta_R,2,quantile,0.025,na.rm = TRUE)
+      Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R_thinned,2,quantile,0.025,na.rm = TRUE)
+      Rts_mcmc_NB <- apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,quantile,0.025,na.rm = TRUE)
     }else{
-      Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,quantile,0.975,na.rm = TRUE)
-      Rts_mcmc_NB <- apply(res_MCMC_EpiEstim_NB1$theta_R,2,quantile,0.975,na.rm = TRUE)
+      Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R_thinned,2,quantile,0.975,na.rm = TRUE)
+      Rts_mcmc_NB <- apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,quantile,0.975,na.rm = TRUE)
     }
   }else{
-    Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,f1)
-    Rts_mcmc_NB <- apply(res_MCMC_EpiEstim_NB1$theta_R,2,f1)
+    Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R_thinned,2,f1)
+    Rts_mcmc_NB <- apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,f1)
   }
   Rts_epiestim <- matrix(unlist(lapply(res_EpiEstim, "[", ,f2)), nrow = t_max, ncol = n_location, byrow = FALSE)
   Rts_epiestim <- c(Rts_epiestim[t_end,])
@@ -491,9 +491,9 @@ lines(rep(seq(1,t_max),n_location),c(Rts_epiestim_mean),type = 'p',pch=4, col = 
 lines(Rt$t, Rt$Rt, col = 'grey50')
 
 # sim vs MCMC Poiss
-Rts_mcmc_poiss_med <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,median), 
+Rts_mcmc_poiss_med <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R_thinned,2,median), 
                              nrow =  n_tw, ncol = n_location, byrow = FALSE)
-Rts_mcmc_poiss_mean <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,mean), 
+Rts_mcmc_poiss_mean <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R_thinned,2,mean), 
                               nrow =  n_tw, ncol = n_location, byrow = FALSE)
 
 plot(rep(t_end,n_location),c(Rts_mcmc_poiss_med), 
@@ -502,9 +502,9 @@ lines(rep(t_end,n_location),c(Rts_mcmc_poiss_mean),type = 'p',pch=4, col = 'red3
 lines(Rt$t, Rt$Rt, col = 'grey50')
 
 # sim vs MCMC NB
-Rts_mcmc_NB_med <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R,2,median), 
+Rts_mcmc_NB_med <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,median), 
                              nrow =  n_tw, ncol = n_location, byrow = FALSE)
-Rts_mcmc_NB_mean <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R,2,mean), 
+Rts_mcmc_NB_mean <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,mean), 
                               nrow =  n_tw, ncol = n_location, byrow = FALSE)
 
 plot(rep(t_end,n_location),c(Rts_mcmc_NB_med), 
@@ -520,7 +520,7 @@ legend('topleft',c('median','mean'),pch = c(3,4), col = c('blue3','red3'),bty = 
 ```{r}
 I_NB <- as.matrix(sim$res$I_true)
 
-Rts_P1 <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,median),
+Rts_P1 <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R_thinned,2,median),
                                    nrow =  n_tw, ncol = n_location, byrow = FALSE)
 
 # Rts_P1 <- Rts_P1[seq(1,nrow(Rts_P1),by = 7),]
@@ -541,7 +541,7 @@ P2
 
 ```{r}
 
-Rts_nb1 <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R,2,median),
+Rts_nb1 <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,median),
                                    nrow =  n_tw, ncol = n_location, byrow = FALSE)
 
 # Rts_nb1 <- Rts_nb1[seq(1,nrow(Rts_nb1),by = 7),]
@@ -550,8 +550,8 @@ Rts_nb1 <- data.frame(t = 1:nrow(Rts_nb1),
                      Rts_nb1)
 
 layout(matrix(1:2, nrow = 1))
-NB1 <- diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'nb', Rt = Rts_nb1,k = median(res_MCMC_EpiEstim_NB1$theta_over0))
-NB2 <- diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'nb', Rt = Rts_nb1, k = median(res_MCMC_EpiEstim_NB1$theta_over0))
+NB1 <- diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'nb', Rt = Rts_nb1,k = median(res_MCMC_EpiEstim_NB1$theta_over_thinned))
+NB2 <- diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'nb', Rt = Rts_nb1, k = median(res_MCMC_EpiEstim_NB1$theta_over_thinned))
 
 NB1
 NB2
@@ -757,8 +757,8 @@ plot(res_MCMC_EpiEstim_NB1$theta_over ,
 
 lines(res_MCMC_EpiEstim_NB2$theta_over,col = 'red3',type = 'p',pch = 12)
 
-quantile(res_MCMC_EpiEstim_NB1$theta_over, c(.5,.025,.975))
-quantile(res_MCMC_EpiEstim_NB2$theta_over, c(.5,.025,.975))
+quantile(res_MCMC_EpiEstim_NB1$theta_over_thinned, c(.5,.025,.975))
+quantile(res_MCMC_EpiEstim_NB2$theta_over_thinned, c(.5,.025,.975))
 ```
 
 
@@ -783,15 +783,15 @@ comp_plot <- function(f1,f2){
   
   if(f2 %in% c("Quantile.0.025(R)","Quantile.0.975(R)")){
     if(f2 %in%"Quantile.0.025(R)"){
-      Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,quantile,0.025,na.rm = TRUE)
-      Rts_mcmc_NB <- apply(res_MCMC_EpiEstim_NB1$theta_R,2,quantile,0.025,na.rm = TRUE)
+      Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R_thinned,2,quantile,0.025,na.rm = TRUE)
+      Rts_mcmc_NB <- apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,quantile,0.025,na.rm = TRUE)
     }else{
-      Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,quantile,0.975,na.rm = TRUE)
-      Rts_mcmc_NB <- apply(res_MCMC_EpiEstim_NB1$theta_R,2,quantile,0.975,na.rm = TRUE)
+      Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R_thinned,2,quantile,0.975,na.rm = TRUE)
+      Rts_mcmc_NB <- apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,quantile,0.975,na.rm = TRUE)
     }
   }else{
-    Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,f1)
-    Rts_mcmc_NB <- apply(res_MCMC_EpiEstim_NB1$theta_R,2,f1)
+    Rts_mcmc_pois <- apply(res_MCMC_EpiEstim_Poiss1$theta_R_thinned,2,f1)
+    Rts_mcmc_NB <- apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,f1)
   }
   Rts_epiestim <- matrix(unlist(lapply(res_EpiEstim, "[", ,f2)), nrow = t_max, ncol = n_location, byrow = FALSE)
   Rts_epiestim <- c(Rts_epiestim[t_end,])
@@ -837,9 +837,9 @@ lines(rep(seq(1,t_max),n_location),c(Rts_epiestim_mean),type = 'p',pch=4, col = 
 lines(Rt$t, Rt$Rt, col = 'grey50')
 
 # sim vs MCMC Poiss
-Rts_mcmc_poiss_med <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,median), 
+Rts_mcmc_poiss_med <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R_thinned,2,median), 
                              nrow =  n_tw, ncol = n_location, byrow = FALSE)
-Rts_mcmc_poiss_mean <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,mean), 
+Rts_mcmc_poiss_mean <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R_thinned,2,mean), 
                               nrow =  n_tw, ncol = n_location, byrow = FALSE)
 
 plot(rep(t_end,n_location),c(Rts_mcmc_poiss_med), 
@@ -848,9 +848,9 @@ lines(rep(t_end,n_location),c(Rts_mcmc_poiss_mean),type = 'p',pch=4, col = 'red3
 lines(Rt$t, Rt$Rt, col = 'grey50')
 
 # sim vs MCMC NB
-Rts_mcmc_NB_med <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R,2,median), 
+Rts_mcmc_NB_med <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,median), 
                              nrow =  n_tw, ncol = n_location, byrow = FALSE)
-Rts_mcmc_NB_mean <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R,2,mean), 
+Rts_mcmc_NB_mean <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,mean), 
                               nrow =  n_tw, ncol = n_location, byrow = FALSE)
 
 plot(rep(t_end,n_location),c(Rts_mcmc_NB_med), 
@@ -866,7 +866,7 @@ legend('topleft',c('median','mean'),pch = c(3,4), col = c('blue3','red3'),bty = 
 ```{r}
 I_NB <- as.matrix(sim$res$I_true)
 
-Rts_P1 <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,median),
+Rts_P1 <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R_thinned,2,median),
                                    nrow =  n_tw, ncol = n_location, byrow = FALSE)
 
 # Rts_P1 <- Rts_P1[seq(1,nrow(Rts_P1),by = 7),]
@@ -888,7 +888,7 @@ P2$res_table
 
 ```{r}
 
-Rts_nb1 <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R,2,median),
+Rts_nb1 <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,median),
                                    nrow =  n_tw, ncol = n_location, byrow = FALSE)
 
 # Rts_nb1 <- Rts_nb1[seq(1,nrow(Rts_nb1),by = 7),]
@@ -897,8 +897,8 @@ Rts_nb1 <- data.frame(t = 1:nrow(Rts_nb1),
                      Rts_nb1)
 
 layout(matrix(1:2, nrow = 1))
-NB1 <- diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'nb', Rt = Rts_nb1,k = median(res_MCMC_EpiEstim_NB1$theta_over0))
-NB2 <- diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'nb', Rt = Rts_nb1, k = median(res_MCMC_EpiEstim_NB1$theta_over0))
+NB1 <- diag_plot(I_NB, logged = TRUE, max_x=1, dist = 'nb', Rt = Rts_nb1,k = median(res_MCMC_EpiEstim_NB1$theta_over_thinned))
+NB2 <- diag_plot(I_NB, logged = FALSE, max_x=.1, dist = 'nb', Rt = Rts_nb1, k = median(res_MCMC_EpiEstim_NB1$theta_over_thinned))
 
 NB1$res_table
 NB2$res_table

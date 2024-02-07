@@ -523,7 +523,7 @@ I_NB <- as.matrix(sim$res$I_true)
 Rts_P1 <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,median),
                                    nrow =  n_tw, ncol = n_location, byrow = FALSE)
 
-Rts_P1 <- Rts_P1[seq(1,nrow(Rts_P1),by = 7),]
+# Rts_P1 <- Rts_P1[seq(1,nrow(Rts_P1),by = 7),]
 Rts_P1 <- Rts_P1[rep(seq(1:nrow(Rts_P1)),each = 7),]
 Rts_P1 <- data.frame(t = 1:nrow(Rts_P1),
                      Rts_P1)
@@ -544,7 +544,7 @@ P2
 Rts_nb1 <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R,2,median),
                                    nrow =  n_tw, ncol = n_location, byrow = FALSE)
 
-Rts_nb1 <- Rts_nb1[seq(1,nrow(Rts_nb1),by = 7),]
+# Rts_nb1 <- Rts_nb1[seq(1,nrow(Rts_nb1),by = 7),]
 Rts_nb1 <- Rts_nb1[rep(seq(1:nrow(Rts_nb1)),each = 7),]
 Rts_nb1 <- data.frame(t = 1:nrow(Rts_nb1),
                      Rts_nb1)
@@ -869,7 +869,7 @@ I_NB <- as.matrix(sim$res$I_true)
 Rts_P1 <- matrix(apply(res_MCMC_EpiEstim_Poiss1$theta_R,2,median),
                                    nrow =  n_tw, ncol = n_location, byrow = FALSE)
 
-Rts_P1 <- Rts_P1[seq(1,nrow(Rts_P1),by = 7),]
+# Rts_P1 <- Rts_P1[seq(1,nrow(Rts_P1),by = 7),]
 Rts_P1 <- Rts_P1[rep(seq(1:nrow(Rts_P1)),each = 7),]
 Rts_P1 <- data.frame(t = 1:nrow(Rts_P1),
                      Rts_P1)
@@ -891,7 +891,7 @@ P2$res_table
 Rts_nb1 <- matrix(apply(res_MCMC_EpiEstim_NB1$theta_R,2,median),
                                    nrow =  n_tw, ncol = n_location, byrow = FALSE)
 
-Rts_nb1 <- Rts_nb1[seq(1,nrow(Rts_nb1),by = 7),]
+# Rts_nb1 <- Rts_nb1[seq(1,nrow(Rts_nb1),by = 7),]
 Rts_nb1 <- Rts_nb1[rep(seq(1:nrow(Rts_nb1)),each = 7),]
 Rts_nb1 <- data.frame(t = 1:nrow(Rts_nb1),
                      Rts_nb1)

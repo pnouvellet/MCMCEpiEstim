@@ -52,22 +52,15 @@ I0 <- incidence::as.incidence(x = input$I0, dates = 1, interval = 1)
 
 Rt <- MCMCEpiEstim::Rt_linear(inp = input)
 
-# res <- MCMCEpiEstim::project_fct(I0 = I0,
-#                                  Rt = Rt,
-#                                  n_loc = input$n_locations,
-#                                  t_max = nrow(Rt),
-#                                  si = si,
-#                                  p = input$pi,
-#                                  model = 'negbin',
-#                                  over = input$k)
-
 res <- MCMCEpiEstim::project_fct(I0 = I0,
                                  Rt = Rt,
                                  n_loc = input$n_locations,
                                  t_max = nrow(Rt),
                                  si = si,
                                  p = input$pi,
-                                 model = 'poisson')
+                                 model = 'negbin',
+                                 over = input$k)
+
 
 sim <- list(input = input, I0 = I0, Rt = Rt, res = res)
 
@@ -88,10 +81,13 @@ t_window <- 7
 mean_prior <- 5
 std_prior <- 5
 
-res_EpiEstim <- fct_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_obs, #I_true ,
+res_EpiEstim <- fct_EpiEstim(I0_t_import = sim$I0$timespan , 
+                             I = sim$res$I_obs, #I_true ,
                              t_window = t_window, 
-                             mean_prior = mean_prior, std_prior = std_prior,
-                             si = si, overlap = FALSE)
+                             mean_prior = mean_prior, 
+                             std_prior = std_prior,
+                             si = si, 
+                             overlap = FALSE)
 
 
 plot(Rt$t,Rt$Rt,type = 'l', ylim = c(0,2.5))
@@ -111,51 +107,48 @@ for(i in 1:sim$input$n_locations){
 ```
 
 
-
 ## Run MCMCEpiEstim 
 
 ```{r}
 
-rep <- 2*1e3
-
-res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_obs, #I_true ,
+rep <- 1e3
+devtools::load_all(".")
+res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , 
+                                              I = sim$res$I_obs, #I_true ,
                                               t_window = t_window,
-                                             mean_prior = mean_prior, std_prior = std_prior,
-                                             res_EpiEstim = res_EpiEstim, overdispersion = FALSE, 
-                                             rep = rep, thin = 10, param_agg = TRUE, p_reps = 1,overlap = FALSE)
+                                              mean_prior = mean_prior, 
+                                              std_prior = std_prior,
+                                              res_EpiEstim = res_EpiEstim, 
+                                              overdispersion = FALSE, 
+                                              rep = rep, 
+                                              thin = 10, 
+                                              param_agg = TRUE, 
+                                              p_reps = 1,
+                                              overlap = FALSE)
 
 res_MCMC_EpiEstim_Poiss2 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_obs, #I_true , 
                                               t_window = t_window,
                                              mean_prior = mean_prior, std_prior = std_prior,
                                              res_EpiEstim = res_EpiEstim, overdispersion = FALSE, 
-                                             rep = rep, thin = 10, param_agg = TRUE, p_reps = input$pi,overlap = FALSE)
-
-res_MCMC_EpiEstim_Poiss3 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_obs, #I_true , 
-                                              t_window = t_window,
-                                             mean_prior = mean_prior, std_prior = std_prior,
-                                             res_EpiEstim = res_EpiEstim, overdispersion = FALSE, 
-                                             rep = rep, thin = 10, param_agg = FALSE, p_reps = input$pi, overlap = FALSE)
-
-res_MCMC_EpiEstim_Poiss3$DIC[1]
-```
+                                             rep = rep, thin = 10, param_agg = TRUE, p_reps = input$pi,
+                                              overlap = FALSE)
 
 
-```{r}
-
-
-rep <- 3*1e3
-
-res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan, I = sim$res$I_obs, #I_true  ,
+res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_obs, #I_true  ,
                                            t_window = t_window,
                                           mean_prior = mean_prior, std_prior = std_prior,
                                           res_EpiEstim = res_EpiEstim, overdispersion = TRUE,
-                                          rep = rep, thin = 10, param_agg = TRUE, p_reps = 1, overlap = FALSE)
+                                          rep = rep, thin = 10, param_agg = TRUE, p_reps = 1,
+                                              overlap = FALSE)
 
-res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan, I = sim$res$I_obs, #I_true  ,
+res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_obs, #I_true  ,
                                            t_window = t_window,
                                           mean_prior = mean_prior, std_prior = std_prior,
                                           res_EpiEstim = res_EpiEstim, overdispersion = TRUE,
-                                          rep = rep, thin = 10, param_agg = TRUE, p_reps = input$pi, overlap = FALSE)
+                                          rep = rep, thin = 10, param_agg = TRUE, p_reps = input$pi,
+                                              overlap = FALSE)
+
+
 
 ```
 
@@ -231,7 +224,6 @@ for(i in 1:n_location){
 }
 ```
 
-
 ```{r}
 # function for plots compare results
 t_max <- length(res_EpiEstim[[1]]$t)
@@ -295,8 +287,6 @@ legend('topleft',c('NB1','NB2'),pch = c(3,4), col = c('blue3', 'red3'),bty = 'n'
 
 
 
-
-
 ```{r}
 layout(matrix(1:4,2,2))
 
@@ -336,4 +326,3 @@ lines(Rt$t, Rt$Rt, col = 'grey50')
 legend('topleft',c('median','mean'),pch = c(3,4), col = c('blue3','red3'),bty = 'n')
 
 ```
-

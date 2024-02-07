@@ -83,7 +83,7 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
   if(overdispersion){
     res$theta_over_thinned <- res$theta_over[seq(1, rep, by = thin),]
   }
-
+  
   # run the MCMC to sample posterior of R and initial coniditions at each location
   # FYI: this is called internally by adapt_tuning
   # see Rscript/MCMC_Rt_2018.R for full function
@@ -116,34 +116,26 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
   #Calculate DIC
   res$DIC = c(-2 * (L - P),P)
   
-  # to do it overall i.e. checking convergence of the LL chain (non thinned)
-  LL <- rowSums(res$logL)
-  spl1 <- LL[seq_len(floor(length(LL) / 2))]
-  spl2 <- LL[seq(ceiling(length(LL) / 2) + 1, length(LL))]
-  GRD <- gelman.diag(as.mcmc.list(list(as.mcmc(spl1), as.mcmc(spl2))))
+  # to check convergence parameter by parameter 
+  pars <- names(res)[grep("theta_", names(res))] 
+  thinned <- names(res)[grep("thinned", names(res))] 
+  non_thinned_pars <- pars[!(pars %in% thinned)]
   
-  # # to do it parameter by parameter 
-  # # TODO: Pierre to rename theta0_R to theta_R0 or theta_over0 to theta0_over
-  ## pars <- names(res)[grep("^theta_.*0$", names(res))] # thinned option
-  # pars <- names(res)[grep("^theta_[^0]*$", names(res))] # non-thinned option
-  # i <- pars[1] # will need to loop over
-  # if(is.vector(res[[i]])) {
-  #   tmp_par <- res[[i]]
-  #   spl1 <- tmp_par[seq_len(floor(length(tmp_par) / 2))]
-  #   spl2 <- tmp_par[seq(ceiling(length(tmp_par) / 2) + 1, length(tmp_par))]
-  #   GRD <- gelman.diag(as.mcmc.list(list(as.mcmc(spl1), as.mcmc(spl2))))
-  # } else{
-  #   tmp_par <- res[[i]]
-  #   spl1 <- tmp_par[seq_len(floor(nrow(tmp_par) / 2)), ]
-  #   spl2 <- tmp_par[seq(ceiling(nrow(tmp_par) / 2) + 1, nrow(tmp_par)), ]
-  #   GRD <- gelman.diag(as.mcmc.list(list(as.mcmc(spl1), as.mcmc(spl2)))) # loads of NANs??
-  # } 
+  ## get all parameter chains into a single matrix to feed into Gelman Rubin
+  tmp_par <- res[[non_thinned_pars[1]]]
+  if(length(non_thinned_pars) > 1) {
+    for(k in seq(2, length(non_thinned_pars))) {
+      tmp_par <- cbind(tmp_par, res[[non_thinned_pars[k]]])  
+    }
+  }
+  spl1 <- tmp_par[seq_len(floor(nrow(tmp_par) / 2)), ]
+  spl2 <- tmp_par[seq(ceiling(nrow(tmp_par) / 2) + 1, nrow(tmp_par)), ]
+  res$GRD <- gelman.diag(as.mcmc.list(list(as.mcmc(spl1), as.mcmc(spl2)))) 
   
-  res$GRD <- GRD 
   # Is any of the potential scale reduction factors >1.1 
   # (looking at the upper CI)?
   # If so this would suggest that the MCMC has not converged well.
-  if (any(GRD$psrf[, "Upper C.I."] > 1.1)) {
+  if (any(res$GRD$psrf[, "Upper C.I."] > 1.1)) {
     warning("The Gelman-Rubin algorithm suggests the MCMC may not have \n
       converged within the number of iterations (MCMC.burnin + n1) specified. \n
       You could visualise the MCMC chain & decide whether to rerun for longer.\n")

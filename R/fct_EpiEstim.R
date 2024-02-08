@@ -32,24 +32,8 @@
 
 fct_EpiEstim <- function(I0_t_import , I , t_window, 
                          mean_prior, std_prior,
-                         si, overlap, 
-                         t_truncate = NULL, incidence_truncate = NULL){
+                         si, overlap){
   
-  # check incidence/time to truncate
-  if (!is.null(t_truncate)){
-    I <- I[1:(t_truncate*t_window+I0_t_import),]
-  }
-  if (!is.null(incidence_truncate)){
-    f <- apply(I[,-1],2,function(x) which(x>incidence_truncate)[1])
-    f <- (floor((f-I0_t_import)/7)+1 )*7 + I0_t_import+1
-    for(i in 2:nrow(I)){
-      if(!is.na(f[i-1])){
-        I[f[i-1]:nrow(I),i] <- NA
-      }
-    }
-  }
-  
-  #
   t_max <- nrow(I)
   n_sim <- ncol(I)-1
   # time windows

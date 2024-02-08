@@ -12,8 +12,8 @@ rm(list=ls())
 
 
 library(Hmisc)
-remove.packages('EpiEstim')
-devtools::install_github("mrc-ide/EpiEstim",build = TRUE,ref = 'na_bug' )
+# remove.packages('EpiEstim')
+# devtools::install_github("mrc-ide/EpiEstim",build = TRUE,ref = 'na_bug' )
 library(EpiEstim)
 library(incidence)
 library(projections)
@@ -154,6 +154,29 @@ res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = s
 
 ```
 
+
+check turncations
+```{r}
+
+
+
+res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , 
+                                              I = sim$res$I_obs, #I_true ,
+                                              t_window = t_window,
+                                              mean_prior = mean_prior, 
+                                              std_prior = std_prior,
+                                              res_EpiEstim = res_EpiEstim, 
+                                              overdispersion = FALSE, 
+                                              rep = rep, 
+                                              thin = 10, 
+                                              param_agg = FALSE, 
+                                              p_reps = 1,
+                                              overlap = FALSE, t_truncate = 8, incidence_truncate = 1e3)
+
+
+aa=res_MCMC_EpiEstim_Poiss1$theta_R_thinned
+I = sim$res$I_obs
+```
 
 ```{r}
 

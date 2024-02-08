@@ -47,11 +47,18 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                               t_truncate = NULL, incidence_truncate = NULL){
   
   # check incidence/time to truncate
-  if (!is.null(t_truncate)){
-    I <- I[1:(t_truncate*t_window),]
-  }
   if (!is.null(incidence_truncate)){
-    I <- I[1:t_truncate,]
+    f <- apply(I[,-1],2,function(x) which(x>incidence_truncate)[1])
+    f <- (floor((f-I0_t_import)/7)+1 )*7 + I0_t_import+1
+    for(i in 2:nrow(I)){
+      if(!is.na(f[i-1])){
+        I[f[i-1]:nrow(I),i] <- NA
+      }
+    }
+  }
+  
+  if (!is.null(t_truncate)){
+    I <- I[1:(t_truncate*t_window+I0_t_import),]
   }
   
   #
@@ -73,7 +80,7 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
   # parameters & proposal log_normal standard deviation
   if (param_agg){
     if(Rt0_epiEstim){
-      temp <- apply(matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), nrow = t_max, ncol = n_loc, byrow = FALSE),
+      temp <- apply(matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')),  ncol = n_loc, byrow = FALSE),
                     1,mean,na.rm=TRUE)
       Rts_0 <- temp[t_end]
     }else{
@@ -82,7 +89,7 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
     s_Rt <- rep(0.1, n_tw)
   }else{
     if(Rt0_epiEstim){
-      temp <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), nrow = t_max, ncol = n_loc, byrow = FALSE)
+      temp <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')),  ncol = n_loc, byrow = FALSE)
       Rts_0 <- c(temp[t_end,])
     }else{
       Rts_0 <- rep(1, n_loc*n_tw)
@@ -101,7 +108,8 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
   
   # precompute I and infectivity matrices
   Inc <- as.matrix(I[,-1])
-  Oi <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Oi')), nrow = t_max, ncol = n_loc, byrow = FALSE)
+  Oi <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Oi')),  ncol = n_loc, byrow = FALSE)
+  Oi <- Oi[1:tail(t_end,1),]
   Oi[Oi==0] <- NA
   idx_inc <- c(apply(cbind(t_start,t_end), 1,f1_idx_inc))
   
@@ -125,7 +133,20 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                    data_long = data_long, n_loc = n_loc, n_tw = n_tw, 
                    t_window = t_window, prior = prior, 
                    overdispersion = overdispersion, thin = thin, param_agg, p_reps )
+  res$I <- I
   
+  # set Rt estimate to NA when no information available, e.g. if incidence is/are NA and/or Oi is/are NA
+  if (param_agg){
+    temp <- aggregate((is.na(data_long$Inc_lk + data_long$Oi_lk)),by=list(data_long$Rt),sum)
+    f <- which( temp[,2] == (t_window*n_loc) )
+    res$theta_R[,f] <- NA
+    res$theta_R_thinned[,f] <- NA
+  }else{
+    temp <- aggregate((is.na(data_long$Inc_lk + data_long$Oi_lk)),by=list(data_long$Rt),sum)
+    f <- which( temp[,2] == t_window )
+    res$theta_R[,f] <- NA
+    res$theta_R_thinned[,f] <- NA
+  }
   
   return(res)
 }

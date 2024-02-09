@@ -109,6 +109,5 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                    t_window = t_window, prior = prior, 
                    overdispersion = overdispersion, thin = thin, param_agg, p_reps )
   
-  
   return(res)
 }

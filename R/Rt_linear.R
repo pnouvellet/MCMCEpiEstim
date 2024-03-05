@@ -1,10 +1,18 @@
-#' project
+#' Rt_linear
 #'
-#' wrapper for projection with/without overdispersion 
+#' To specify stewise changes in Rt
 #' 
-#' @param inp see others
+#' @param inp input, need to be a data.frame and include $R_max, $R_min,
+#' $period, $step, the max/min of the reproduction and the period of the 
+#' pattern and duration of the step-changes
 #'
-#' @details n_week nb of weeks for the simulation, default of 24
+#' @param n_week nb of weeks for the simulation, default of 24
+#' 
+#' @details Over the period of simulation (n_week), the function provide
+#' Rt values following a periodic pattern with a number of step-wise changes, which
+#' ultimately depend on the input.
+#'  
+#' @return A data.frame of time ($t) and daily Rt values ($Rt), size: (n_week x 7) x 2
 #' 
 #' @export
 #' 

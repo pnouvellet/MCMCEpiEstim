@@ -51,9 +51,11 @@ I0 <- incidence::as.incidence(x = input$I0, dates = 1, interval = 1)
 Rt <- MCMCEpiEstim::Rt_linear(inp = input)
 
 if(!is.na(input$t_pi_change)){
+  t_change_p <- input$t_pi_change*input$step+1
+  
   Pi_t <- data.frame(t = c(Rt$t,tail(Rt$t,1)+1),
-                     pi = c(rep(input$pi,input$t_pi_change*input$step+1),
-                            rep(input$pi2, nrow(Rt)+1-(input$t_pi_change*input$step+1) )) )
+                     pi = c(rep(input$pi,t_change_p),
+                            rep(input$pi2, nrow(Rt)+1-t_change_p )) )
 }else{
   Pi_t <- input$pi
 }

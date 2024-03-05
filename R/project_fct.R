@@ -1,23 +1,51 @@
 #' project
 #'
-#' wrapper for projection with/without overdispersion 
+#' wrapper for projection with/without overdispersion and with under-reporting
 #' 
-#' @param I0 matrix of initial incidence per location (can be more than one day)
+#' @param I0 an incidence object, specifying the initial incidence. 
+#' The initial incidence is here assumed the same in every location.
 #' 
-#' @param Rt dataframe with t (time) and associated Rts (instantaneous Rt)
+#' @param Rt A data.frame with time ($t) and associated daily Rts (instantaneous Rt, $Rt).
 #'                   
-#' @param n_loc number of locations
+#' @param n_loc number of locations.
 #' 
-#' @param t_max number of simulated time steps
+#' @param t_max number of simulated time steps.
 #'
-#' @param si serial distribution (as in EpiEstim include a 0 weighted SI on same day)
+#' @param p level of reporting, i.e. probability that a case simulated is actually observed.
+#' p can take a single value and that would assume constant reporting across time and locations simulated.
+#' Otherwise, p can be data.frame similar to Rt ($t for time and $p for the reporting). Such p data.frame
+#' would be longer (1 more value) than Rt as it would be specifying in the reporting for imported cases seeding 
+#' the simulation.
+#' In one of our application, we first specify Rt and then then simulate reporting with a single time-step change 
+#' in reporting:
+#' 
+#' t_change_p <- input$t_pi_change*input$step+1
+#' 
+#' Pi_t <- data.frame(t = c(Rt$t,tail(Rt$t,1)+1),
+#'                    pi = c(rep(input$pi,t_change_p),
+#'                          rep(input$pi2, nrow(Rt)+1-t_change_p )) )
+#'  input$pi, input$pi2, input$t_pi_change specifying the 2 reporting probability and last time (in weeks) 
+#'  when pi1 applies respectively.
 #'
-#' @param model take 'poisson' or 'NB', i.e. offspring distribution assumed.
+#' @param si serial distribution (as in EpiEstim include a 0 weighted SI on same day).
 #'
-#' @param over value of overdispersion in the offspring distribution (here no under-reporting)
+#' @param model takes 'poisson' or 'negbin', i.e. offspring distribution assumed. 
+#' By default, 'poisson' is assumed.
+#'
+#' @param over a real number quantifying the level of overdispersion in the offspring
+#'  distribution. The overdispersion is defined in the context of a negative binomial distribution 
+#'  as: if X follows a negative binomial distribution with mean \mu and overdispersion \delta, then the 
+#'  $$ E[X] = \mu $$ and $$ Var[X] = \mu + frac{\mu^2}{\delta} $$.
 #'
 #' 
-#' @details I simulated incidence, inclusive of starting values
+#' @details Simulate incidence using the package 'projection', with a time-varying Rt, The possibility
+#' to specify the presence of overdispersion and the presence of under-reporting of cases.
+#' 
+#' 
+#' @return A list containing 2 data.frames of time ($t) and daily incidence values at each location 
+#' ($simX, with X an integer for each location). 
+#' The first data.frame, I_true, contains the 'true' incidence, while the second, I_obs, contains the 'observed'
+#' incidence once under-reporting is accounted for.
 #' 
 #' @export
 #' 

@@ -7,23 +7,50 @@
 project_fct(I0, Rt, n_loc, t_max, si, p, model = "poisson", over = NULL)
 }
 \arguments{
-\item{I0}{matrix of initial incidence per location (can be more than one day)}
+\item{I0}{an incidence object, specifying the initial incidence. 
+The initial incidence is here assumed the same in every location.}
 
-\item{Rt}{dataframe with t (time) and associated Rts (instantaneous Rt)}
+\item{Rt}{A data.frame with time ($t) and associated daily Rts (instantaneous Rt, $Rt).}
 
-\item{n_loc}{number of locations}
+\item{n_loc}{number of locations.}
 
-\item{t_max}{number of simulated time steps}
+\item{t_max}{number of simulated time steps.}
 
-\item{si}{serial distribution (as in EpiEstim include a 0 weighted SI on same day)}
+\item{si}{serial distribution (as in EpiEstim include a 0 weighted SI on same day).}
 
-\item{model}{take 'poisson' or 'NB', i.e. offspring distribution assumed.}
+\item{p}{level of reporting, i.e. probability that a case simulated is actually observed.
+p can take a single value and that would assume constant reporting across time and locations simulated.
+Otherwise, p can be data.frame similar to Rt ($t for time and $p for the reporting). Such p data.frame
+would be longer (1 more value) than Rt as it would be specifying in the reporting for imported cases seeding 
+the simulation.
+In one of our application, we first specify Rt and then then simulate reporting with a single time-step change 
+in reporting:
+t_change_p <- input$t_pi_change*input$step+1
 
-\item{over}{value of overdispersion in the offspring distribution (here no under-reporting)}
+Pi_t <- data.frame(t = c(Rt$t,tail(Rt$t,1)+1),
+                   pi = c(rep(input$pi,t_change_p),
+                         rep(input$pi2, nrow(Rt)+1-t_change_p )) )
+ input$pi, input$pi2, input$t_pi_change specifying the 2 reporting probability and last time (in weeks) 
+ when pi1 applies respectively.}
+
+\item{model}{takes 'poisson' or 'negbin', i.e. offspring distribution assumed. 
+By default, 'poisson' is assumed.}
+
+\item{over}{a real number quantifying the level of overdispersion in the offspring
+distribution. The overdispersion is defined in the context of a negative binomial distribution 
+as: if X follows a negative binomial distribution with mean \mu and overdispersion \delta, then the 
+$$ E[X] = \mu $$ and $$ Var[X] = \mu + frac{\mu^2}{\delta} $$.}
+}
+\value{
+A list containing 2 data.frames of time ($t) and daily incidence values at each location 
+($simX, with X an integer for each location). 
+the first data.frame, I_true contain the 'true' incidence, while the second, I_obs contains the 'observed'
+incidence once under-reporting is accounted for.
 }
 \description{
-wrapper for projection with/without overdispersion
+wrapper for projection with/without overdispersion and with under-reporting
 }
 \details{
-I simulated incidence, inclusive of starting values
+Simulate incidence using the package 'projection', with a time-varying Rt, the possibility
+to specify the presence of overdispersion and the presence of under-reporting of cases.
 }

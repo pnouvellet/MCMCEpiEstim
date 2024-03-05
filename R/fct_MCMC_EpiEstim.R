@@ -108,6 +108,11 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                             sim = c(matrix(1:n_loc, nrow = n_tw*t_window, ncol = n_loc, byrow = TRUE)),
                             Rt = rep(seq(1,n_tw*n_loc), each = t_window ) )
   }
+  
+  if(length(p_reps)>1){
+    p_reps <- p_reps$pi
+    p_reps <- rep(head(p_reps,-1),n_loc)
+  }
   # res <- MCMC_iter(iter = rep, theta0 = Theta_0, s = s_0, data_long = data_long,
   #                  n_loc = n_loc, n_tw = n_tw, t_window = t_window,
   #                  prior = prior,overdispersion = overdispersion, param_agg, p_reps )

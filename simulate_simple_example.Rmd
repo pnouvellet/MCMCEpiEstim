@@ -23,6 +23,7 @@ library(readxl)
 # devtools::install_github("pnouvellet/MCMCEpiEstim",build = TRUE)
 # library(MCMCEpiEstim)
 devtools::load_all('.')
+
 ```
 
 here check package work with perfect reporting!
@@ -159,9 +160,16 @@ check turncations
 ```{r}
 
 
+I_trunc <- truncate_incidence(I0_t_import = sim$I0$timespan , 
+                             I = sim$res$I_true ,
+                             t_window = t_window,
+                             t_truncate = 8, 
+                             incidence_truncate = 1e4)
+
+
 
 res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , 
-                                              I = sim$res$I_obs, #I_true ,
+                                              I = I_trunc ,
                                               t_window = t_window,
                                               mean_prior = mean_prior, 
                                               std_prior = std_prior,
@@ -171,7 +179,7 @@ res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan ,
                                               thin = 10, 
                                               param_agg = FALSE, 
                                               p_reps = 1,
-                                              overlap = FALSE, t_truncate = 8, incidence_truncate = 1e3)
+                                              overlap = FALSE)
 
 
 aa=res_MCMC_EpiEstim_Poiss1$theta_R_thinned

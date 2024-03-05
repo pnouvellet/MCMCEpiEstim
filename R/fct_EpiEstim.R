@@ -16,11 +16,6 @@
 #'                   
 #' @param overlap TRUE/FALSE, whether using overlapping time window or not
 #'
-#' @param t_truncate integer, truncate incidence after t_truncate* t_window days 
-#'
-#' @param incidence_truncate integer, set incidence at NA for all time windows after which
-#' 'incidence_truncate' daily cases are reached
-#'
 #' 
 #' @details res, list of 1 dataframe per location summarising incidence, time, overall infectivity,
 #'              time window start and end date, estimated mean/std deviation/median and

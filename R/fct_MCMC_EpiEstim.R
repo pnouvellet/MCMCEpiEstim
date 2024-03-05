@@ -43,23 +43,7 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                               mean_prior, std_prior,
                               res_EpiEstim, overdispersion = FALSE, 
                               rep, thin = 10, param_agg = FALSE, Rt0_epiEstim = TRUE, 
-                              p_reps = 1, overlap = FALSE, 
-                              t_truncate = NULL, incidence_truncate = NULL){
-  
-  # check incidence/time to truncate
-  if (!is.null(incidence_truncate)){
-    f <- apply(I[,-1],2,function(x) which(x>incidence_truncate)[1])
-    f <- (floor((f-I0_t_import)/7)+1 )*7 + I0_t_import+1
-    for(i in 2:nrow(I)){
-      if(!is.na(f[i-1])){
-        I[f[i-1]:nrow(I),i] <- NA
-      }
-    }
-  }
-  
-  if (!is.null(t_truncate)){
-    I <- I[1:(t_truncate*t_window+I0_t_import),]
-  }
+                              p_reps = 1, overlap = FALSE){
   
   #
   prior <- epitrix::gamma_mucv2shapescale(mu = mean_prior, cv = std_prior/mean_prior)

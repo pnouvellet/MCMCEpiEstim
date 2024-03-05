@@ -55,9 +55,17 @@ project_fct <- function(I0, Rt, n_loc, t_max, si, p,
   I[(I0$timespan+1):(nrow(I)),] <- temp
   
   I_obs <- I
-  I_obs[,-1] <- matrix(rbinom(n = nrow(I)*(ncol(I)-1),
-                              size = as.matrix(I[,-1]),prob = p),
-                       nrow = nrow(I),ncol = (ncol(I)-1),byrow = FALSE)
+  
+  if(length(p)>1){
+    p <- p$pi
+  }
+  
+  temp <- matrix(rbinom(n = (t_max+nrow(I0))*n_loc,
+                        size = as.matrix(I[,-1]),
+                        prob = matrix(p,nrow = t_max+nrow(I0),ncol = n_loc,byrow = FALSE) ),
+                 nrow = t_max+nrow(I0),ncol = n_loc,byrow = FALSE)
+  
+  I_obs[,-1] <- temp
   
   return(list(I_true = I, I_obs = I_obs))
   

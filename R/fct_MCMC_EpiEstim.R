@@ -119,6 +119,7 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                    overdispersion = overdispersion, thin = thin, param_agg, p_reps )
   res$I <- I
   
+
   # set Rt estimate to NA when no information available, e.g. if incidence is/are NA and/or Oi is/are NA
   if (param_agg){
     temp <- aggregate((is.na(data_long$Inc_lk + data_long$Oi_lk)),by=list(data_long$Rt),sum)
@@ -132,5 +133,6 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
     res$theta_R_thinned[,f] <- NA
   }
   
+
   return(res)
 }

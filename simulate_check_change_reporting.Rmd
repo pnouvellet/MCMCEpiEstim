@@ -36,28 +36,33 @@ here check package work with perfect reporting!
 ```{r}
 
 Scenarios <- as.data.frame(readxl::read_xlsx('../overdispersion-epidemic-data/overdispersion_scenarios.xlsx',
-                               sheet = 1, range = 'A1:I60'))
+                               sheet = 1, range = 'A1:K73'))
 si <- c(0,1)
 
-i=57
+i=64
 
 # print(i)
 input <- Scenarios[i,]
-
-input$R_min <- 0.65
-input$k <- .1
-# input$k <- 1e4
+input$n_locations <- 13
 
 I0 <- incidence::as.incidence(x = input$I0, dates = 1, interval = 1)
 
 Rt <- MCMCEpiEstim::Rt_linear(inp = input)
 
+if(!is.na(input$t_pi_change)){
+  Pi_t <- data.frame(t = c(Rt$t,tail(Rt$t,1)+1),
+                     pi = c(rep(input$pi,input$t_pi_change*input$step+1),
+                            rep(input$pi2, nrow(Rt)+1-(input$t_pi_change*input$step+1) )) )
+}else{
+  Pi_t <- input$pi
+}
+  
 res <- MCMCEpiEstim::project_fct(I0 = I0,
                                  Rt = Rt,
                                  n_loc = input$n_locations,
                                  t_max = nrow(Rt),
                                  si = si,
-                                 p = input$pi,
+                                 p = Pi_t,
                                  model = 'poisson')
 
 sim <- list(input = input, I0 = I0, Rt = Rt, res = res)

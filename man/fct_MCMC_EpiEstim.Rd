@@ -5,7 +5,7 @@
 \title{wrapper for MCMC EpiEstim}
 \usage{
 fct_MCMC_EpiEstim(
-  I0,
+  I0_t_import,
   I,
   t_window,
   mean_prior,
@@ -15,17 +15,18 @@ fct_MCMC_EpiEstim(
   rep,
   thin = 10,
   param_agg = FALSE,
-  Rt0_epiEstim = TRUE
+  Rt0_epiEstim = TRUE,
+  p_reps = 1,
+  overlap = FALSE
 )
 }
 \arguments{
-\item{I0}{the incidence for the time window during which we assume Rt to be constant.
-I is a dataframe, first column are dates then incidence for all locations
+\item{I0_t_import}{which of the initial incidence is imported}
+
+\item{I}{I is a dataframe, first column are dates then incidence for all locations
 nb of row is the size of time widows, dates must be sequential}
 
-\item{I}{integer of  numbers of locations}
-
-\item{t_window}{integer, the number of iteration for the MCMC}
+\item{t_window}{integer, time window}
 
 \item{mean_prior}{mean prior for Rt}
 

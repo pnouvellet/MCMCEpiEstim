@@ -11,7 +11,8 @@ Like1(
   n_loc,
   n_tw,
   param_agg = FALSE,
-  overdispersion
+  overdispersion,
+  p_reps
 )
 }
 \arguments{

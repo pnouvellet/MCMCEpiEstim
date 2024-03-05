@@ -4,9 +4,9 @@
 #' 
 #' @param I0_t_import which of the initial incidence is imported
 #' 
-#' @param I matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples
+#' @param I dataframe of incidence. ncol: nb of location +1 (time), nrow: time
 #' 
-#' @param t_window matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples
+#' @param t_window integer, time window
 #' 
 #' @param mean_prior single real number, mean prior for Rts
 #' 
@@ -52,9 +52,8 @@ fct_EpiEstim <- function(I0_t_import , I , t_window,
     
     d_incidence <- data.frame(t = I[,1],
                               incidence = I[,i+1])
-    
     # overall Infectivity
-    d_incidence$Oi = overall_infectivity(incid = d_incidence$incidence,
+    d_incidence$Oi <- EpiEstim::overall_infectivity(incid = d_incidence$incidence, ## issue here when NAs present
                                          si_distr = si)
     d_incidence$Oi[1:I0_t_import] <- NA
     f_0 <- which(d_incidence$Oi == 0)

@@ -14,7 +14,8 @@ MCMC_iter(
   t_window,
   prior,
   overdispersion,
-  param_agg = FALSE
+  param_agg = FALSE,
+  p_reps
 )
 }
 \arguments{

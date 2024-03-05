@@ -4,7 +4,7 @@
 \alias{diag_plot}
 \title{diagnostic plots}
 \usage{
-diag_plot(I_NB, E_NB, logged, max_x = 1, dist, Rt, k)
+diag_plot(I_NB, logged, max_x = 1, dist, Rt, k)
 }
 \arguments{
 \item{logged}{plot y_axis on natural scale, i.e. FALSE, of log10 scale, logged = TRUE,}
@@ -13,7 +13,7 @@ diag_plot(I_NB, E_NB, logged, max_x = 1, dist, Rt, k)
 
 \item{dist}{assumed offspring distribution: 'poisson' or 'nb'}
 
-\item{Rt}{relevant only when dist = 'nb', vector of Rt's assumed or estimated}
+\item{Rt}{data.frame with t = time and vector of Rt's assumed or estimated}
 
 \item{k}{relevant only when dist = 'nb', assumed or estimated overdispersion (single estimate)}
 }

@@ -10,7 +10,7 @@
 #' @param I I is a dataframe, first column are dates then incidence for all locations
 #'           nb of row is the size of time widows, dates must be sequential
 #'                   
-#' @param t_window integer, the number of iteration for the MCMC
+#' @param t_window integer, time window
 #'
 #' @param mean_prior mean prior for Rt
 #'
@@ -28,6 +28,12 @@
 #' 
 #' @param Rt0_epiEstim iterations for evaluate the accpetance with new proposal variances
 #' 
+#' @param Rt0_epiEstim iterations for evaluate the accpetance with new proposal variances
+#' 
+#' @param Rt0_epiEstim iterations for evaluate the accpetance with new proposal variances
+#' 
+#' @param Rt0_epiEstim iterations for evaluate the accpetance with new proposal variances
+#' 
 #' @details  res a list containing 2 matrices: theta: matrix of posterior samples
 #'                      and logL: matrix of associated log-likelihood
 #' @export
@@ -36,8 +42,10 @@
 fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                               mean_prior, std_prior,
                               res_EpiEstim, overdispersion = FALSE, 
-                              rep, thin = 10, param_agg = FALSE, Rt0_epiEstim = TRUE, p_reps = 1, overlap = FALSE){
+                              rep, thin = 10, param_agg = FALSE, Rt0_epiEstim = TRUE, 
+                              p_reps = 1, overlap = FALSE){
   
+  #
   prior <- epitrix::gamma_mucv2shapescale(mu = mean_prior, cv = std_prior/mean_prior)
   t_max <- nrow(I)
   n_loc <- ncol(I)-1
@@ -56,7 +64,7 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
   # parameters & proposal log_normal standard deviation
   if (param_agg){
     if(Rt0_epiEstim){
-      temp <- apply(matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), nrow = t_max, ncol = n_loc, byrow = FALSE),
+      temp <- apply(matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')),  ncol = n_loc, byrow = FALSE),
                     1,mean,na.rm=TRUE)
       Rts_0 <- temp[t_end]
     }else{
@@ -65,7 +73,7 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
     s_Rt <- rep(0.1, n_tw)
   }else{
     if(Rt0_epiEstim){
-      temp <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')), nrow = t_max, ncol = n_loc, byrow = FALSE)
+      temp <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Mean(R)')),  ncol = n_loc, byrow = FALSE)
       Rts_0 <- c(temp[t_end,])
     }else{
       Rts_0 <- rep(1, n_loc*n_tw)
@@ -84,7 +92,8 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
   
   # precompute I and infectivity matrices
   Inc <- as.matrix(I[,-1])
-  Oi <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Oi')), nrow = t_max, ncol = n_loc, byrow = FALSE)
+  Oi <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Oi')),  ncol = n_loc, byrow = FALSE)
+  Oi <- Oi[1:tail(t_end,1),]
   Oi[Oi==0] <- NA
   idx_inc <- c(apply(cbind(t_start,t_end), 1,f1_idx_inc))
   
@@ -108,6 +117,22 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                    data_long = data_long, n_loc = n_loc, n_tw = n_tw, 
                    t_window = t_window, prior = prior, 
                    overdispersion = overdispersion, thin = thin, param_agg, p_reps )
+  res$I <- I
   
+
+  # set Rt estimate to NA when no information available, e.g. if incidence is/are NA and/or Oi is/are NA
+  if (param_agg){
+    temp <- aggregate((is.na(data_long$Inc_lk + data_long$Oi_lk)),by=list(data_long$Rt),sum)
+    f <- which( temp[,2] == (t_window*n_loc) )
+    res$theta_R[,f] <- NA
+    res$theta_R_thinned[,f] <- NA
+  }else{
+    temp <- aggregate((is.na(data_long$Inc_lk + data_long$Oi_lk)),by=list(data_long$Rt),sum)
+    f <- which( temp[,2] == t_window )
+    res$theta_R[,f] <- NA
+    res$theta_R_thinned[,f] <- NA
+  }
+  
+
   return(res)
 }

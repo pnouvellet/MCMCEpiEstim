@@ -4,14 +4,14 @@
 \alias{fct_EpiEstim}
 \title{epiestim wrap}
 \usage{
-fct_EpiEstim(I0, I, t_window, mean_prior, std_prior, si, overlap)
+fct_EpiEstim(I0_t_import, I, t_window, mean_prior, std_prior, si, overlap)
 }
 \arguments{
-\item{I0}{matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples}
+\item{I0_t_import}{which of the initial incidence is imported}
 
-\item{I}{matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples}
+\item{I}{dataframe of incidence. ncol: nb of location +1 (time), nrow: time}
 
-\item{t_window}{matrix, samples of posterior distribution. ncol: nb parameters, nrow: nb samples}
+\item{t_window}{integer, time window}
 
 \item{mean_prior}{single real number, mean prior for Rts}
 

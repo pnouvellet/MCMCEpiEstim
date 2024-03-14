@@ -43,7 +43,7 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                               mean_prior, std_prior,
                               res_EpiEstim, overdispersion = FALSE, 
                               rep, thin = 10, param_agg = FALSE, Rt0_epiEstim = TRUE, 
-                              p_reps = 1, overlap = FALSE){
+                              p_reps = 1, overlap = FALSE, input = NULL){
   
   #
   prior <- epitrix::gamma_mucv2shapescale(mu = mean_prior, cv = std_prior/mean_prior)
@@ -138,6 +138,13 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
     res$theta_R_thinned[,f] <- NA
   }
   
+  if (!is.null(input)){
+    res$input_simulation <-  input
+  }
+  res$input_MCMC <- list(I0_t_import = I0_t_import, t_window, mean_prior, std_prior,
+                         res_EpiEstim, overdispersion = overdispersion, 
+                         rep = rep, thin = thin, param_agg = param_agg, Rt0_epiEstim = Rt0_epiEstim, 
+                         p_reps = p_reps, overlap = overlap)
 
   return(res)
 }

@@ -117,11 +117,16 @@ for(i in 1:sim$input$n_locations){
 ```{r}
 
 rep <- 1e4
-res_MCMC_EpiEstim_1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_obs, 
-                                              t_window = t_window,
-                                             mean_prior = mean_prior, std_prior = std_prior,
-                                             res_EpiEstim = res_EpiEstim, overdispersion = TRUE, 
-                                             rep = rep, thin = 10, param_agg = TRUE, p_reps = 1,overlap = FALSE)
+# if truncation happen, put it here!
+I_trunc <- MCMCEpiEstim::truncate_incidence(I0_t_import = sim$I0$timespan, I = sim$res$I_obs, 
+                                            t_window = t_window, incidence_truncate = 1e3, t_truncate = 6 )
+
+res_MCMC_EpiEstim_1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I= I_trunc, # I = sim$res$I_obs, # 
+                                         t_window = t_window,
+                                         mean_prior = mean_prior, std_prior = std_prior,
+                                         res_EpiEstim = res_EpiEstim, overdispersion = TRUE, 
+                                         rep = rep, thin = 10, param_agg = TRUE, p_reps = 1,overlap = FALSE,
+                                         input = input)
 
 res_MCMC_EpiEstim_2 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_obs, 
                                               t_window = t_window,

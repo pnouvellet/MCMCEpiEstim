@@ -95,6 +95,7 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
   Oi <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Oi')),  ncol = n_loc, byrow = FALSE)
   Oi <- Oi[1:tail(t_end,1),]
   Oi[Oi==0] <- NA
+  Oi <- as.matrix(Oi)
   idx_inc <- c(apply(cbind(t_start,t_end), 1,f1_idx_inc))
   
   if(param_agg){

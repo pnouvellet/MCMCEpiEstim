@@ -2,7 +2,7 @@
 % Please edit documentation in R/fct_EpiEstim.R
 \name{fct_EpiEstim}
 \alias{fct_EpiEstim}
-\title{epiestim wrap}
+\title{EpiEstim wrapper}
 \usage{
 fct_EpiEstim(I0_t_import, I, t_window, mean_prior, std_prior, si, overlap)
 }
@@ -21,11 +21,20 @@ fct_EpiEstim(I0_t_import, I, t_window, mean_prior, std_prior, si, overlap)
 
 \item{overlap}{TRUE/FALSE, whether using overlapping time window or not}
 }
+\value{
+A list composed of 1 data.frame per location summarizing daily time, 
+daily incidence (full incidence time series, including the imported cases for seeding), 
+daily overall infectivity,the start and end of the time windows associated with 
+the estimated mean/std deviation/median and
+95% CI lower and upper quantile for Rts 
+(i.e. Mean(R)", "Std(R)", "Quantile.0.025(R)", "Median(R)", "Quantile.0.975(R)").
+If no overlapping windows is used, the entries for t_start/t_end and estimated Rt characteristics are only given 
+when 't' is the end of the time window.
+}
 \description{
-wrapper to call EpiEstim independently on multiple locations
+Wrapper to call EpiEstim independently on multiple locations.
 }
 \details{
-res, list of 1 dataframe per location summarising incidence, time, overall infectivity,
-             time window start and end date, estimated mean/std deviation/median and
-              95% CI lower and upper quantile for Rts
+Use EpiEstim independently on each location to estimate Rts without
+ accounting for overdispersion, nor under-reporting.
 }

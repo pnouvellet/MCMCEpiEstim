@@ -17,7 +17,8 @@ fct_MCMC_EpiEstim(
   param_agg = FALSE,
   Rt0_epiEstim = TRUE,
   p_reps = 1,
-  overlap = FALSE
+  overlap = FALSE,
+  input = NULL
 )
 }
 \arguments{

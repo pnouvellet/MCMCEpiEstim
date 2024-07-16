@@ -25,6 +25,7 @@ would be longer (1 more value) than Rt as it would be specifying in the reportin
 the simulation.
 In one of our application, we first specify Rt and then then simulate reporting with a single time-step change 
 in reporting:
+
 t_change_p <- input$t_pi_change*input$step+1
 
 Pi_t <- data.frame(t = c(Rt$t,tail(Rt$t,1)+1),
@@ -44,13 +45,13 @@ $$ E[X] = \mu $$ and $$ Var[X] = \mu + frac{\mu^2}{\delta} $$.}
 \value{
 A list containing 2 data.frames of time ($t) and daily incidence values at each location 
 ($simX, with X an integer for each location). 
-the first data.frame, I_true contain the 'true' incidence, while the second, I_obs contains the 'observed'
+The first data.frame, I_true, contains the 'true' incidence, while the second, I_obs, contains the 'observed'
 incidence once under-reporting is accounted for.
 }
 \description{
 wrapper for projection with/without overdispersion and with under-reporting
 }
 \details{
-Simulate incidence using the package 'projection', with a time-varying Rt, the possibility
+Simulate incidence using the package 'projection', with a time-varying Rt, The possibility
 to specify the presence of overdispersion and the presence of under-reporting of cases.
 }

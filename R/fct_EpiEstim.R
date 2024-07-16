@@ -61,8 +61,15 @@ fct_EpiEstim <- function(I0_t_import , I , t_window,
     d_incidence <- data.frame(t = I[,1],
                               incidence = I[,i+1])
     # overall Infectivity
-    d_incidence$Oi <- EpiEstim::overall_infectivity(incid = d_incidence$incidence, ## issue here when NAs present
-                                         si_distr = si)
+    f_incidence_nonNA <- which(!is.na(d_incidence$incidence))
+    d_incidence$incidence[-f_incidence_nonNA] <- 0
+    d_incidence$Oi <- 0
+    
+    d_incidence$Oi[f_incidence_nonNA] <- EpiEstim::overall_infectivity(incid = d_incidence$incidence[f_incidence_nonNA], ## issue here when NAs present
+                                                                       si_distr = si)
+    
+    # d_incidence$Oi <- EpiEstim::overall_infectivity(incid = d_incidence$incidence, ## issue here when NAs present
+    #                                      si_distr = si)
     d_incidence$Oi[1:I0_t_import] <- NA
     f_0 <- which(d_incidence$Oi == 0)
     

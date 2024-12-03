@@ -167,8 +167,7 @@ check turncations
 I_trunc <- truncate_incidence(I0_t_import = sim$I0$timespan , 
                              I = sim$res$I_true ,
                              t_window = t_window,
-                             t_truncate = 8, 
-                             incidence_truncate = 1e4)
+                             incidence_truncate = 1e5)
 
 
 
@@ -181,7 +180,7 @@ res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan ,
                                               overdispersion = FALSE, 
                                               rep = rep, 
                                               thin = 10, 
-                                              param_agg = FALSE, 
+                                              param_agg = TRUE, 
                                               p_reps = 1,
                                               overlap = FALSE)
 
@@ -204,6 +203,7 @@ dics <- data.frame(model = c('Pois1','Pois2','NB1','NB2'),
                            res_MCMC_EpiEstim_NB1$DIC[1],
                            res_MCMC_EpiEstim_NB2$DIC[1]))
 dics
+res_MCMC_EpiEstim_NB1$DIC
 ```
 
 
@@ -237,7 +237,7 @@ plot(res_MCMC_EpiEstim_NB1$theta_over ,
 
 lines(res_MCMC_EpiEstim_NB2$theta_over,col = 'red3',type = 'p',pch = 12)
 
-quantile(res_MCMC_EpiEstim_NB1$theta_over, c(.5,.025,.975))
+quantile(res_MCMC_EpiEstim_NB1$theta_over_thinned, c(.5,.025,.975))
 quantile(res_MCMC_EpiEstim_NB2$theta_over, c(.5,.025,.975))
 
 ```

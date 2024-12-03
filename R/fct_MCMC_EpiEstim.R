@@ -45,6 +45,7 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                               rep, thin = 10, param_agg = FALSE, Rt0_epiEstim = TRUE, 
                               p_reps = 1, overlap = FALSE, input = NULL){
   
+  set.seed(1)
   #
   prior <- epitrix::gamma_mucv2shapescale(mu = mean_prior, cv = std_prior/mean_prior)
   t_max <- nrow(I)

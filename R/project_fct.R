@@ -57,7 +57,7 @@ project_fct <- function(I0, Rt, n_loc, t_max, si, p,
   I <- as.data.frame(matrix(NA,ncol = n_loc+1, nrow = t_max+1))
   names(I) <- c('t',paste0('sim',1:n_loc))
   I$t <- 1:(t_max+1)
-  
+  set.seed(1)
   # project
   if (model == 'poisson'){
     temp <- as.data.frame(project(x = I0,

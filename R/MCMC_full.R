@@ -130,8 +130,13 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
   }
   spl1 <- tmp_par[seq_len(floor(nrow(tmp_par) / 2)), ]
   spl2 <- tmp_par[seq(ceiling(nrow(tmp_par) / 2) + 1, nrow(tmp_par)), ]
-  res$GRD <- gelman.diag(as.mcmc.list(list(as.mcmc(spl1), as.mcmc(spl2)))) 
-  res$ESS <- effectiveSize(tmp_par)
+  # res$GRD <- gelman.diag(as.mcmc.list(list(as.mcmc(spl1), as.mcmc(spl2)))) 
+  # res$ESS <- effectiveSize(tmp_par)
+  
+  res$GRD <- NA
+  res$ESS <- NA
+  
+  
   
   ess_names <- unlist(sapply(non_thinned_pars, function(i) 
   {

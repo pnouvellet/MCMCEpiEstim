@@ -29,7 +29,7 @@
 #' 
 
 MCMC_iter <- function(iter,theta0,s, data_long, n_loc, n_tw, t_window, prior, 
-                      overdispersion, param_agg = FALSE, p_reps, mean_k_prior = 1e3){
+                      overdispersion, param_agg = FALSE, p_reps, mean_k_prior){
   
   # parameters
   n_param <- data.frame(Rt = length(theta0$Rts),

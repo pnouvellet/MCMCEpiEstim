@@ -43,7 +43,7 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                               mean_prior, std_prior,
                               res_EpiEstim, overdispersion = FALSE, 
                               rep, thin = 10, param_agg = FALSE, Rt0_epiEstim = TRUE, 
-                              p_reps = 1, overlap = FALSE, input = NULL){
+                              p_reps = 1, overlap = FALSE, input = NULL, mean_k_prior = 1e3){
   
   set.seed(1)
   #
@@ -123,7 +123,8 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                    repli_adapt = 10, within_iter = rep/10,
                    data_long = data_long, n_loc = n_loc, n_tw = n_tw, 
                    t_window = t_window, prior = prior, 
-                   overdispersion = overdispersion, thin = thin, param_agg, p_reps )
+                   overdispersion = overdispersion, thin = thin, param_agg, 
+                   p_reps , mean_k_prior)
   res$I <- I
   
 

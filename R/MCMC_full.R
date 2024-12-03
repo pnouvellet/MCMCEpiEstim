@@ -41,7 +41,8 @@
 #' 
 
 MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
-                      n_loc, n_tw, t_window, prior, overdispersion, thin, param_agg = FALSE, p_reps ){
+                      n_loc, n_tw, t_window, prior, overdispersion, thin, 
+                      param_agg = FALSE, p_reps, mean_k_prior ){
   
   rep <- repli_adapt*within_iter
   # # initialise likelihood
@@ -56,7 +57,8 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
                        theta0 = theta0,
                        sigma = s,
                        data_long = data_long, n_loc = n_loc, n_tw = n_tw, 
-                       t_window = t_window, prior = prior, overdispersion = overdispersion, param_agg, p_reps)
+                       t_window = t_window, prior = prior, overdispersion = overdispersion,
+                       param_agg, p_reps, mean_k_prior)
   # adaptive tuning bit: we run an MCMC with rep/10 iterations, then
   # adjust the proposal variance to reach 0.2
   # do again using parameter value from the last iteration of the previous MCMC
@@ -75,7 +77,9 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
                    theta0 = res0$theta0, 
                    s = res0$sigma, 
                    data_long = data_long, n_loc = n_loc, n_tw = n_tw, 
-                   t_window = t_window, prior = prior, overdispersion = overdispersion, param_agg, p_reps)
+                   t_window = t_window, prior = prior, 
+                   overdispersion = overdispersion, 
+                   param_agg, p_reps, mean_k_prior)
   
   # thinning
   res$theta_R_thinned <- res$theta_R[seq(1, rep, by = thin),]

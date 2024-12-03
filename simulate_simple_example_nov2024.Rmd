@@ -53,6 +53,7 @@ input$k <- .1
 # input$k <- 1e4
 input$pi <- 1 
 input$n_locations <- 50
+input$I0 <- 10
 
 I0 <- incidence::as.incidence(x = input$I0, dates = 1, interval = 1)
 

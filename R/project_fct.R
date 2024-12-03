@@ -52,12 +52,14 @@
 #' 
 
 project_fct <- function(I0, Rt, n_loc, t_max, si, p,
-                        model = 'poisson',over = NULL){
+                        model = 'poisson',over = NULL, k.seed = NULL){
   
   I <- as.data.frame(matrix(NA,ncol = n_loc+1, nrow = t_max+1))
   names(I) <- c('t',paste0('sim',1:n_loc))
   I$t <- 1:(t_max+1)
-  set.seed(1)
+  if(!is.null(k.seed)){
+    set.seed(k.seed)
+  }
   # project
   if (model == 'poisson'){
     temp <- as.data.frame(project(x = I0,

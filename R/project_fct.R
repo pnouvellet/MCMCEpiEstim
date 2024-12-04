@@ -59,7 +59,8 @@ project_fct <- function(I0, Rt, n_loc, t_max, si, p,
     set.seed(k.seed)
   }
   
-  I_obs_final <- I_true_final <- NA
+  I_obs_final <- I_true_final <- as.data.frame(matrix(1:(t_max+1),
+                                                      ncol = 1, nrow = t_max+1))
   n_loc_above <- 0
   
   while(n_loc_above < n_loc){
@@ -119,8 +120,10 @@ project_fct <- function(I0, Rt, n_loc, t_max, si, p,
     n_loc_above <- ncol(I_obs_final)
   }
     
-  I_obs_final <- cbind(I_obs[,1], I_obs_final[,1:n_loc])
-  I_true_final <- cbind(I[,1], I_true_final[,1:n_loc])
+  I_obs_final <-  I_obs_final[,1:(n_loc+1)]
+  I_true_final <- I_true_final[,1:(n_loc+1)]
+  names(I_obs_final) <- c('t',paste('sim',1:n_loc))
+  names(I_true_final) <- c('t',paste('sim',1:n_loc))
   
   return(list(I_true = I_true_final, I_obs = I_obs_final))
   

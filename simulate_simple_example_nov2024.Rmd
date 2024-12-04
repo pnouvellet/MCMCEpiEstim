@@ -48,11 +48,11 @@ i=57
 input <- Scenarios[i,]
 
 input$R_min <- 0.5
-input$R_max <- 3
+input$R_max <- 2
 input$k <- .1
 # input$k <- 1e4
 input$pi <- 1 
-input$n_locations <- 50
+input$n_locations <- 10
 input$I0 <- 10
 
 I0 <- incidence::as.incidence(x = input$I0, dates = 1, interval = 1)
@@ -66,7 +66,9 @@ res <- MCMCEpiEstim::project_fct(I0 = I0,
                                  si = si,
                                  p = input$pi,
                                  model = 'negbin',
-                                 over = input$k)
+                                 over = input$k,
+                                 k.seed = 1,
+                                 threshold_cumCase = 10)
 
 
 sim <- list(input = input, I0 = I0, Rt = Rt, res = res)
@@ -76,7 +78,8 @@ matplot((sim$res$I_true[,-1]))
 matplot((sim$res$I_obs[,-1]))
 input
   
-colSums(sim$res$I_true)
+
+colSums(sim$res$I_obs)
 ```
 
 

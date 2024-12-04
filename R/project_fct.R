@@ -111,8 +111,8 @@ project_fct <- function(I0, Rt, n_loc, t_max, si, p,
       f_CumCase_above <- which(colSums(I_obs[-1,-1]) > threshold_cumCase)
     }
     
-    I_obs <- I_obs[,f_CumCase_above]
-    I <- I[,f_CumCase_above]
+    I_obs[,-1] <- I_obs[,f_CumCase_above+1]
+    I[,-1] <- I[,f_CumCase_above+1]
     
     I_obs_final <- cbind(I_obs_final, I_obs[,-1])
     I_true_final <- cbind(I_true_final, I[,-1])

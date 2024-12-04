@@ -63,7 +63,7 @@ project_fct <- function(I0, Rt, n_loc, t_max, si, p,
                                                       ncol = 1, nrow = t_max+1))
   n_loc_above <- 0
   
-  while(n_loc_above < n_loc){
+  while(n_loc_above < n_loc + 1 ){
     I <- as.data.frame(matrix(NA,ncol = n_loc+1, nrow = t_max+1))
     names(I) <- c('t',paste0('sim',1:n_loc))
     I$t <- 1:(t_max+1)

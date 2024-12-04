@@ -95,12 +95,14 @@ project_fct <- function(I0, Rt, n_loc, t_max, si, p,
     I_obs <- I
     
     if(length(p)>1){
-      p <- p$pi
+      p_value <- p$pi
+    } else{
+      p_value <- p
     }
     
     temp <- matrix(rbinom(n = (t_max+nrow(I0))*n_loc,
                           size = as.matrix(I[,-1]),
-                          prob = matrix(p,nrow = t_max+nrow(I0),ncol = n_loc,byrow = FALSE) ),
+                          prob = matrix(p_value,nrow = t_max+nrow(I0),ncol = n_loc,byrow = FALSE) ),
                    nrow = t_max+nrow(I0),ncol = n_loc,byrow = FALSE)
     
     I_obs[,-1] <- temp

@@ -83,7 +83,7 @@ MCMC_iter <- function(iter,theta0,s, data_long, n_loc, n_tw, t_window, prior,
       # propose new overdispersion
       theta_s <- theta0
       theta_s$Over <- theta_s$Over*exp(s$Over*rnorm(n = 1, mean = 0, sd = 1) )
-      if(theta_s$Over>1e3) theta_s$Over <- theta0$Over 
+      # if(theta_s$Over>1e3) theta_s$Over <- theta0$Over 
       
       # get the log-likelihood (minus constant bits)
       logL_s <- Like1(theta = theta_s, data_long = data_long, 
@@ -98,7 +98,7 @@ MCMC_iter <- function(iter,theta0,s, data_long, n_loc, n_tw, t_window, prior,
       # corr_prior <- 1
       
       # get ratio of likelihood corrected for priors and proposal
-      r <- exp(sum(logL_s)-sum(logL_0))*theta_s$Over/theta0$Over * exp(corr_prior)  
+      r <- exp(sum(logL_s) - sum(logL_0) + corr_prior)*theta_s$Over/theta0$Over 
       
       # if accepted replace Rt and likelihood
       if(runif(n = 1, min = 0, max = 1) <= r){

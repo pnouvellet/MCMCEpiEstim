@@ -42,46 +42,239 @@ Scenarios <- as.data.frame(readxl::read_xlsx('../overdispersion-epidemic-data/ov
                                sheet = 1, range = 'A1:K60'))
 si <- c(0,1)
 
-i=57
+i=2
 
 # print(i)
 input <- Scenarios[i,]
 
-input$R_min <- 0.5
-input$R_max <- 2
-input$k <- .1
-# input$k <- 1e4
-input$pi <- 1 
-input$n_locations <- 10
-input$I0 <- 10
+# input$R_min <- 0.5
+# input$R_max <- 3
+# input$k <- .1
+# # input$k <- 1e4
+# input$pi <- 1 
+# input$n_locations <- 1
+# input$I0 <- 10
 
 I0 <- incidence::as.incidence(x = input$I0, dates = 1, interval = 1)
 
 Rt <- MCMCEpiEstim::Rt_linear(inp = input)
 
-res <- MCMCEpiEstim::project_fct(I0 = I0,
+t_change_p <- input$t_pi_change*input$step+1
+  if(is.na(t_change_p)){
+    Pi_t <- data.frame(t = c(Rt$t,tail(Rt$t,1)+1),
+                       pi = input$pi )
+  }else{
+    
+    Pi_t <- data.frame(t = c(Rt$t,tail(Rt$t,1)+1),
+                       pi = c(rep(input$pi,t_change_p),
+                              rep(input$pi2, nrow(Rt)+1-t_change_p )) )
+  }
+
+res <- list()
+
+for(k in 1:100)
+{
+  res[[k]] <- MCMCEpiEstim::project_fct(I0 = I0,
                                  Rt = Rt,
                                  n_loc = input$n_locations,
                                  t_max = nrow(Rt),
                                  si = si,
-                                 p = input$pi,
+                                 p = Pi_t,
                                  model = 'negbin',
                                  over = input$k,
-                                 k.seed = 1,
+                                 k.seed = k,
                                  threshold_cumCase = 10)
+}
+
 
 
 sim <- list(input = input, I0 = I0, Rt = Rt, res = res)
 
 
-matplot((sim$res$I_true[,-1]))
-matplot((sim$res$I_obs[,-1]))
+matplot((sim$res[[1]]$I_true[,-1]))
+matplot((sim$res[[1]]$I_obs[,-1]))
 input
   
 
-colSums(sim$res$I_obs)
+colSums(sim$res[[1]]$I_obs)
 ```
 
+```{r}
+# parameters
+# for EpiEstim
+t_window <- 7
+mean_prior <- 5
+std_prior <- 5
+
+  replication_sc <- length(sim$res)
+  input <- Scenarios[i,]
+
+  res_EpiEstim <- list()
+  res_MCMC_EpiEstim_Poiss1 <- list()
+  res_MCMC_EpiEstim_NB1 <- list()
+
+for(k in 1:replication_sc){
+  # k=1
+    print(k)
+    # if truncation temporal or using max I, put it here
+    I <- MCMCEpiEstim::truncate_incidence(I0_t_import = sim$I0$timespan,
+                                          I = sim$res[[k]]$I_obs,
+                                          t_window = t_window,
+                                          incidence_truncate = 1e5)
+    
+    res_EpiEstim[[k]] <- fct_EpiEstim(I0_t_import = sim$I0$timespan,
+                                      I = I ,
+                                      t_window = t_window, 
+                                      mean_prior = mean_prior, std_prior = std_prior,
+                                      si = si, overlap = FALSE)
+    
+    
+    
+    ## Run MCMCEpiEstim 
+    rep <- 1e3
+    
+    ## Poisson
+    
+    res_MCMC_EpiEstim_Poiss1[[k]] <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan,
+                                                       I = sim$res[[k]]$I_obs, #I_true ,
+                                                       t_window = t_window,
+                                                       mean_prior = mean_prior,
+                                                       std_prior = std_prior,
+                                                       res_EpiEstim = res_EpiEstim[[k]],
+                                                       overdispersion = FALSE, 
+                                                       rep = rep, 
+                                                       thin = 10, 
+                                                       param_agg = TRUE, 
+                                                       p_reps = Pi_t)
+    
+    ## NB
+    
+    res_MCMC_EpiEstim_NB1[[k]] <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , 
+                                                    I = sim$res[[k]]$I_obs, #I_true  ,
+                                                    t_window = t_window,
+                                                    mean_prior = mean_prior, 
+                                                    std_prior = std_prior,
+                                                    res_EpiEstim = res_EpiEstim[[k]], 
+                                                    overdispersion = TRUE,
+                                                    rep = rep, 
+                                                    thin = 10, 
+                                                    param_agg = TRUE, 
+                                                    p_reps = 1)
+    
+    
+    ## DICs
+    
+    dics <- data.frame(model = c('Pois1','NB1'),
+                       DIC = c(res_MCMC_EpiEstim_Poiss1[[k]]$DIC[1],
+                               res_MCMC_EpiEstim_NB1[[k]]$DIC[1]) )
+  }
+  
+  # here keep track if poisson or neg binomial is better
+  
+  res <- list(input = input,
+              res_EpiEstim = res_EpiEstim,
+              res_MCMC_EpiEstim_Poiss1 = res_MCMC_EpiEstim_Poiss1,
+              res_MCMC_EpiEstim_NB1 = res_MCMC_EpiEstim_NB1 )
+  
+```
+
+```{r}
+summary_performance <- function(x) {
+  coverage_k <- sum(x$within_CI_k, na.rm = TRUE) / sum(!is.na(x$within_CI_k))
+  coverage_R <- sum(x$within_CI_Rt, na.rm = TRUE) / sum(!is.na(x$within_CI_Rt))
+  summary_bias_k <- summary(x$bias_k, na.rm = TRUE)
+  summary_bias_R <- summary(as.vector(x$bias_R), na.rm = TRUE)
+  res <- list(cov_k = coverage_k,
+              cov_R = coverage_R,
+              bias_k = summary_bias_k,
+              bias_R = summary_bias_R)
+  return(res)
+}
+
+performance_metric_fct <- function(replication_sc, res, sim){
+  
+  performance_metric <- list(bias_k = rep(NA,replication_sc) ,
+                             bias_Rt = matrix(NA,nrow = replication_sc, 
+                                              ncol = ncol(res$res_MCMC_EpiEstim_Poiss1[[1]]$theta_R) ),
+                             within_CI_k = rep(NA,replication_sc) ,
+                             within_CI_Rt = matrix(NA,nrow = replication_sc, 
+                                                   ncol = ncol(res$res_MCMC_EpiEstim_Poiss1[[1]]$theta_R) ) )
+  
+  k_true <- res$input$k
+  Rt_true <- sim$Rt$Rt[seq(1, nrow(sim$Rt), by = t_window)]
+  for(j in 1:replication_sc){
+    if(sum_model$Meet_threshold[j]){
+      best_model_output <- res[[ sum_model$best_model[j] ]][[j]]
+      if(sum_model$best_model[j] == 'res_MCMC_EpiEstim_NB1'){
+        performance_metric$bias_k[j] <- mean(best_model_output$theta_over_thinned - k_true)
+        
+        q_k <- quantile(best_model_output$theta_over_thinned, c(.025,.975))
+        performance_metric$within_CI_k[j] <- ((q_k[1] <= k_true) & (q_k[2] >= k_true))
+      }
+      # Rt performance_metric and within CI
+      performance_metric$bias_Rt[j,] <- apply(best_model_output$theta_R_thinned,2,mean) - Rt_true
+      q_Rt <- apply(best_model_output$theta_R_thinned,2,quantile, c(.025,.975),na.rm = TRUE)
+      performance_metric$within_CI_Rt[j,] <- ((q_Rt[1,] <= Rt_true) & (q_Rt[2,] >= Rt_true))
+      
+    }
+  }
+  return(performance_metric)
+}
+
+process_estimate <- function(res, threshold_case){
+  # browser()
+  # 
+
+  replication_sc <- length(res$res_MCMC_EpiEstim_Poiss1)
+  sum_model <- data.frame(DIC_Pois1 = rep(NA,replication_sc),
+                     DIC_NB1= rep(NA,replication_sc),
+                     N_cases = NA,
+                     Meet_threshold = NA,
+                     best_model = NA)
+  for(k in 1:replication_sc){
+    sum_model$N_cases[k] <- sum(res$res_EpiEstim[[k]][[1]]$incidence)
+    sum_model$Meet_threshold[k] <-  sum_model$N_cases[k] >= threshold_case
+    if(sum_model$Meet_threshold[k]){
+      sum_model$DIC_Pois1[k] <-  res$res_MCMC_EpiEstim_Poiss1[[k]]$DIC[1]
+      sum_model$DIC_NB1[k] <- res$res_MCMC_EpiEstim_NB1[[k]]$DIC[1] 
+      if(sum_model$DIC_Pois1[k] > sum_model$DIC_NB1[k]){
+        sum_model$best_model[k] <- 'res_MCMC_EpiEstim_NB1'
+      }else{
+        sum_model$best_model[k] <- 'res_MCMC_EpiEstim_Poiss1'
+      }
+    }
+  }
+  
+  return(sum_model)
+  
+}
+
+model_selection_summary <- function(sum_model){
+  # browser()
+  prop_NB <- mean(sum_model$DIC_Pois1>sum_model$DIC_NB1,na.rm=TRUE)
+  N_meet_threshold <- sum(!is.na(sum_model$DIC_Pois1))
+  f_meet_threshold <- which(sum_model$Meet_threshold)
+  
+  outbreak_size_stats <- quantile(sum_model$N_cases[f_meet_threshold],c(.5,0,1))
+  
+  return(list(outbreak_size_stats = outbreak_size_stats,
+              N_meet_threshold = N_meet_threshold,
+              prop_NB = prop_NB  ))
+}
+
+ 
+```
+
+```{r}
+sum_model    <- process_estimate(res = res, threshold_case = 10)
+  m_sel        <- model_selection_summary(sum_model = sum_model)
+  input_params <- Scenarios[Scenarios$Scenario==i,]
+
+ performance_metric <- performance_metric_fct(replication_sc, res, sim)
+  sp                 <- summary_performance(performance_metric)
+  
+  sp
+```
 
 
 ```{r}

@@ -92,7 +92,7 @@ MCMC_iter <- function(iter,theta0,s, data_long, n_loc, n_tw, t_window, prior,
       # correct log-likelihood for prior of overdisp. (1/k~exp(mu_v)) assume mu_v=1/100: Poisson-like
       # corr_prior <- 2*log(theta0$Over/theta_s$Over) - 1 *(1/theta_s$Over - 1/theta0$Over)
       # exponential prior
-      corr_prior <- mean_k_prior*(theta_s$Over-theta0$Over)
+      corr_prior <- (theta0$Over-theta_s$Over)/mean_k_prior
       
       
       # corr_prior <- 1

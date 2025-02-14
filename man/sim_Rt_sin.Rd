@@ -2,7 +2,7 @@
 % Please edit documentation in R/sim_Rt_sin.R
 \name{sim_Rt_sin}
 \alias{sim_Rt_sin}
-\title{simulate}
+\title{Simulate Rt}
 \usage{
 sim_Rt_sin(a, period, m, t_max, t_start)
 }
@@ -17,9 +17,9 @@ sim_Rt_sin(a, period, m, t_max, t_start)
 
 \item{t_start}{starting time for simulation of Rt}
 }
-\description{
-simulate sinusoidal Rt
+\value{
+return data frame with 2 columns for time (\code{t}) and the Rt (\code{$Rt})
 }
-\details{
-return dataframe with Rt and time
+\description{
+simulate a sinusoidal Rt over time
 }

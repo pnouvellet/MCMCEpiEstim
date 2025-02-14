@@ -15,7 +15,8 @@ MCMC_iter(
   prior,
   overdispersion,
   param_agg = FALSE,
-  p_reps
+  p_reps,
+  mean_k_prior
 )
 }
 \arguments{

@@ -1,6 +1,6 @@
-#' simulate
+#' Simulate Rt
 #'
-#' simulate sinusoidal Rt
+#' simulate a sinusoidal Rt over time
 #' 
 #' @param a amplitude of the wave
 #' 
@@ -13,7 +13,7 @@
 #' @param t_max end time
 #'                   
 #' 
-#' @details return dataframe with Rt and time
+#' @return return data frame with 2 columns for time (\code{t}) and the Rt (\code{$Rt})
 #' 
 #' @export
 #' 

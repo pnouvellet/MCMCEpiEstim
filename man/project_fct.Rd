@@ -4,7 +4,18 @@
 \alias{project_fct}
 \title{project}
 \usage{
-project_fct(I0, Rt, n_loc, t_max, si, p, model = "poisson", over = NULL)
+project_fct(
+  I0,
+  Rt,
+  n_loc,
+  t_max,
+  si,
+  p,
+  model = "poisson",
+  over = NULL,
+  k.seed = NULL,
+  threshold_cumCase = NULL
+)
 }
 \arguments{
 \item{I0}{an incidence object, specifying the initial incidence. 

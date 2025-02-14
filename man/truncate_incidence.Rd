@@ -13,10 +13,16 @@ truncate_incidence(
 )
 }
 \arguments{
-\item{t_truncate}{integer, truncate incidence after t_truncate* t_window days}
+\item{I0_t_import}{integer, which of the initial incidence is imported.}
+
+\item{I}{data.frame of incidence. ncol: number of locations +1 (\code{$time}), nrow: time}
+
+\item{t_window}{integer, time window during which Rt is assumed constant.}
+
+\item{t_truncate}{integer, truncate incidence after \code{t_truncate* t_window days + I0_t_import}.}
 
 \item{incidence_truncate}{integer, set incidence at NA for all time windows after which
-'incidence_truncate' daily cases are reached}
+'incidence_truncate' daily cases are reached.}
 }
 \value{
 A data.frame similar to the input incidence but with truncation applied.

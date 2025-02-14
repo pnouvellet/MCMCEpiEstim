@@ -27,7 +27,7 @@
 adapt_tuning <- function(repli, within_iter, theta0, sigma, 
                          data_long, n_loc, n_tw, t_window, prior, 
                          overdispersion, param_agg = FALSE , p_reps,
-                         mean_k_prior ){
+                         mean_k_prior, k_upper_limit ){
   
   new_sigma <- sigma
   for (i in 1:repli){
@@ -38,7 +38,7 @@ adapt_tuning <- function(repli, within_iter, theta0, sigma,
     res <- MCMC_iter(iter = within_iter, theta0 = theta0, s = new_sigma, 
                      data_long = data_long, n_loc = n_loc, n_tw = n_tw,
                      t_window = t_window, prior = prior, overdispersion = overdispersion, 
-                     param_agg, p_reps, mean_k_prior )
+                     param_agg, p_reps, mean_k_prior, k_upper_limit )
     
     # colSums(diff(res$theta)!=0)/(within_iter-1) 
     # tune the variance according to accpetance

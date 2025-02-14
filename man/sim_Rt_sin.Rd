@@ -18,7 +18,7 @@ sim_Rt_sin(a, period, m, t_max, t_start)
 \item{t_start}{starting time for simulation of Rt}
 }
 \value{
-return data frame with 2 columns for time (\code{t}) and the Rt (\code{$Rt})
+Return data frame with 2 columns for time (\code{t}) and the Rt (\code{$Rt})
 }
 \description{
 simulate a sinusoidal Rt over time

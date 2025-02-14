@@ -134,38 +134,38 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
   }
   spl1 <- tmp_par[seq_len(floor(nrow(tmp_par) / 2)), ]
   spl2 <- tmp_par[seq(ceiling(nrow(tmp_par) / 2) + 1, nrow(tmp_par)), ]
-  # res$GRD <- gelman.diag(as.mcmc.list(list(as.mcmc(spl1), as.mcmc(spl2)))) 
-  # res$ESS <- effectiveSize(tmp_par)
+  res$GRD <- gelman.diag(as.mcmc.list(list(as.mcmc(spl1), as.mcmc(spl2))))
+  res$ESS <- effectiveSize(tmp_par)
   
-  res$GRD <- NA
-  res$ESS <- NA
+  # res$GRD <- NA
+  # res$ESS <- NA
   
   
   
-  # ess_names <- unlist(sapply(non_thinned_pars, function(i) 
-  # {
-  #   if(ncol(res[[i]]) > 1) {
-  #     ret <- paste(i, seq_len(ncol(res[[i]])), sep = "_")
-  #   }else{
-  #     ret <- i
-  #   }
-  # ret
-  # }))
-  # 
-  # names(res$ESS) <- ess_names
-  # 
-  # # Is any of the potential scale reduction factors >1.1 
-  # # (looking at the upper CI)?
-  # # If so this would suggest that the MCMC has not converged well.
-  # if (any(res$GRD$psrf[, "Upper C.I."] > 1.1)) {
-  #   warning("The Gelman-Rubin algorithm suggests the MCMC may not have \n
-  #     converged within the number of iterations (MCMC.burnin + n1) specified. \n
-  #     You could visualise the MCMC chain & decide whether to rerun for longer.\n")
-  #   res$GRD_converged <- FALSE
-  # } else {
-  #   cat("\nGelman-Rubin MCMC convergence diagnostic was successful.")
-  #   res$GRD_converged <- TRUE
-  # }
+  ess_names <- unlist(sapply(non_thinned_pars, function(i)
+  {
+    if(ncol(res[[i]]) > 1) {
+      ret <- paste(i, seq_len(ncol(res[[i]])), sep = "_")
+    }else{
+      ret <- i
+    }
+  ret
+  }))
+
+  names(res$ESS) <- ess_names
+
+  # Is any of the potential scale reduction factors >1.1
+  # (looking at the upper CI)?
+  # If so this would suggest that the MCMC has not converged well.
+  if (any(res$GRD$psrf[, "Upper C.I."] > 1.1)) {
+    warning("The Gelman-Rubin algorithm suggests the MCMC may not have \n
+      converged within the number of iterations (MCMC.burnin + n1) specified. \n
+      You could visualise the MCMC chain & decide whether to rerun for longer.\n")
+    res$GRD_converged <- FALSE
+  } else {
+    cat("\nGelman-Rubin MCMC convergence diagnostic was successful.")
+    res$GRD_converged <- TRUE
+  }
   
   return(res)
 }

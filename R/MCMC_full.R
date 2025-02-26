@@ -1,39 +1,58 @@
-#' MCMC full
+#' full MCMC procedure
 #'
-#' run the MCMC to sample posterior of Rts (and overdispersion) at each location + 
-#' tuning of proposal variance + DIC of model
+#' Run the MCMC to sample the posterior of Rts (and optionally overdispersion) at each location.
+#' This function is called internally by the function fct_MCMC_EpiEstim.R.
+#' This function automatically tune the proposal variances targeting a 20% aceeptance rate
+#' The function also run some diagnotics (covergence checks) and estimate the DIC of model.
 #' 
 #' 
-#' @param iter integer, the number of iteration for the MCMC
+#' @param iter integer, the number of iterations for the MCMC
 #'
-#' @param theta0 vector of inital parameters
+#' @param theta0 list of 2 vectors (for Rt and overdispersion) of inital values for parameters (set in fct_MCMC_EpiEstim.R)
 #'
-#' @param s variance of proposal distributions (log-normal) 
-#' 
+#' @param s list of 2 vectors (for Rt and overdispersion) of variances of proposal distributions (log-normal). (set in fct_MCMC_EpiEstim.R) 
+#'  
 #' @param repli_adapt number of time the variance of the proposal is tuned (10 tends to be ok)
 #' 
-#' @param within_iter iterations for evaluation of the acceptance with new proposal variances, when tuning
+#' @param within_iter iterations for evaluation of the acceptance rate with new proposal variances, when tuning
 #' 
-#' @param data_long dataframe of incidence and overall infectivities
+#' @param data_long data.frame of incidence and overall infectivities by locations in long format 
+#' (i.e. see  fct_MCMC_EpiEstim.R)
 #' 
 #' @param n_loc number of locations
 #' 
-#' @param n_tw number of time windows 
+#' @param n_tw number of time windows (set in fct_MCMC_EpiEstim.R)
 #' 
-#' @param t_window time windows
+#' @param t_window integer, time window during which Rt is assumed constant.
 #' 
-#' @param prior prior for parameters
+#' @param prior prior for Rt parameter, assume gamma distributed Rt prior with \code{$shape} and \code{$scale}
 #' 
 #' @param overdispersion TRUE or FALSE if overdispersion is assumed (Poisson vs. NB)
 #'              
-#' @param thin thinning of posterior sample
+#' @param thin thinning of posterior samples
 #' 
 #' @param param_agg TRUE or FALSE if Rts estimates are aggregated by location
 #' 
-#' @details  res a list containing matrices of: Rts posterior samples (before/after thinning), 
-#'               overdispersions posterior samples (before/after thinning),
-#'               likelihoods (before/after thinning), 
-#'               DIC for the model.
+#' @param p_reps reporting probability, either a single real (if constant) or a vector 
+#' with a value of reporting for each day. (set in fct_MCMC_EpiEstim.R)
+#' 
+#' @param mean_k_prior real, assuming k prior as an exponential distribution, mean_k_prior is the mean of the prior distribution
+#' 
+#' @param k_upper_limit TRUE or FALSE if k estimates should be bounded to 1,000 (upper limit for k)
+
+#' 
+#' @return  res a list containing matrices of: 
+#'               Rts (\code{$theta_R}) posterior samples (ncol = number of Rts estimated, nrow = number of iteration), 
+#'               overdispersions (\code{$theta_over}) posterior samples (if estimated), 
+#'               and the associated log-likelihoods (\code{$logL}).
+#'               The thinned versions of the above (\code{$theta_R_thinned}, \code{$theta_over_thinned}, \code{$logL_thinned})
+#'               DIC for the model (\code{$DIC}), with the first number being the DIC and the second being the effective number of parameters.
+#'               The Gelman and Rubin's convergence diagnostic, from the gelman.diag function (\code{$GRD}).
+#'               The effective sample size for estimating the mean, from the effectiveSize function (\code{$ESS}).
+#'               
+#'               The function evaluate convergence , based on
+#'               the upper 95%CI of potential scale reduction factors >1.1 (\code{$GRD_converged} being TRUE or FALSE).
+#'               the function outputs a warning if evidence of convergence is not reached
 #' 
 #' @importFrom coda gelman.diag
 #' 
@@ -137,12 +156,7 @@ MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
   res$GRD <- gelman.diag(as.mcmc.list(list(as.mcmc(spl1), as.mcmc(spl2))))
   res$ESS <- effectiveSize(tmp_par)
   
-  # res$GRD <- NA
-  # res$ESS <- NA
-  
-  
-  
-  ess_names <- unlist(sapply(non_thinned_pars, function(i)
+   ess_names <- unlist(sapply(non_thinned_pars, function(i)
   {
     if(ncol(res[[i]]) > 1) {
       ret <- paste(i, seq_len(ncol(res[[i]])), sep = "_")

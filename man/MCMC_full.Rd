@@ -2,7 +2,7 @@
 % Please edit documentation in R/MCMC_full.R
 \name{MCMC_full}
 \alias{MCMC_full}
-\title{MCMC full}
+\title{full MCMC procedure}
 \usage{
 MCMC_full(
   iter,
@@ -19,43 +19,62 @@ MCMC_full(
   thin,
   param_agg = FALSE,
   p_reps,
-  mean_k_prior
+  mean_k_prior,
+  k_upper_limit = TRUE
 )
 }
 \arguments{
-\item{iter}{integer, the number of iteration for the MCMC}
+\item{iter}{integer, the number of iterations for the MCMC}
 
-\item{theta0}{vector of inital parameters}
+\item{theta0}{list of 2 vectors (for Rt and overdispersion) of inital values for parameters (set in fct_MCMC_EpiEstim.R)}
 
-\item{s}{variance of proposal distributions (log-normal)}
+\item{s}{list of 2 vectors (for Rt and overdispersion) of variances of proposal distributions (log-normal). (set in fct_MCMC_EpiEstim.R)}
 
 \item{repli_adapt}{number of time the variance of the proposal is tuned (10 tends to be ok)}
 
-\item{within_iter}{iterations for evaluation of the acceptance with new proposal variances, when tuning}
+\item{within_iter}{iterations for evaluation of the acceptance rate with new proposal variances, when tuning}
 
-\item{data_long}{dataframe of incidence and overall infectivities}
+\item{data_long}{data.frame of incidence and overall infectivities by locations in long format 
+(i.e. see  fct_MCMC_EpiEstim.R)}
 
 \item{n_loc}{number of locations}
 
-\item{n_tw}{number of time windows}
+\item{n_tw}{number of time windows (set in fct_MCMC_EpiEstim.R)}
 
-\item{t_window}{time windows}
+\item{t_window}{integer, time window during which Rt is assumed constant.}
 
-\item{prior}{prior for parameters}
+\item{prior}{prior for Rt parameter, assume gamma distributed Rt prior with \code{$shape} and \code{$scale}}
 
 \item{overdispersion}{TRUE or FALSE if overdispersion is assumed (Poisson vs. NB)}
 
-\item{thin}{thinning of posterior sample}
+\item{thin}{thinning of posterior samples}
 
 \item{param_agg}{TRUE or FALSE if Rts estimates are aggregated by location}
+
+\item{p_reps}{reporting probability, either a single real (if constant) or a vector 
+with a value of reporting for each day. (set in fct_MCMC_EpiEstim.R)}
+
+\item{mean_k_prior}{real, assuming k prior as an exponential distribution, mean_k_prior is the mean of the prior distribution}
+
+\item{k_upper_limit}{TRUE or FALSE if k estimates should be bounded to 1,000 (upper limit for k)}
+}
+\value{
+res a list containing matrices of: 
+              Rts (\code{$theta_R}) posterior samples (ncol = number of Rts estimated, nrow = number of iteration), 
+              overdispersions (\code{$theta_over}) posterior samples (if estimated), 
+              and the associated log-likelihoods (\code{$logL}).
+              The thinned versions of the above (\code{$theta_R_thinned}, \code{$theta_over_thinned}, \code{$logL_thinned})
+              DIC for the model (\code{$DIC}), with the first number being the DIC and the second being the effective number of parameters.
+              The Gelman and Rubin's convergence diagnostic, from the gelman.diag function (\code{$GRD}).
+              The effective sample size for estimating the mean, from the effectiveSize function (\code{$ESS}).
+              
+              The function evaluate convergence , based on
+              the upper 95%CI of potential scale reduction factors >1.1 (\code{$GRD_converged} being TRUE or FALSE).
+              the function outputs a warning if evidence of convergence is not reached
 }
 \description{
-run the MCMC to sample posterior of Rts (and overdispersion) at each location + 
-tuning of proposal variance + DIC of model
-}
-\details{
-res a list containing matrices of: Rts posterior samples (before/after thinning), 
-              overdispersions posterior samples (before/after thinning),
-              likelihoods (before/after thinning), 
-              DIC for the model.
+Run the MCMC to sample the posterior of Rts (and optionally overdispersion) at each location.
+This function is called internally by the function fct_MCMC_EpiEstim.R.
+This function automatically tune the proposal variances targeting a 20% aceeptance rate
+The function also run some diagnotics (covergence checks) and estimate the DIC of model.
 }

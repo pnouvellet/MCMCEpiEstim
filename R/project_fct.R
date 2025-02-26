@@ -47,7 +47,7 @@
 #' to specify the presence of overdispersion and the presence of under-reporting of cases.
 #' 
 #' 
-#' @return A list containing 2 data.frames of time (\code{$t) and daily incidence values at each location 
+#' @return A list containing 2 data.frames of time (\code{$t}) and daily incidence values at each location 
 #' (\code{$simX}, with X an integer for each location). 
 #' The first data.frame, \code{$I_true}, contains the 'true' incidence, while the second, \code{$I_obs}, contains the 'observed'
 #' incidence once under-reporting is accounted for.

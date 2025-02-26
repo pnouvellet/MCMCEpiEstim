@@ -2,7 +2,7 @@
 % Please edit documentation in R/Like1.R
 \name{Like1}
 \alias{Like1}
-\title{get likelihood  for Poisson or NB offspring distribution}
+\title{Compute the likelihood  for Poisson or NB offspring distributions}
 \usage{
 Like1(
   theta,
@@ -16,24 +16,33 @@ Like1(
 )
 }
 \arguments{
-\item{data_long}{dataframe of incidence and overall infectivities}
+\item{data_long}{data.frame of incidence and overall infectivities by locations in long format 
+(i.e. see  fct_MCMC_EpiEstim.R)}
 
-\item{t_window}{time windows}
+\item{t_window}{integer, time window during which Rt is assumed constant.#'}
 
 \item{n_loc}{number of locations}
 
-\item{n_tw}{number of time windows}
+\item{n_tw}{number of time windows (set in fct_MCMC_EpiEstim.R)}
 
 \item{param_agg}{TRUE or FALSE if Rts estimates are aggregated by location}
 
 \item{overdispersion}{TRUE or FALSE if overdispersion is assumed (Poisson vs. NB)}
 
-\item{theta:}{parameters values}
+\item{p_reps}{reporting probability, either a single real (if constant) or a vector 
+with a value of reporting for each day. (set in fct_MCMC_EpiEstim.R)}
+
+\item{theta0}{list of 2 vectors (for Rt and overdispersion) of inital values for parameters (set in MCMC_iter.R)}
+}
+\value{
+logL log likelihood, a row vector of loglikelihoods. when param_agg is FALSE, 
+logL has size number of independent time windows times number of location,
+when param_agg is FALSE, logL has size number of independent time windows.
 }
 \description{
-get likelihood  
-internal to the MCMC
-}
-\details{
-L log likelihood
+This is an internal function.
+it compute the likelihood for given parameter set and the data.
+Run the MCMC to sample the posterior of Rts (and optionally overdispersion) at each location.
+this function is called internally by  MCMC_iter.R, adapt_tuning.R, and MCMC_Full.R, which is itself called in the 
+fct_MCMC_EpiEstim.R.
 }

@@ -19,38 +19,67 @@ fct_MCMC_EpiEstim(
   p_reps = 1,
   overlap = FALSE,
   input = NULL,
-  mean_k_prior = 1000
+  mean_k_prior = 1000,
+  k_upper_limit = TRUE
 )
 }
 \arguments{
 \item{I0_t_import}{which of the initial incidence is imported}
 
-\item{I}{I is a dataframe, first column are dates then incidence for all locations
-nb of row is the size of time widows, dates must be sequential}
+\item{I}{dataframe of incidence. ncol: nb of location +1 (time), nrow: time.}
 
-\item{t_window}{integer, time window}
+\item{t_window}{integer, time window during which Rt is assumed constant.}
 
-\item{mean_prior}{mean prior for Rt}
+\item{mean_prior}{single real number, mean prior for Rts.}
 
-\item{std_prior}{std deviation prior for Rt}
+\item{std_prior}{single real number, std deviation for prior for Rts.}
 
 \item{res_EpiEstim}{starting at Rts at estimate from epiestim}
 
+\item{overdispersion}{TRUE or FALSE if overdispersion is assumed (Poisson vs. NB)}
+
 \item{rep}{iterations for MCMC, rep for the final sampling, rep/10 10 times for optimisation of proposal}
 
-\item{thin}{thinning of posterior sample}
+\item{thin}{thinning of posterior samples}
 
-\item{param_agg}{iterations for evaluate the accpetance with new proposal variances}
+\item{param_agg}{TRUE or FALSE if Rts estimates are aggregated by location}
 
 \item{Rt0_epiEstim}{iterations for evaluate the accpetance with new proposal variances}
 
-\item{overdispersion:}{FALSE/TRUE, TRUE: single overdispersion across locations}
+\item{p_reps}{reporting probability, either a single real (if constant) or a vector 
+with a value of reporting for each day. (set in fct_MCMC_EpiEstim.R)}
+
+\item{overlap}{TRUE or FALSE, specify wether using overlapping sliding time windows or non-overlapping time windows.}
+
+\item{input}{Default is NULL, optional input variables used in the simulation. This is not used by the function but 
+can be appended to the results
+to keep track of the input of the incidence simulation.}
+
+\item{mean_k_prior}{real, assuming k prior as an exponential distribution, mean_k_prior is the mean of the prior distribution}
+
+\item{k_upper_limit}{TRUE or FALSE if k estimates should be bounded to 1,000 (upper limit for k)}
 }
 \description{
-run the MCMC to sample posterior of of Rts (and overdispersion) at each location, require
+run the MCMC to sample posterior of of Rts (and optionally overdispersion) at each location, require
 running first the 'fct_EpiEstim' (need to clean up input here so no duplications)
 }
 \details{
-res a list containing 2 matrices: theta: matrix of posterior samples
-                     and logL: matrix of associated log-likelihood
+res a large list summarising results:
+              Rts (\code{$theta_R}) posterior samples (ncol = number of Rts estimated, nrow = number of iteration), 
+              overdispersions (\code{$theta_over}) posterior samples (if estimated), 
+              and the associated log-likelihoods (\code{$logL}).
+              The thinned versions of the above (\code{$theta_R_thinned}, \code{$theta_over_thinned}, \code{$logL_thinned})
+              DIC for the model (\code{$DIC}), with the first number being the DIC and the second being the effective number of parameters.
+              The Gelman and Rubin's convergence diagnostic, from the gelman.diag function (\code{$GRD}).
+              The effective sample size for estimating the mean, from the effectiveSize function (\code{$ESS}).
+              
+              The function evaluate convergence , based on
+              the upper 95%CI of potential scale reduction factors >1.1 (\code{$GRD_converged} being TRUE or FALSE).
+              the function outputs a warning if evidence of convergence is not reached
+              
+              the matrix of incidence used for Rt estimatation (\code{$I})
+              
+              input used in the incidence simulation (\code{$input})
+              
+              input_MCMC, a list of input parameters for the MCMC (\code{$input})
 }

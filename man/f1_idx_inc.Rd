@@ -9,9 +9,9 @@ f1_idx_inc(x)
 \arguments{
 \item{x}{vector of 2 index integers}
 }
+\value{
+a sequence of indices betwen the first and second number
+}
 \description{
 useful for indices
-}
-\details{
-return corrected variances to decrease/increase acceptance
 }

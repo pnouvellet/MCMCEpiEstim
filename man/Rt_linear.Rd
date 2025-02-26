@@ -8,12 +8,15 @@ Rt_linear(inp, n_week = 24)
 }
 \arguments{
 \item{inp}{input, need to be a data.frame and include \code{$R_max, $R_min,
-$period, $step}: the max/min of the reproduction and the period of the 
+$period, $step}: the max/min of the reproduction, the period of the 
 pattern and duration of the step-changes (during 'step' days the Rt is constant).
-Note that the ratio of period divided
-by step should be an even integer to ensure that the Rt function is symmetrical.}
+Note: the ratio of period divided
+by step should be an even integer to ensure that the Rt function is symmetrical,
+while reaching its maximum and its minimum.}
 
-\item{n_week}{number of weeks for the simulation, default of 24 weeks}
+\item{n_week}{number of weeks for the simulation, default of 24 weeks.
+Note: the number of week divide by the period * 7 should should be an integer, to
+ensure we have complete cycles.}
 }
 \value{
 Over the period of simulation (\code{n_week}), the function provide
@@ -24,8 +27,8 @@ A data.frame of time (\code{$t}) and daily Rt values (\code{$Rt}),
 size: (\code{n_week} x 7) x 2
 }
 \description{
-Function to simulate a periodic and linearly changing Rt. the function allow 
-some stepwise change of Rt.
+Function to simulate a periodic and linearly changing Rt. The function allows 
+stepwise changes of Rt.
 }
 \examples{
 # with linear change in Rt (step = 1)

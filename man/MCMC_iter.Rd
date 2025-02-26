@@ -2,7 +2,7 @@
 % Please edit documentation in R/MCMC_iter.R
 \name{MCMC_iter}
 \alias{MCMC_iter}
-\title{MCMC iterate}
+\title{Iterate the MCMC inference}
 \usage{
 MCMC_iter(
   iter,
@@ -16,34 +16,46 @@ MCMC_iter(
   overdispersion,
   param_agg = FALSE,
   p_reps,
-  mean_k_prior
+  mean_k_prior,
+  k_upper_limit
 )
 }
 \arguments{
-\item{iter}{integer, the number of iteration for the MCMC}
+\item{iter}{integer, the number of iterations for the MCMC}
 
-\item{theta0}{vector of inital parameters}
+\item{theta0}{list of 2 vectors (for Rt and overdispersion) of inital values for parameters (set in fct_MCMC_EpiEstim.R)}
 
-\item{s}{variance of proposal distributions (log-normal)}
+\item{s}{list of 2 vectors (for Rt and overdispersion) of variances of proposal distributions (log-normal). (set in fct_MCMC_EpiEstim.R)}
 
-\item{data_long}{dataframe of incidence and overall infectivities}
+\item{data_long}{data.frame of incidence and overall infectivities by locations in long format 
+(i.e. see  fct_MCMC_EpiEstim.R)}
 
 \item{n_loc}{number of locations}
 
-\item{n_tw}{number of time windows}
+\item{n_tw}{number of time windows (set in fct_MCMC_EpiEstim.R)}
 
-\item{t_window}{time windows}
+\item{t_window}{integer, time window during which Rt is assumed constant.}
 
-\item{prior}{prior for parameters}
+\item{prior}{prior for Rt parameter, assume gamma distributed Rt prior with \code{$shape} and \code{$scale}}
 
 \item{overdispersion}{TRUE or FALSE if overdispersion is assumed (Poisson vs. NB)}
 
 \item{param_agg}{TRUE or FALSE if Rts estimates are aggregated by location}
+
+\item{p_reps}{reporting probability, either a single real (if constant) or a vector 
+with a value of reporting for each day. (set in fct_MCMC_EpiEstim.R)}
+
+\item{mean_k_prior}{real, assuming k prior as an exponential distribution, mean_k_prior is the mean of the prior distribution}
+
+\item{k_upper_limit}{TRUE or FALSE if k estimates should be bounded to 1,000 (upper limit for k)}
+}
+\value{
+res a list containing matrices of: Rts posterior samples (ncol = number of Rts estimated, nrow = number of iteration), 
+              overdispersions posterior samples (if estimated), and the associated log-likelihoods.
 }
 \description{
-run the MCMC to sample posterior of of Rts (and overdispersion) at each location
-}
-\details{
-res a list containing matrices of: Rts posterior samples (before/after thinning), 
-              overdispersions posterior samples (before/after thinning).
+This is an internal function.
+Run the MCMC to sample the posterior of Rts (and optionally overdispersion) at each location.
+this function is called internally by MCMC_Full.R, which is itself called in the 
+fct_MCMC_EpiEstim.R.
 }

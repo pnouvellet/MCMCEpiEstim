@@ -39,7 +39,7 @@ install.packages("MCMCEpiEstim")
 
 To benefit from the latest features and bug fixes, install the development, *github* version of the package using:
 ```{r install2, eval=FALSE}
-devtools::install_github("pnouvellet/MCMCEpiEstim",build = TRUE)
+devtools::install_github("pnouvellet/MCMCEpiEstim",build = TRUE, force = TRUE)
 library(MCMCEpiEstim)
 ```
 
@@ -50,6 +50,7 @@ Note that this requires the package *devtools* installed.
 This section illustrates how to simulate incidence data for a time-varying Rt, with a given level of reporting and superspreading.
 
 ```{r}
+
 
 # a serial interal
 si <- c(0,1)

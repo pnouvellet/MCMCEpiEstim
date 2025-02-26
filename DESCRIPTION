@@ -5,7 +5,7 @@ Authors@R: person("Your", "Name", email = "your.name@localhost", role = c("aut",
 Description: Please add a description.
 Depends: R (>= 4.2.1)
 Imports:
-  projections
+  projections,
   EpiEstim
 License: MIT + file LICENSE
 Encoding: UTF-8

@@ -111,14 +111,14 @@ project_fct <- function(I0, Rt, n_loc, t_max, si, p,
     
     # project, see projections R-package
     if (model == 'poisson'){
-      temp <- as.data.frame(projections:project(x = I0,
+      temp <- as.data.frame(projections::project(x = I0,
                                     R = Rt$Rt, 
                                     si = si[-1], n_sim = n_loc, time_change = 1:(t_max-1-I0$timespan+1),
                                     n_days = t_max-I0$timespan+1, 
                                     R_fix_within = TRUE, 
                                     model = 'poisson',instantaneous_R = TRUE))
     }else if (model == 'negbin'){
-      temp <- as.data.frame(projections:project(x = I0,
+      temp <- as.data.frame(projections::project(x = I0,
                                     R = Rt$Rt, 
                                     si = si[-1], n_sim = n_loc, time_change = 1:(t_max-1-I0$timespan+1),
                                     n_days = t_max-I0$timespan+1, 

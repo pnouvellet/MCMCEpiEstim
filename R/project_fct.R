@@ -52,6 +52,7 @@
 #' The first data.frame, \code{$I_true}, contains the 'true' incidence, while the second, \code{$I_obs}, contains the 'observed'
 #' incidence once under-reporting is accounted for.
 #' 
+#' @import projections
 #' @export  
 #' 
 #' @examples

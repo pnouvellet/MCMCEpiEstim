@@ -6,7 +6,8 @@ Description: Please add a description.
 Depends: R (>= 4.2.1)
 Imports:
   projections,
-  EpiEstim
+  EpiEstim,
+  coda
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

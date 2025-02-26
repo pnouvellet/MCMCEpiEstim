@@ -56,10 +56,11 @@ si <- c(0,1)
 # simualte an Rt
 input <- data.frame(R_min = 0.95,
                     R_max = 1.1,
-                    k = 1,
+                    k = .1,
                     period = 24, 
                     step = 4,
                     I0 = 100,
+                    n_loc = 10,
                     pi = 0.5)
 Rt <- Rt_linear(inp = input, n_week = input$period)
 plot(Rt$t, Rt$Rt,type='l', xlab = 'time',ylab = 'Rt')
@@ -69,7 +70,7 @@ I0 <- incidence::as.incidence(x = input$I0, dates = 1, interval = 1)
 # simulate for 10 locations
 res <- MCMCEpiEstim::project_fct(I0 = I0,
                                  Rt = Rt,
-                                 n_loc = 10,
+                                 n_loc = input$n_loc,
                                  t_max = nrow(Rt),
                                  si = si,
                                  p = input$pi,
@@ -101,9 +102,9 @@ res_EpiEstim <- fct_EpiEstim(I0_t_import = length(input$I0) ,
                              overlap = FALSE)
 
 
-plot(Rt$t,Rt$Rt,type = 'l', ylim = c(0,2.5))
+plot(Rt$t,Rt$Rt,type = 'l', ylim = c(0,2.5), xlab = 'time',ylab = 'Rt')
 
-for(i in 1:sim$input$n_locations){
+for(i in 1:input$n_loc){
   
   Hmisc::errbar(x = res_EpiEstim[[i]]$t_start, 
                 y = res_EpiEstim[[i]]$`Median(R)`,
@@ -122,4 +123,34 @@ for(i in 1:sim$input$n_locations){
 
 
 
+```{r}
+
+rep <- 1e3 # number of iteration for the posterior distribution
+
+# inferrence of Rt and overdispersion wrongly assuming 100% reporting
+res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0_t_import = length(input$I0) ,
+                                           I = res$I_obs,
+                                           t_window = t_window,
+                                           mean_prior = mean_prior, std_prior = std_prior,
+                                           res_EpiEstim = res_EpiEstim, 
+                                           overdispersion = TRUE,
+                                           rep = rep, thin = 10, 
+                                           param_agg = TRUE, 
+                                           p_reps = 1,
+                                           overlap = FALSE)
+
+res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0_t_import = length(input$I0) ,
+                                           I = res$I_obs, 
+                                           t_window = t_window,
+                                           mean_prior = mean_prior, std_prior = std_prior,
+                                           res_EpiEstim = res_EpiEstim, 
+                                           overdispersion = TRUE,
+                                           rep = rep, thin = 10, 
+                                           param_agg = TRUE,
+                                           p_reps = input$pi,
+                                           overlap = FALSE)
+
+
+
+```
 

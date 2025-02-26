@@ -1,11 +1,11 @@
-#' project
+#' Project incidence
 #'
-#' wrapper for projection with/without overdispersion and with under-reporting
+#' Wrapper for projection with/without overdispersion and with under-reporting.
 #' 
 #' @param I0 an incidence object, specifying the initial incidence. 
 #' The initial incidence is here assumed the same in every location.
 #' 
-#' @param Rt A data.frame with time ($t) and associated daily Rts (instantaneous Rt, $Rt).
+#' @param Rt A data.frame with time (\code{$t}) and associated daily Rts (instantaneous Rt, \code{$Rt}).
 #'                   
 #' @param n_loc number of locations.
 #' 
@@ -13,7 +13,7 @@
 #'
 #' @param p level of reporting, i.e. probability that a case simulated is actually observed.
 #' p can take a single value and that would assume constant reporting across time and locations simulated.
-#' Otherwise, p can be data.frame similar to Rt ($t for time and $p for the reporting). Such p data.frame
+#' Otherwise, p can be data.frame similar to Rt (\code{$t} for time and \code{$p} for the reporting). Such p data.frame
 #' would be longer (1 more value) than Rt as it would be specifying in the reporting for imported cases seeding 
 #' the simulation.
 #' In one of our application, we first specify Rt and then then simulate reporting with a single time-step change 
@@ -37,17 +37,21 @@
 #'  as: if X follows a negative binomial distribution with mean \mu and overdispersion \delta, then the 
 #'  $$ E[X] = \mu $$ and $$ Var[X] = \mu + frac{\mu^2}{\delta} $$.
 #'
+#' @param k.seed an optional argument to set the seed of the simulations
+#'
+#' @param threshold_cumCase an optional argument to set the incidence to NA once the cumulative number of 
+#' cases (observed) reached threshold_cumCase.
 #' 
 #' @details Simulate incidence using the package 'projection', with a time-varying Rt, The possibility
 #' to specify the presence of overdispersion and the presence of under-reporting of cases.
 #' 
 #' 
-#' @return A list containing 2 data.frames of time ($t) and daily incidence values at each location 
-#' ($simX, with X an integer for each location). 
-#' The first data.frame, I_true, contains the 'true' incidence, while the second, I_obs, contains the 'observed'
+#' @return A list containing 2 data.frames of time (\code{$t) and daily incidence values at each location 
+#' (\code{$simX}, with X an integer for each location). 
+#' The first data.frame, \code{$I_true}, contains the 'true' incidence, while the second, \code{$I_obs}, contains the 'observed'
 #' incidence once under-reporting is accounted for.
 #' 
-#' @export
+#' @export  
 #' 
 #' 
 

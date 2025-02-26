@@ -13,7 +13,7 @@
 #' @param t_max end time
 #'                   
 #' 
-#' @return Return data frame with 2 columns for time (\code{t}) and the Rt (\code{$Rt})
+#' @return Return data.frame with 2 columns for time (\code{t}) and the Rt (\code{$Rt})
 #' 
 #' @export
 #' 

@@ -1,4 +1,4 @@
-#' truncate incidence
+#' Truncate incidence
 #'
 #' Remove incidence (i.e. replace with NA) after a given time or once a certain incidence threshold is reached.
 #' 

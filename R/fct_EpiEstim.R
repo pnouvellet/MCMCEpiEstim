@@ -75,7 +75,7 @@ fct_EpiEstim <- function(I0_t_import , I , t_window,
   t_end <- t_start + t_window - 1      
   
   # defines settings for estimate_R 
-  config <- EiEstim::make_config(list(si_distr = si,
+  config <- EpiEstim::make_config(list(si_distr = si,
                              t_start = t_start,
                              t_end = t_end,
                              mean_prior = mean_prior,

@@ -1,14 +1,18 @@
-#' MCMC iterate
+#' iterate the MCMC inference
 #'
-#' run the MCMC to sample posterior of of Rts (and overdispersion) at each location
+#' Run the MCMC to sample the posterior of Rts (and optionally overdispersion) at each location.
+#' this function is called internally by MCMC_Full.R, which is itself called in the 
+#' fct_MCMC_EpiEstim.R.
 #' 
-#' @param iter integer, the number of iteration for the MCMC
+#' @param iter integer, the number of iterations for the MCMC
 #'
-#' @param theta0 vector of inital parameters
+#' @param theta0 vector of inital values for parameters (set in fct_MCMC_EpiEstim.R)
 #'
-#' @param s variance of proposal distributions (log-normal) 
+#' @param s variance of proposal distributions (log-normal). (set in fct_MCMC_EpiEstim.R) 
 #' 
-#' @param data_long dataframe of incidence and overall infectivities
+#' @param data_long data.frame of incidence and overall infectivities by locations in long format 
+#' (i.e. see  fct_MCMC_EpiEstim.R, construct a data.frame with 4 columns for \code{$time}, 
+#' \code{$sim} for location index, \code{$incidence} )
 #' 
 #' @param n_loc number of locations
 #' 

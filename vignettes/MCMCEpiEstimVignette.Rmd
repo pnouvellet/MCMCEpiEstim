@@ -11,7 +11,23 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-*MCMCEpiEstim* provides ...
+*MCMCEpiEstim* allows:
+
+- inferring Rt on multiple locations using EpiEstim independelty on each location.
+
+- inferring Rt on multiple locations using an MCMC implementation of EpiEstim and allowing Rt variations 
+to be the same/different across locations. The implementation can account for a given level reporting which may change over time. 
+
+- jointly inferring Rt and the level of superspreading on multiple locations using an MCMC implementation of EpiEstim and allowing Rt variations to be the same/different across locations. The implementation can account for a given level reporting which may change over time.
+
+In the 3 implementations:
+
+- the serial interval is assumed to be the non-parametric version of EpiEstim,
+
+- the time window can be sliding overlapping or non-overlapping (the latter returning estimates of Rt at the end of each time window),
+
+- level of superspreading is always assumed constant over time and across locations.
+
 
 # Installing the package
 

@@ -28,6 +28,7 @@
 #' If no overlapping windows is used, the entries for t_start/t_end and estimated Rt characteristics are only given 
 #' when 't' is the end of the time window.
 #' 
+#' @import EpiEstim
 #' @export
 #' 
 #' @examples
@@ -74,7 +75,7 @@ fct_EpiEstim <- function(I0_t_import , I , t_window,
   t_end <- t_start + t_window - 1      
   
   # defines settings for estimate_R 
-  config <- make_config(list(si_distr = si,
+  config <- EiEstim::make_config(list(si_distr = si,
                              t_start = t_start,
                              t_end = t_end,
                              mean_prior = mean_prior,

@@ -40,7 +40,7 @@ install.packages("MCMCEpiEstim")
 To benefit from the latest features and bug fixes, install the development, *github* version of the package using:
 ```{r install2, eval=FALSE}
 devtools::install_github("pnouvellet/MCMCEpiEstim",build = TRUE, force = TRUE)
-library(MCMCEpiEstim)
+
 ```
 
 Note that this requires the package *devtools* installed.
@@ -50,6 +50,7 @@ Note that this requires the package *devtools* installed.
 This section illustrates how to simulate incidence data for a time-varying Rt, with a given level of reporting and superspreading.
 
 ```{r}
+library(MCMCEpiEstim)
 
 # a serial interal
 si <- c(0,1)
@@ -106,10 +107,15 @@ plot(Rt$t,Rt$Rt,type = 'l', ylim = c(0,2.5), xlab = 'time',ylab = 'Rt')
 
 for(i in 1:input$n_loc){
   
-  Hmisc::errbar(x = res_EpiEstim[[i]]$t_start, 
-                y = res_EpiEstim[[i]]$`Median(R)`,
-                yplus = res_EpiEstim[[i]]$`Quantile.0.975(R)`,
-                yminus = res_EpiEstim[[i]]$`Quantile.0.025(R)`,
+  Rt_EpiEstim <- res_EpiEstim[[i]]
+  # remove espitmate when overall infectivity was 0 (would return only prior distribution of Rt)
+  f <- (which(Rt_EpiEstim$Oi == 0))
+  Rt_EpiEstim[f,c("Mean(R)","Std(R)","Quantile.0.025(R)","Median(R)","Quantile.0.975(R)")] <- NA
+  
+  Hmisc::errbar(x = Rt_EpiEstim$t_start, 
+                y = Rt_EpiEstim$`Median(R)`,
+                yplus = Rt_EpiEstim$`Quantile.0.975(R)`,
+                yminus = Rt_EpiEstim$`Quantile.0.025(R)`,
                 col = i, errbar.col = i, 
                 add=TRUE)
 }
@@ -125,7 +131,7 @@ for(i in 1:input$n_loc){
 
 ```{r}
 
-rep <- 1e3 # number of iteration for the posterior distribution
+rep <- 1e4 # number of iteration for the posterior distribution
 
 # inferrence of Rt and overdispersion wrongly assuming 100% reporting
 res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0_t_import = length(input$I0) ,

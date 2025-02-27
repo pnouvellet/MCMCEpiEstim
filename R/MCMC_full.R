@@ -54,7 +54,10 @@
 #'               the upper 95%CI of potential scale reduction factors >1.1 (\code{$GRD_converged} being TRUE or FALSE).
 #'               the function outputs a warning if evidence of convergence is not reached
 #' 
-#' @importFrom coda gelman.diag
+#' @importFrom coda gelman.diag 
+#' @importFrom coda as.mcmc.list 
+#' @importFrom coda as.mcmc 
+#' @importFrom coda effectiveSize
 #' 
 #' @export
 #' 

@@ -141,7 +141,7 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
   s_0 <- list(Rts = s_Rt, Over = s_Over)
   
   # precompute I and infectivity matrices
-  Inc <- as.matrix(I[,-1])
+  Inc <- as.matrix(I_local[,-1])
   Oi <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Oi')),  ncol = n_loc, byrow = FALSE)
   Oi <- Oi[1:tail(t_end,1),]
   # infectivity tolerance threshold

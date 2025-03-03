@@ -80,7 +80,7 @@ input
 I <- sim$res$I_obs
 I <- list(local = I, import = I)
 
-I$local[50:169,-1] <-0
+I$local[50:169,-1]
 
 # parameters
 # for EpiEstim

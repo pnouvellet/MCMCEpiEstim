@@ -115,6 +115,10 @@ fct_EpiEstim <- function(I0_t_import , I , t_window,
     }else{
       I_corr$imported <- I_import[,i+1]
       I_corr$local <- I_local[,i+1]
+      
+      # then account for importation of simulation
+      I_corr$imported[1:I0_t_import] <- d_incidence$incidence[1:I0_t_import]
+      I_corr$local[1:I0_t_import] <- 0
     }
     
     # correction for days with 0 overall infectivity

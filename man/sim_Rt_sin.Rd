@@ -2,9 +2,9 @@
 % Please edit documentation in R/sim_Rt_sin.R
 \name{sim_Rt_sin}
 \alias{sim_Rt_sin}
-\title{simulate}
+\title{Simulate Rt}
 \usage{
-sim_Rt_sin(a, period, m, t_max, t_start)
+sim_Rt_sin(a, period, m, t_start, t_max)
 }
 \arguments{
 \item{a}{amplitude of the wave}
@@ -13,13 +13,20 @@ sim_Rt_sin(a, period, m, t_max, t_start)
 
 \item{m}{overall mean of Rt}
 
-\item{t_max}{end time}
-
 \item{t_start}{starting time for simulation of Rt}
+
+\item{t_max}{end time}
+}
+\value{
+Return data.frame with 2 columns for time (\code{t}) and the Rt (\code{$Rt})
 }
 \description{
-simulate sinusoidal Rt
+simulate a sinusoidal Rt over time
 }
-\details{
-return dataframe with Rt and time
+\examples{
+
+Rt <- sim_Rt_sin(a = 3, period = 20, m = 1, t_start = 1, t_max = 100)
+plot(Rt$t, Rt$Rt, type='l')
+
+
 }

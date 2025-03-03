@@ -3,7 +3,7 @@
 #' @param x vector of 2 index integers
 #' 
 #' 
-#' @details return corrected variances to decrease/increase acceptance
+#' @return a sequence of indices betwen the first and second number 
 #' 
 #' @export
 #' 

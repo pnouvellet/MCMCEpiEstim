@@ -1,6 +1,6 @@
-#' simulate
+#' Simulate Rt
 #'
-#' simulate sinusoidal Rt
+#' simulate a sinusoidal Rt over time
 #' 
 #' @param a amplitude of the wave
 #' 
@@ -13,16 +13,22 @@
 #' @param t_max end time
 #'                   
 #' 
-#' @details return dataframe with Rt and time
+#' @return Return data.frame with 2 columns for time (\code{t}) and the Rt (\code{$Rt})
 #' 
 #' @export
+#' 
+#' @examples
+#' 
+#' Rt <- sim_Rt_sin(a = 3, period = 20, m = 1, t_start = 1, t_max = 100)
+#' plot(Rt$t, Rt$Rt, type='l')
 #' 
 #' 
 
 # 
-sim_Rt_sin <- function(a, period, m, t_max, t_start){
-
+sim_Rt_sin <- function(a, period, m, t_start, t_max){
+  # make dataframe with time
   Rt <- data.frame(t = seq(t_start,t_max))
+  # add Rt as a sinusoidal function
   Rt$Rt <- a*sin(2*pi*Rt$t/period)+m
   
   return(Rt)

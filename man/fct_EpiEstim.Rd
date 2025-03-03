@@ -7,19 +7,19 @@
 fct_EpiEstim(I0_t_import, I, t_window, mean_prior, std_prior, si, overlap)
 }
 \arguments{
-\item{I0_t_import}{which of the initial incidence is imported}
+\item{I0_t_import}{which of the initial incidence is imported.}
 
-\item{I}{dataframe of incidence. ncol: nb of location +1 (time), nrow: time}
+\item{I}{dataframe of incidence. ncol: nb of location +1 (time), nrow: time.}
 
-\item{t_window}{integer, time window}
+\item{t_window}{integer, time window during which Rt is assumed constant.}
 
-\item{mean_prior}{single real number, mean prior for Rts}
+\item{mean_prior}{single real number, mean prior for Rts.}
 
-\item{std_prior}{single real number, stad deviation for prior for Rts}
+\item{std_prior}{single real number, std deviation for prior for Rts.}
 
-\item{si}{serial distribution (as in EpiEstim include a 0 weighted SI on same day)}
+\item{si}{serial distribution (as in EpiEstim include a 0 weighted SI on same day).}
 
-\item{overlap}{TRUE/FALSE, whether using overlapping time window or not}
+\item{overlap}{TRUE/FALSE, whether using overlapping time window or not.}
 }
 \value{
 A list composed of 1 data.frame per location summarizing daily time, 
@@ -37,4 +37,31 @@ Wrapper to call EpiEstim independently on multiple locations.
 \details{
 Use EpiEstim independently on each location to estimate Rts without
  accounting for overdispersion, nor under-reporting.
+}
+\examples{
+
+I <- data.frame(t = seq(1:50))
+I$loc1 <- 2*exp(.05*I$t)
+I$loc2 <- 2*exp(.1*I$t)
+matplot(I[,-1], xlim = c(0,50), ylim = c(0,200))
+
+
+res <- fct_EpiEstim(I0_t_import = 1 , I = I , t_window = 5, 
+                                mean_prior = 1, std_prior = 1,
+                                si = c(0,1), overlap = FALSE)
+
+a <- res[[1]]
+Hmisc::errbar(x =a$t_start, 
+              y = a$`Median(R)`,
+              yplus = a$`Quantile.0.975(R)`,
+              yminus = a$`Quantile.0.025(R)`,
+              xlab = 'time', ylab = 'Rt')
+
+a <- res[[2]]
+Hmisc::errbar(x =a$t_start, 
+              y = a$`Median(R)`,
+              yplus = a$`Quantile.0.975(R)`,
+              yminus = a$`Quantile.0.025(R)`,
+              xlab = 'time', ylab = 'Rt')
+
 }

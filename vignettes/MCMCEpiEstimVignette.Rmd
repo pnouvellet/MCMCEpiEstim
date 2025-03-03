@@ -11,7 +11,24 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-*MCMCEpiEstim* provides ...
+*MCMCEpiEstim* allows:
+
+- inferring Rt on multiple locations using EpiEstim independelty on each location.
+
+- inferring Rt on multiple locations using an MCMC implementation of EpiEstim and allowing Rt variations 
+to be the same/different across locations. The implementation can account for a given level reporting which may change over time. 
+
+- jointly inferring Rt and the level of superspreading on multiple locations using an MCMC implementation of EpiEstim and allowing Rt variations to be the same/different across locations. The implementation can account for a given level reporting which may change over time.
+
+In the 3 implementations:
+
+- the serial interval is assumed to be the non-parametric version of EpiEstim,
+
+- the time window can be sliding overlapping or non-overlapping (the latter returning estimates of Rt at the end of each time window),
+
+- level of superspreading is always assumed constant over time and across locations.
+
+Below, we provide a typical workflow for using the package
 
 # Installing the package
 
@@ -22,22 +39,124 @@ install.packages("MCMCEpiEstim")
 
 To benefit from the latest features and bug fixes, install the development, *github* version of the package using:
 ```{r install2, eval=FALSE}
-devtools::install_github("reconhub/MCMCEpiEstim")
+devtools::install_github("pnouvellet/MCMCEpiEstim",build = TRUE, force = TRUE)
+
 ```
 
 Note that this requires the package *devtools* installed.
 
-# Main visible functions of the package
+# Simulating incidence data
 
-The main functions of the package include:
+This section illustrates how to simulate incidence data for a time-varying Rt, with a given level of reporting and superspreading.
 
-...
+```{r}
+library(MCMCEpiEstim)
 
-Also consider adding some examples.
+# a serial interal
+si <- c(0,1)
+# simualte an Rt
+input <- data.frame(R_min = 0.95,
+                    R_max = 1.1,
+                    k = .1,
+                    period = 24, 
+                    step = 4,
+                    I0 = 100,
+                    n_loc = 10,
+                    pi = 0.5)
+Rt <- Rt_linear(inp = input, n_week = input$period)
+plot(Rt$t, Rt$Rt,type='l', xlab = 'time',ylab = 'Rt')
+# set initial incidence
+I0 <- incidence::as.incidence(x = input$I0, dates = 1, interval = 1)
 
-# Main internal functions
+# simulate for 10 locations
+res <- MCMCEpiEstim::project_fct(I0 = I0,
+                                 Rt = Rt,
+                                 n_loc = input$n_loc,
+                                 t_max = nrow(Rt),
+                                 si = si,
+                                 p = input$pi,
+                                 model = 'negbin',
+                                 over = input$k, 
+                                 k.seed = 1)
 
-In case you want to describe internal function as well.
-... 
+matplot((res$I_true[,-1]), xlab = '', ylab = 'cases', main = 'true cases')
+matplot((res$I_obs[,-1]), xlab = '', ylab = 'cases', main = 'observed cases')
 
+```
+
+
+# Inferring Rt using the multi-location EpiEstim
+
+```{r}
+
+# parameters for EpiEstim
+t_window <- 7
+mean_prior <- 5
+std_prior <- 5
+
+res_EpiEstim <- fct_EpiEstim(I0_t_import = length(input$I0) , 
+                             I = res$I_obs, 
+                             t_window = t_window, 
+                             mean_prior = mean_prior, 
+                             std_prior = std_prior,
+                             si = si, 
+                             overlap = FALSE)
+
+
+plot(Rt$t,Rt$Rt,type = 'l', ylim = c(0,2.5), xlab = 'time',ylab = 'Rt')
+
+for(i in 1:input$n_loc){
+  
+  Rt_EpiEstim <- res_EpiEstim[[i]]
+  # remove espitmate when overall infectivity was 0 (would return only prior distribution of Rt)
+  f <- (which(Rt_EpiEstim$Oi == 0))
+  Rt_EpiEstim[f,c("Mean(R)","Std(R)","Quantile.0.025(R)","Median(R)","Quantile.0.975(R)")] <- NA
+  
+  Hmisc::errbar(x = Rt_EpiEstim$t_start, 
+                y = Rt_EpiEstim$`Median(R)`,
+                yplus = Rt_EpiEstim$`Quantile.0.975(R)`,
+                yminus = Rt_EpiEstim$`Quantile.0.025(R)`,
+                col = i, errbar.col = i, 
+                add=TRUE)
+}
+
+
+
+```
+
+
+# Jointly inferring Rt and the level of superspreading 
+
+
+
+```{r}
+
+rep <- 1e4 # number of iteration for the posterior distribution
+
+# inferrence of Rt and overdispersion wrongly assuming 100% reporting
+res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0_t_import = length(input$I0) ,
+                                           I = res$I_obs,
+                                           t_window = t_window,
+                                           mean_prior = mean_prior, std_prior = std_prior,
+                                           res_EpiEstim = res_EpiEstim, 
+                                           overdispersion = TRUE,
+                                           rep = rep, thin = 10, 
+                                           param_agg = TRUE, 
+                                           p_reps = 1,
+                                           overlap = FALSE)
+
+res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0_t_import = length(input$I0) ,
+                                           I = res$I_obs, 
+                                           t_window = t_window,
+                                           mean_prior = mean_prior, std_prior = std_prior,
+                                           res_EpiEstim = res_EpiEstim, 
+                                           overdispersion = TRUE,
+                                           rep = rep, thin = 10, 
+                                           param_agg = TRUE,
+                                           p_reps = input$pi,
+                                           overlap = FALSE)
+
+
+
+```
 

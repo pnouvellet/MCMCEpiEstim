@@ -2,7 +2,7 @@
 % Please edit documentation in R/truncate_incidence.R
 \name{truncate_incidence}
 \alias{truncate_incidence}
-\title{truncate incidence}
+\title{Truncate incidence}
 \usage{
 truncate_incidence(
   I0_t_import,
@@ -13,14 +13,34 @@ truncate_incidence(
 )
 }
 \arguments{
-\item{t_truncate}{integer, truncate incidence after t_truncate* t_window days}
+\item{I0_t_import}{integer, which of the initial incidence is imported.}
+
+\item{I}{data.frame of incidence. ncol: number of locations +1 (\code{$time}), nrow: time}
+
+\item{t_window}{integer, time window during which Rt is assumed constant.}
+
+\item{t_truncate}{integer, truncate incidence after \code{t_truncate* t_window days + I0_t_import}.}
 
 \item{incidence_truncate}{integer, set incidence at NA for all time windows after which
-'incidence_truncate' daily cases are reached}
+'incidence_truncate' daily cases are reached.}
 }
 \value{
 A data.frame similar to the input incidence but with truncation applied.
 }
 \description{
 Remove incidence (i.e. replace with NA) after a given time or once a certain incidence threshold is reached.
+}
+\examples{
+
+I <- data.frame(t = seq(1:100))
+I$loc1 <- 2*exp(.04*I$t)
+I$loc2 <- 2*exp(.08*I$t)
+matplot(I[,-1], xlim = c(0,100), ylim = c(0,220))
+
+I_trunc1 <- truncate_incidence(I0_t_import = 1, I = I,t_window = 5,t_truncate = 10)
+matplot(I_trunc1[,-1], xlim = c(0,100), ylim = c(0,220))
+
+I_trunc2 <- truncate_incidence(I0_t_import = 1, I = I,t_window = 5,incidence_truncate = 100)
+matplot(I_trunc2[,-1], xlim = c(0,100), ylim = c(0,220))
+
 }

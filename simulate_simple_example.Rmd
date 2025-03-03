@@ -92,8 +92,20 @@ res_EpiEstim <- fct_EpiEstim(I0_t_import = sim$I0$timespan ,
                              mean_prior = mean_prior, 
                              std_prior = std_prior,
                              si = si, 
-                             overlap = FALSE)
+                             overlap = FALSE, infectivity_tolerance = 0)
 
+
+plot(Rt$t,Rt$Rt,type = 'l', ylim = c(0,2.5))
+
+for(i in 1:sim$input$n_locations){
+  
+  Hmisc::errbar(x = res_EpiEstim[[i]]$t_start, 
+                y = res_EpiEstim[[i]]$`Median(R)`,
+                yplus = res_EpiEstim[[i]]$`Quantile.0.975(R)`,
+                yminus = res_EpiEstim[[i]]$`Quantile.0.025(R)`,
+                col = i, errbar.col = i, 
+                add=TRUE)
+}
 
 ```
 

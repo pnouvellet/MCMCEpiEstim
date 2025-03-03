@@ -61,7 +61,7 @@
 
 fct_EpiEstim <- function(I0_t_import , I , t_window, 
                          mean_prior, std_prior,
-                         si, overlap, infectivity_tolerance = NULL){
+                         si, overlap){
   
   input_import <- FALSE
   if (is.list(I)){
@@ -122,16 +122,11 @@ fct_EpiEstim <- function(I0_t_import , I , t_window,
     }
     
     # correction for days with 0 overall infectivity
-    if(is.null(infectivity_tolerance)){
+
       f_0 <- which(d_incidence$Oi == 0)
       I_corr$imported[f_0] <- d_incidence$incidence[f_0]
       I_corr$local[f_0] <- 0
-    }else{
-      f_0 <- which(d_incidence$Oi < infectivity_tolerance)
-      I_corr$imported[f_0] <- NA
-      I_corr$local[f_0] <- NA
-      d_incidence$Oi[f_0] <- NA
-    }
+
     
     # estimation
     res_non_parametric_si <- estimate_R(I_corr, 

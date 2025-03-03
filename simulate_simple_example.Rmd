@@ -75,8 +75,32 @@ input
 ```
 
 
+```{r, eval = FALSE, for list_import}
+
+I <- sim$res$I_obs
+I <- list(local = I, import = I)
+
+# parameters
+# for EpiEstim
+t_window <- 7
+mean_prior <- 5
+std_prior <- 5
+
+res_EpiEstim <- fct_EpiEstim(I0_t_import = sim$I0$timespan , 
+                             I = I, #I_true ,
+                             t_window = t_window, 
+                             mean_prior = mean_prior, 
+                             std_prior = std_prior,
+                             si = si, 
+                             overlap = FALSE)
+
+
+```
+
 
 ```{r}
+
+
 
 # parameters
 # for EpiEstim

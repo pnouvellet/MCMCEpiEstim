@@ -35,7 +35,16 @@
 
 fct_EpiEstim <- function(I0_t_import , I , t_window, 
                          mean_prior, std_prior,
-                         si, overlap){
+                         si, overlap, infectivity_tolerance = NULL){
+  
+  input_import <- FALSE
+  if (is.list(I)){
+    input_import <- TRUE
+    I_import <- I$local
+    I_local <- I$import
+    I <- I_import
+    I[,-1] <- I[,-1] + I_local[,-1]
+  }
   
   t_max <- nrow(I)
   n_sim <- ncol(I)-1
@@ -71,16 +80,29 @@ fct_EpiEstim <- function(I0_t_import , I , t_window,
     # d_incidence$Oi <- EpiEstim::overall_infectivity(incid = d_incidence$incidence, ## issue here when NAs present
     #                                      si_distr = si)
     d_incidence$Oi[1:I0_t_import] <- NA
-    f_0 <- which(d_incidence$Oi == 0)
     
     I_corr <- data.frame(local = d_incidence$incidence,
-                    imported = 0)
-    # correct initial case as imported
-    I_corr$imported[1:I0_t_import] <- d_incidence$incidence[1:I0_t_import]
-    I_corr$local[1:I0_t_import] <- 0
+                         imported = 0)
+    if(input_import == FALSE){
+      # correct initial case as imported
+      I_corr$imported[1:I0_t_import] <- d_incidence$incidence[1:I0_t_import]
+      I_corr$local[1:I0_t_import] <- 0
+    }else{
+      I_corr$imported <- I_import[,i+1]
+      I_corr$local <- I_local[,i+1]
+    }
+    
     # correction for days with 0 overall infectivity
-    I_corr$imported[f_0] <- d_incidence$incidence[f_0]
-    I_corr$local[f_0] <- 0
+    if(is.null(infectivity_tolerance)){
+      f_0 <- which(d_incidence$Oi == 0)
+      I_corr$imported[f_0] <- d_incidence$incidence[f_0]
+      I_corr$local[f_0] <- 0
+    }else{
+      f_0 <- which(d_incidence$Oi < infectivity_tolerance)
+      I_corr$imported[f_0] <- NA
+      I_corr$local[f_0] <- NA
+      d_incidence$Oi[f_0] <- NA
+    }
     
     # estimation
     res_non_parametric_si <- estimate_R(I_corr, 

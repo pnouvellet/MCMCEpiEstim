@@ -286,7 +286,7 @@ mean_prior <- 5
 std_prior <- 5
 
 res_EpiEstim <- fct_EpiEstim(I0_t_import = sim$I0$timespan , 
-                             I = sim$res$I_obs, #I_true ,
+                             I = sim$res[[1]]$I_obs, #I_true ,
                              t_window = t_window, 
                              mean_prior = mean_prior, 
                              std_prior = std_prior,
@@ -318,7 +318,7 @@ for(i in 1:sim$input$n_locations){
 rep <- 1e3
 devtools::load_all(".")
 res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , 
-                                              I = sim$res$I_true ,
+                                              I = sim$res[[1]]$I_true ,
                                               t_window = t_window,
                                               mean_prior = mean_prior, 
                                               std_prior = std_prior,
@@ -330,7 +330,8 @@ res_MCMC_EpiEstim_Poiss1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan ,
                                               p_reps = 1,
                                               overlap = FALSE)
 
-res_MCMC_EpiEstim_Poiss2 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_true , 
+res_MCMC_EpiEstim_Poiss2 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , 
+                                              I = sim$res[[1]]$I_true , 
                                               t_window = t_window,
                                              mean_prior = mean_prior, std_prior = std_prior,
                                              res_EpiEstim = res_EpiEstim, overdispersion = FALSE, 
@@ -338,14 +339,16 @@ res_MCMC_EpiEstim_Poiss2 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I 
                                               overlap = FALSE)
 
 
-res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_true  ,
+res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , 
+                                           I = sim$res[[1]]$I_true  ,
                                            t_window = t_window,
                                           mean_prior = mean_prior, std_prior = std_prior,
                                           res_EpiEstim = res_EpiEstim, overdispersion = TRUE,
                                           rep = rep, thin = 10, param_agg = TRUE, p_reps = 1,
                                               overlap = FALSE)
 
-res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , I = sim$res$I_true  ,
+res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , 
+                                           I = sim$res[[1]]$I_true  ,
                                            t_window = t_window,
                                           mean_prior = mean_prior, std_prior = std_prior,
                                           res_EpiEstim = res_EpiEstim, overdispersion = TRUE,

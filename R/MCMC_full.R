@@ -65,7 +65,7 @@
 MCMC_full <- function(iter, theta0, s, repli_adapt, within_iter, data_long,
                       n_loc, n_tw, t_window, prior, overdispersion, thin, 
                       param_agg = FALSE, p_reps, mean_k_prior, k_upper_limit = TRUE,
-                      run_diagnostics = TRUE){
+                      run_diagnostics){
   
   rep <- repli_adapt*within_iter
   # # initialise likelihood

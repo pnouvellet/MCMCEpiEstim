@@ -123,7 +123,7 @@ res_MCMC_EpiEstim_NB <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan ,
                                               thin = 10, 
                                               param_agg = TRUE, 
                                               p_reps = 1,
-                                              overlap = FALSE)
+                                              overlap = FALSE, run  )
 
 
 Rt1 <- res_MCMC_EpiEstim_NB$theta_R_thinned

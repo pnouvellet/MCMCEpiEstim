@@ -64,7 +64,7 @@ fct_EpiEstim <- function(I0_t_import , I , t_window,
                          si, overlap){
   
   input_import <- FALSE
-  if (is.list(I)){
+  if (!is.data.frame(I)){
     input_import <- TRUE
     I_import <- I$import
     I_local <- I$local

@@ -66,8 +66,8 @@ fct_EpiEstim <- function(I0_t_import , I , t_window,
   input_import <- FALSE
   if (is.list(I)){
     input_import <- TRUE
-    I_import <- I$local
-    I_local <- I$import
+    I_import <- I$import
+    I_local <- I$local
     I <- I_import
     I[,-1] <- I[,-1] + I_local[,-1]
   }

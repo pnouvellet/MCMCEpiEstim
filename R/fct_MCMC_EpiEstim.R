@@ -69,10 +69,33 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
                               mean_prior, std_prior,
                               res_EpiEstim, overdispersion = FALSE, 
                               rep, thin = 10, param_agg = FALSE, Rt0_epiEstim = TRUE, 
-                              p_reps = 1, overlap = FALSE, input = NULL, mean_k_prior = 1e3, k_upper_limit = TRUE){
+                              p_reps = 1, overlap = FALSE, input = NULL, 
+                              mean_k_prior = 1e3, k_upper_limit = TRUE,
+                              infectivity_tolerance = 0){
   
   set.seed(1)
   #
+  input_import <- FALSE
+  if (is.list(I)){
+    input_import <- TRUE
+    I_import <- I$import
+    I_local <- I$local
+    I <- I_import
+    I[,-1] <- I[,-1] + I_local[,-1]
+    
+    # then account for importation of simulation
+    I_import[1:I0_t_import,-1] <- I_import[1:I0_t_import,-1] + I_local[1:I0_t_import,-1]
+    I_local[1:I0_t_import,-1] <- 0
+  }else{
+    I_local <- I_import <- I
+    I_import[,-1] <- 0
+    # then account for importation of simulation
+    I_import[1:I0_t_import,-1] <- I_import[1:I0_t_import,-1] + I_local[1:I0_t_import,-1]
+    I_local[1:I0_t_import,-1] <- 0
+    
+  }
+  
+  
   prior <- epitrix::gamma_mucv2shapescale(mu = mean_prior, cv = std_prior/mean_prior)
   t_max <- nrow(I)
   n_loc <- ncol(I)-1
@@ -121,7 +144,9 @@ fct_MCMC_EpiEstim <- function(I0_t_import, I, t_window,
   Inc <- as.matrix(I[,-1])
   Oi <- matrix(unlist(lapply(res_EpiEstim, "[", ,'Oi')),  ncol = n_loc, byrow = FALSE)
   Oi <- Oi[1:tail(t_end,1),]
-  Oi[Oi==0] <- NA
+  # infectivity tolerance threshold
+  Oi[Oi<=infectivity_tolerance] <- NA
+  
   Oi <- as.matrix(Oi)
   idx_inc <- c(apply(cbind(t_start,t_end), 1,f1_idx_inc))
   

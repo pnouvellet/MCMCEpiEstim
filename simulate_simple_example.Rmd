@@ -80,6 +80,8 @@ input
 I <- sim$res$I_obs
 I <- list(local = I, import = I)
 
+I$local[50:169,-1] <-0
+
 # parameters
 # for EpiEstim
 t_window <- 7
@@ -92,7 +94,7 @@ res_EpiEstim <- fct_EpiEstim(I0_t_import = sim$I0$timespan ,
                              mean_prior = mean_prior, 
                              std_prior = std_prior,
                              si = si, 
-                             overlap = FALSE, infectivity_tolerance = 0)
+                             overlap = FALSE)
 
 
 plot(Rt$t,Rt$Rt,type = 'l', ylim = c(0,2.5))
@@ -106,6 +108,26 @@ for(i in 1:sim$input$n_locations){
                 col = i, errbar.col = i, 
                 add=TRUE)
 }
+
+###
+rep <- 1e3
+
+res_MCMC_EpiEstim_NB <- fct_MCMC_EpiEstim(I0_t_import = sim$I0$timespan , 
+                                              I = I, #I_true ,
+                                              t_window = t_window,
+                                              mean_prior = mean_prior, 
+                                              std_prior = std_prior,
+                                              res_EpiEstim = res_EpiEstim, 
+                                              overdispersion = TRUE, 
+                                              rep = rep, 
+                                              thin = 10, 
+                                              param_agg = TRUE, 
+                                              p_reps = 1,
+                                              overlap = FALSE)
+
+
+Rt1 <- res_MCMC_EpiEstim_NB$theta_R_thinned
+delta <- res_MCMC_EpiEstim_NB$theta_over
 
 ```
 

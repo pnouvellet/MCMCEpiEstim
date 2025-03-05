@@ -160,3 +160,6 @@ res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0_t_import = length(input$I0) ,
 
 ```
 
+# real world application - Ebola
+
+

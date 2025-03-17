@@ -162,6 +162,7 @@ res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0_t_import = length(input$I0) ,
 ```
 ```{r}
 k <- median(res_MCMC_EpiEstim_NB1$theta_over_thinned)
+quantile(res_MCMC_EpiEstim_NB1$theta_over_thinned,c(.5,.025,.975))
 
 D2 <- diag_plot(res = res_EpiEstim,logged = FALSE,max_x = 1,
                 dist = 'nb', k = k, res_MCMC = res_MCMC_EpiEstim_NB1)
@@ -194,7 +195,8 @@ res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0_t_import = length(input$I0) ,
 
 
 ```{r}
-k <- median(res_MCMC_EpiEstim_NB1$theta_over_thinned)
+k <- median(res_MCMC_EpiEstim_NB2$theta_over_thinned)
+quantile(res_MCMC_EpiEstim_NB2$theta_over_thinned,c(.5,.025,.975))
 
 D3 <- diag_plot(res = res_EpiEstim,logged = FALSE,max_x = 1,
                 dist = 'nb', k = k, res_MCMC = res_MCMC_EpiEstim_NB2)

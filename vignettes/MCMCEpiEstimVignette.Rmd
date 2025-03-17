@@ -100,7 +100,7 @@ res_EpiEstim <- fct_EpiEstim(I0_t_import = length(input$I0) ,
                              mean_prior = mean_prior, 
                              std_prior = std_prior,
                              si = si, 
-                             overlap = TRUE)
+                             overlap = FALSE)
 
 
 plot(Rt$t,Rt$Rt,type = 'l', ylim = c(0,2.5), xlab = 'time',ylab = 'Rt')
@@ -127,7 +127,11 @@ for(i in 1:input$n_loc){
 
 ```{r}
 
-diag_plot()
+D1 <- diag_plot(res = res_EpiEstim,logged = FALSE,max_x = 1,dist = 'poisson')
+D1$res_table
+
+D1_logged <- diag_plot(res = res_EpiEstim,logged = TRUE,max_x = 1,dist = 'poisson')
+D1_logged$res_table
 
 ```
 
@@ -135,6 +139,7 @@ diag_plot()
 # Jointly inferring Rt and the level of superspreading 
 
 
+## first wrongy assuming 100% reporting
 
 ```{r}
 
@@ -152,6 +157,24 @@ res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0_t_import = length(input$I0) ,
                                            p_reps = 1,
                                            overlap = FALSE)
 
+
+
+```
+```{r}
+k <- median(res_MCMC_EpiEstim_NB1$theta_over_thinned)
+Rt <- apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,median)
+D1 <- diag_plot(res = res_EpiEstim,logged = FALSE,max_x = 1,dist = 'NB', k = k, Rt = Rt)
+D1$res_table
+
+D1_logged <- diag_plot(res = res_EpiEstim,logged = TRUE,max_x = 1,dist = 'poisson')
+D1_logged$res_table
+
+```
+
+
+## first prper reporting assumption
+
+```{r}
 res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0_t_import = length(input$I0) ,
                                            I = res$I_obs, 
                                            t_window = t_window,

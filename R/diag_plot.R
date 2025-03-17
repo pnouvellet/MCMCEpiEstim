@@ -18,7 +18,7 @@
 #' @export
 #' 
 
-diag_plot <- function(res, logged, max_x=1, dist ){
+diag_plot <- function(res, logged, max_x=1, dist , k, res_MCMC=NULL){
   
   check <- c()
   for (i in 1:length(res)){
@@ -27,7 +27,15 @@ diag_plot <- function(res, logged, max_x=1, dist ){
     
     idx_inc <- c(apply(cbind(tmp$t_start[f],tmp$t_end[f]),1,f1_idx_inc))
     idx_Rt <- c(apply(cbind(tmp$t_start[f],tmp$t_end[f]),1,f2_idx_inc))
-
+    
+    if(!is.null(res_MCMC)){
+      if(res_MCMC$input_MCMC$param_agg){
+        tmp$`Mean(R)`[f] <- apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,mean)
+      }else{
+        n <- length(f)
+        tmp$`Mean(R)`[f] <- apply(res_MCMC_EpiEstim_NB1$theta_R_thinned[,((i-1)*n+1):(n*i)],2,mean)
+      }
+    }
     check0 <- data.frame(time = tmp$t[idx_inc],
                         location = paste('loc_',i),
                         Rt = tmp$`Mean(R)`[idx_Rt],

@@ -30,10 +30,10 @@ diag_plot <- function(res, logged, max_x=1, dist , k, res_MCMC=NULL){
     
     if(!is.null(res_MCMC)){
       if(res_MCMC$input_MCMC$param_agg){
-        tmp$`Mean(R)`[f] <- apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,mean)
+        tmp$`Mean(R)`[f] <- apply(res_MCMC$theta_R_thinned,2,mean)
       }else{
         n <- length(f)
-        tmp$`Mean(R)`[f] <- apply(res_MCMC_EpiEstim_NB1$theta_R_thinned[,((i-1)*n+1):(n*i)],2,mean)
+        tmp$`Mean(R)`[f] <- apply(res_MCMC$theta_R_thinned[,((i-1)*n+1):(n*i)],2,mean)
       }
     }
     check0 <- data.frame(time = tmp$t[idx_inc],
@@ -49,10 +49,27 @@ diag_plot <- function(res, logged, max_x=1, dist , k, res_MCMC=NULL){
     
   # 95%CI associated with particular observation
   if (dist == 'poisson'){
-    check$lim_up <- qpois(p = 0.975,lambda = check$Exp,lower.tail = TRUE) - check$Exp
-    check$lim_down <- qpois(p = 0.025,lambda = check$Exp,lower.tail = TRUE) - check$Exp
+    if(!is.null(res_MCMC)){
+      p_reps <- res_MCMC$input_MCMC$p_reps
+    }else{
+      p_reps <- 1
+    }
+    if(p_reps ==1){
+      check$lim_up <- qpois(p = 0.975,lambda = check$Exp,lower.tail = TRUE) - check$Exp
+      check$lim_down <- qpois(p = 0.025,lambda = check$Exp,lower.tail = TRUE) - check$Exp
+    }else{
+      check$var <- check$Exp * (1 + (1- p_reps) * check$Rt) +
+        (1- p_reps) * check$Rt * (1 + check$Rt)
+      
+      check$lim_up <- qnbinom(p = 0.975,mu = check$Exp, size = check$Exp^2 / (check$var - check$Exp), lower.tail = TRUE) - check$Exp
+      check$lim_down <- qnbinom(p = 0.025,mu = check$Exp, size = check$Exp^2 / (check$var - check$Exp),lower.tail = TRUE) - check$Exp
+    }
   }else if(dist == 'nb'){
-    check$var <- check$Exp * (1 + check$Rt/k)
+    p_reps <- res_MCMC$input_MCMC$p_reps
+    # check$var <- check$Exp * (1 + check$Rt/k)
+    check$var <- check$Exp * (1 + (1- p_reps) * check$Rt  + p_reps * check$Rt/k) +
+      (1- p_reps) * check$Rt * (1 + check$Rt + p_reps * check$Rt/k)
+    
     check$lim_up <- qnbinom(p = 0.975,mu = check$Exp, size = check$Exp^2 / (check$var - check$Exp), lower.tail = TRUE) - check$Exp
     check$lim_down <- qnbinom(p = 0.025,mu = check$Exp, size = check$Exp^2 / (check$var - check$Exp),lower.tail = TRUE) - check$Exp
   }
@@ -113,8 +130,8 @@ diag_plot <- function(res, logged, max_x=1, dist , k, res_MCMC=NULL){
   }else{
     check$int_I <- cut(check$Exp,breaks = seq(0,max(check$Exp,na.rm = TRUE),length.out=5))
   }
-  check$int_R <- cut(check$Rt,breaks = seq(min(check$Rt,na.rm = TRUE)*.9,max(check$Rt,na.rm = TRUE),length.out=5))
-  check$int_t <- cut(check$time,breaks = seq(min(check$time,na.rm = TRUE)*.9,max(check$time,na.rm = TRUE),length.out=5))
+  check$int_R <- cut(check$Rt,breaks = seq(min(check$Rt,na.rm = TRUE),max(check$Rt,na.rm = TRUE),length.out=5))
+  check$int_t <- cut(check$time,breaks = seq(min(check$time,na.rm = TRUE),max(check$time,na.rm = TRUE),length.out=5))
   
   
   

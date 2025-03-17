@@ -162,17 +162,19 @@ res_MCMC_EpiEstim_NB1 <- fct_MCMC_EpiEstim(I0_t_import = length(input$I0) ,
 ```
 ```{r}
 k <- median(res_MCMC_EpiEstim_NB1$theta_over_thinned)
-Rt <- apply(res_MCMC_EpiEstim_NB1$theta_R_thinned,2,median)
-D1 <- diag_plot(res = res_EpiEstim,logged = FALSE,max_x = 1,dist = 'NB', k = k, Rt = Rt)
-D1$res_table
 
-D1_logged <- diag_plot(res = res_EpiEstim,logged = TRUE,max_x = 1,dist = 'poisson')
-D1_logged$res_table
+D2 <- diag_plot(res = res_EpiEstim,logged = FALSE,max_x = 1,
+                dist = 'nb', k = k, res_MCMC = res_MCMC_EpiEstim_NB1)
+D2$res_table
+
+D2_logged <- diag_plot(res = res_EpiEstim,logged = TRUE,max_x = 1,
+                       dist = 'nb', k = k, res_MCMC = res_MCMC_EpiEstim_NB1)
+D2_logged$res_table
 
 ```
 
 
-## first prper reporting assumption
+## Then proper reporting assumption
 
 ```{r}
 res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0_t_import = length(input$I0) ,
@@ -189,6 +191,22 @@ res_MCMC_EpiEstim_NB2 <- fct_MCMC_EpiEstim(I0_t_import = length(input$I0) ,
 
 
 ```
+
+
+```{r}
+k <- median(res_MCMC_EpiEstim_NB1$theta_over_thinned)
+
+D3 <- diag_plot(res = res_EpiEstim,logged = FALSE,max_x = 1,
+                dist = 'nb', k = k, res_MCMC = res_MCMC_EpiEstim_NB2)
+D3$res_table
+
+D3_logged <- diag_plot(res = res_EpiEstim,logged = TRUE,max_x = 1,
+                       dist = 'nb', k = k, res_MCMC = res_MCMC_EpiEstim_NB2)
+D3_logged$res_table
+
+```
+
+
 
 # real world application - Ebola
 

@@ -11,3 +11,7 @@
 f1_idx_inc <- function(x){
   x[1]:x[2]
 }
+
+f2_idx_inc <- function(x){
+  rep(x[2],length(x[1]:x[2]))
+}

@@ -100,7 +100,7 @@ res_EpiEstim <- fct_EpiEstim(I0_t_import = length(input$I0) ,
                              mean_prior = mean_prior, 
                              std_prior = std_prior,
                              si = si, 
-                             overlap = FALSE)
+                             overlap = TRUE)
 
 
 plot(Rt$t,Rt$Rt,type = 'l', ylim = c(0,2.5), xlab = 'time',ylab = 'Rt')
@@ -121,6 +121,13 @@ for(i in 1:input$n_loc){
 }
 
 
+
+```
+## Diagnostics for MCMCEpiEstim
+
+```{r}
+
+diag_plot()
 
 ```
 

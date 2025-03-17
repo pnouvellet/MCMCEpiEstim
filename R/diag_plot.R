@@ -2,7 +2,7 @@
 #'
 #' diagnostic plots 
 #' 
-#' @param logged plot y_axis on natural scale, i.e. FALSE, of log10 scale, logged = TRUE,
+#' @param logged plot y_axis on natural scale, i.e. FALSE, or log10 scale, logged = TRUE,
 #' 
 #' @param max_x plot up to x*max(x), default show the whole axis, i.e. max_x = 1
 #'                   
@@ -18,28 +18,24 @@
 #' @export
 #' 
 
-diag_plot <- function(I_NB, logged, max_x=1, dist, Rt, k){
+diag_plot <- function(res, logged, max_x=1, dist ){
   
-  # get overall infertivity from EpiEstim
-  # E_NB <- matrix(unlist(lapply(res_EpiEstim, "[", ,"Oi")), 
-  #                nrow = t_max, ncol = n_location, byrow = FALSE)
-  if(ncol(Rt) == 2){
-    Rts <- matrix(Rt$Rt,nrow = nrow(Rt),ncol = ncol(I_NB)-1,byrow = FALSE)
-  }else{
-    Rts <- as.matrix(Rt[,-1])
+  check <- c()
+  for (i in 1:length(res)){
+    tmp <- res[[i]]
+    f <- which(!is.na(tmp$t_start))
+    
+    idx_inc <- c(apply(cbind(tmp$t_start[f],tmp$t_end[f]),1,f1_idx_inc))
+    idx_Rt <- c(apply(cbind(tmp$t_start[f],tmp$t_end[f]),1,f2_idx_inc))
+
+    check0 <- data.frame(time = tmp$t[idx_inc],
+                        location = paste('loc_',i),
+                        Rt = tmp$`Mean(R)`[idx_Rt],
+                        Obs = tmp$incidence[idx_inc],
+                        Exp = tmp$Oi[idx_inc] * tmp$`Mean(R)`[idx_Rt])
+
+    check <- rbind(check,check0)
   }
-  
-  E_NB <- I_NB[1:(nrow(I_NB)-1),-1] * Rts
-  E_NB <- as.matrix(rbind(NA,E_NB))
-  
-  check <- data.frame(time = rep(as.matrix(I_NB[-1,1]),ncol(I_NB)-1),
-                      location = rep(paste('loc_',1:(ncol(I_NB)-1)), each = nrow(I_NB)-1),
-                      Rt = c(Rts),
-                      Obs = c(as.matrix(I_NB[-1,-1])),
-                      Exp = c(E_NB[-1,]),
-                      residual = NA, 
-                      lim_up = NA,
-                      lim_down = NA)
   
   check$residual <- check$Obs - check$Exp
     

@@ -206,6 +206,28 @@ D3_logged <- diag_plot(res = res_EpiEstim,logged = TRUE,max_x = 1,
                        dist = 'nb', k = k, res_MCMC = res_MCMC_EpiEstim_NB2)
 D3_logged$res_table
 
+
+
+```
+
+
+```{r, eval = FLASE}
+k <- c(.01,.1,1,100)
+pi_rep = seq(.1,1,length.out = 10)
+R <- c(.5,1,2)
+C0 <- 20
+
+var_Iobs <- function(C0,R,pi_rep,k){
+  R*C0*(1+R/k*(pi_rep+k*(1-pi_rep)*R))
+}
+
+for(i in 1:4){# ks
+  for(j in 1:3){#Rs
+   plot(pi_rep, var_Iobs(C0 = C0, R = R[j], pi_rep = pi_rep, k = k[i]), main = paste0('R=',R[j],', k=',k[i]))
+  }
+}
+
+
 ```
 
 
